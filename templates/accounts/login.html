@@ -1,0 +1,46 @@
+{% extends "accounts/AccountsBase.html" %}
+{% block title %}登入{% endblock %}
+{% block content %}
+
+<div class="center">
+	<h1>登入</h1>
+	<form method="post" id="login-form">
+		{% csrf_token %}
+		<div class="txt_field">
+			{{ form.username }}
+			<label>{{ form.username.label }}</label>
+		</div>
+		<div class="txt_field">
+			{{ form.password }}
+			<label>{{ form.password.label }}</label>
+		</div>
+		<div class="row">
+			<div class="col-6">
+				{{ form.remember_me }}
+				<span></span>
+				<label>{{ form.remember_me.label }}</label>
+			</div>
+			<div class="col-6" style="text-align: right;">
+				<div style="display: none;">
+				</div>
+			</div>
+		</div>
+		{% if form.errors %}
+		<div class="error text-danger">
+			<ul>
+				{% for field in form %}
+				{% for error in field.errors %}
+				<li>{{ error }}</li>
+				{% endfor %}
+				{% endfor %}
+			</ul>
+		</div>
+		{% endif %}
+		<br>
+		<input type="submit" class="btn-submit" value="登入" /><br>
+		<div class="signup_link">
+			還不是會員嗎?<a href="{% url 'Register' %}">&nbsp註冊</a>
+		</div>
+	</form>
+</div>
+{% endblock %}

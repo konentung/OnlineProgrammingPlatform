@@ -1,0 +1,17 @@
+.form {
+    background-color: rgb(212, 214, 215);
+    padding: 10px;
+    border-radius: 10px;
+    transform: translate(21%, 3%);
+    width: 70%;
+}
+.text{
+    margin: 10px 0px;
+}
+.button{
+    text-align: end;
+    margin-top: 20px;
+}
+h2{
+    text-align: center;
+}

@@ -1,0 +1,46 @@
+{% extends "accounts/AccountsBase.html" %}
+
+{% block title %}註冊{% endblock %}
+
+{% block content %}
+
+<div class="center">
+	<h1>註冊</h1>
+	<form method="post" id="register-form">
+		{% csrf_token %}
+		<!-- 註冊表單內容 -->
+		<div class="txt_field">
+			{{ form.username }}
+			<label>{{ form.username.label }}</label>
+		</div>
+		<div class="txt_field">
+		{{ form.email }}
+			<label>{{ form.email.label }}</label>
+		</div>
+		<div class="txt_field">
+			{{ form.password1 }}
+		<label>{{ form.password1.label }}</label>
+		</div>
+		<div class="txt_field">
+			{{ form.password2 }}
+			<label>{{ form.password2.label }}</label>
+		</div>
+		{% if form.errors %}
+		<div class="error text-danger">
+			<ul>
+			{% for field in form %}
+			{% for error in field.errors %}
+			<li>{{ error }}</li>
+			{% endfor %}
+			{% endfor %}
+			</ul>
+		</div>
+		{% endif %}
+		<input type="submit" class="btn-submit" value="送出" /><br>
+	</form>
+	<div class="signup_link">
+		已經是會員?<a href="{% url 'Login'%}">&nbsp;登入</a>
+	</div>
+</div>
+
+{% endblock %}

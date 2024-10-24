@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}你的作業{% endblock %}
+{% block content %}
+{% load static %}
+
+<div class="container mt-5">
+    <h1 class="mb-4" style="font-family:微軟正黑體; font-weight: bold;">作業區</h1>
+    <div class="row">
+      {% if questions %}
+      {% for question in questions %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <a href="{% url 'QuestionDetail' question.id %}" class="btn">
+                    <div class="card-body">
+                        <h5 class="card-title" style="font-family:微軟正黑體;">{{ question.title }}</h5>
+                        <p class="card-text" style="font-family:微軟正黑體; font-size:12pt; color:gray; text-align: left;">
+                            {{ question.description|truncatewords:20 }}
+                        </p>
+                    </div>
+                </a>
+            </div>
+        </div>
+      {% endfor %}
+      {% else %}
+          <p style="font-family:微軟正黑體;">目前沒有作業</p>
+      {% endif %}
+    </div>
+</div>
+{% endblock %}
