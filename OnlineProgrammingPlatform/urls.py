@@ -32,4 +32,6 @@ urlpatterns = [
     path('question/create/', questions_views.question_create, name='QuestionCreate'),
     path('question/update/<int:pk>/', questions_views.question_update, name='QuestionUpdate'),
     path('question/delete/<int:pk>/', questions_views.question_delete, name='QuestionDelete'),
+    path('question/assignment/', questions_views.question_assignment, name='QuestionAssignment'),
+    path('submit_answer/<int:pk>/', questions_views.submit_answer, name='SubmitAnswer'),
 ]

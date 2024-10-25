@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from accounts.models import Student
-from posts.models import QuestionAssignment
-from posts.forms import QuestionDataForm, QuestionData
+from posts.models import QuestionData, QuestionAssignment
+from posts.forms import QuestionDataForm, QuestionAssignmentForm
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, Http404
+from django.utils import timezone
 
 @login_required(login_url='Login')
 def question_create(request):
@@ -18,11 +19,11 @@ def question_create(request):
             question_data.save()
 
             # 創建 QuestionAssignment 並將 title 設置為 QuestionData 的 title
-            question_assignment = QuestionAssignment.objects.create(
-                student=student,
-                question_data=question_data
-            )
-            question_assignment.save()
+            # question_assignment = QuestionAssignment.objects.create(
+            #     student=student,
+            #     question_data=question_data
+            # )
+            # question_assignment.save()
 
             return redirect('/')
         else:
@@ -65,9 +66,64 @@ def question_delete(request, pk):
     question.delete()
     return redirect('/')
 
+# @login_required(login_url='Login')
+# def question_assignment(request):
+#     question_assignment = QuestionAssignment.objects.all()
+#     question_assignment = get_object_or_404(QuestionAssignment)
+#     if request.method == 'POST':
+#         form = QuestionAssignment(request.POST, instance=question_assignment)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('/')
+#     return render(request, 'questions/question_assignment.html')
+
+# def question_assignment(request):
+#     question_assignments = QuestionAssignmentForm.objects.filter(student=request.user)
+#     return render(request, 'questions/question_assignment.html', {'question_assignments': question_assignments})
+
 @login_required(login_url='Login')
-def question_asign(request, pk):
+def question_assignment(request):
+    question_assignments = QuestionAssignment.objects.filter(student=request.user)
+    return render(request, 'questions/question_assignment.html', {'question_assignments': question_assignments})
+
+# @login_required(login_url='Login')
+# def submit_answer(request, pk):
+#     question = get_object_or_404(QuestionData, pk=pk)
+#     assignment, created = QuestionAssignment.objects.get_or_create(
+#         student=request.user,
+#         question_data=question
+#     )
+
+#     if request.method == 'POST':
+#         form = QuestionAssignmentForm(request.POST, instance=assignment)
+#         if form.is_valid():
+#             form.instance.submitted_at = timezone.now()
+#             form.instance.status = 'submitted'
+#             form.save()
+#             return redirect('QuestionDetail', pk=pk)
+#     else:
+#         form = QuestionAssignmentForm(instance=assignment)
+
+#     return render(request, 'questions/submit_answer.html', {'question': question, 'form': form})
+@login_required(login_url='Login')
+def submit_answer(request, pk):
     question = get_object_or_404(QuestionData, pk=pk)
-    question.student = Student.objects.get(username=request.user.username)
-    question.save()
-    return redirect('QuestionDetail', pk=pk)
+    assignment, created = QuestionAssignment.objects.get_or_create(
+        student=request.user,
+        question_data=question
+    )
+
+    # 取得 URL 中的 mode 參數，默認為 'view'
+    mode = request.GET.get('mode', 'view')
+
+    if request.method == 'POST':
+        form = QuestionAssignmentForm(request.POST, instance=assignment)
+        if form.is_valid():
+            form.instance.submitted_at = timezone.now()
+            form.instance.status = 'submitted'
+            form.save()
+            return redirect('QuestionAssignment')
+    else:
+        form = QuestionAssignmentForm(instance=assignment)
+
+    return render(request, 'questions/PostBase.html', {'question': question, 'form': form, 'mode': mode})

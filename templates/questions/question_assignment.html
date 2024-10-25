@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}你的作業{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">作業區</h1>
+    <div class="row">
+      {% if question_assignments %}
+      {% for assignment in question_assignments %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <a href="{% url 'SubmitAnswer' assignment.question_data.id %}?mode=assignment" class="btn">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ assignment.question_data.title }}</h5>
+                        <p class="card-text">{{ assignment.question_data.description|truncatewords:20 }}</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+      {% endfor %}
+      {% else %}
+          <p>目前沒有作業</p>
+      {% endif %}
+    </div>
+</div>
+{% endblock %}

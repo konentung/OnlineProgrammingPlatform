@@ -1,8 +1,4 @@
-from typing import Any, Mapping
 from django import forms
-from django.core.files.base import File
-from django.db.models.base import Model
-from django.forms.utils import ErrorList
 from .models import QuestionData, QuestionAssignment
 from accounts.models import Student
 
@@ -81,19 +77,35 @@ class QuestionDataForm(forms.ModelForm):
             'category': '題目類別'
         }
         
+# class QuestionAssignmentForm(forms.ModelForm):
+#     def __init__(self, *args, **kwargs):
+#         self.user = kwargs.pop('user', None)
+#         super(QuestionAssignmentForm, self).__init__(*args, **kwargs)
+        
+#         self.fields['student'].required = False
+#         self.fields['question_data'].required = False
+        
+        
+#     question_data = forms.ModelChoiceField(
+#         queryset=QuestionData.objects.none(),
+#         label='選擇題目',
+#         widget=forms.Select(attrs={'class': 'form-control'}),
+#     )
+
+#     def __init__(self, *args, **kwargs):
+#         user = kwargs.pop('user', None)
+#         super(QuestionAssignmentForm, self).__init__(*args, **kwargs)
+#         if user:
+#             self.fields['question_data'].queryset = QuestionData.objects.filter(student=user)
+
+#     class Meta:
+#         model = QuestionAssignment
+#         fields = ['question_data']
+
 class QuestionAssignmentForm(forms.ModelForm):
-    question_data = forms.ModelChoiceField(
-        queryset=QuestionData.objects.none(),
-        label='選擇題目',
-        widget=forms.Select(attrs={'class': 'form-control'}),
-    )
-
-    def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)
-        super(QuestionAssignmentForm, self).__init__(*args, **kwargs)
-        if user:
-            self.fields['question_data'].queryset = QuestionData.objects.filter(student=user)
-
     class Meta:
         model = QuestionAssignment
-        fields = ['question_data']
+        fields = ['answer']
+        widgets = {
+            'answer': forms.Textarea(attrs={'class': 'form-control'}),
+        }

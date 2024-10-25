@@ -4,11 +4,46 @@
 <div class="container mt-4">
     <h1 class="mb-4" style="font-family:微軟正黑體; font-weight: bold;">{{ question.title }}</h1>
 
+    <div class="mt-4">
+        <h5 style="font-family:微軟正黑體; font-weight: bold;">題目說明：</h5>
+        <p style="font-family:微軟正黑體; font-size:12pt;">
+            {{ question.description|truncatewords:20 }}
+        </p>
+    </div>
+
+    {% if mode == 'view' %}
+        {% if user.is_authenticated and user == question.student %}
+        <div class="mt-4">
+            <a href="{% url 'QuestionUpdate' question.id %}" class="btn btn-primary">編輯</a>
+            <form method="POST" action="{% url 'QuestionDelete' question.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">刪除</button>
+            </form>
+        </div>
+        {% endif %}
+    {% elif mode == 'assignment' %}
+        <div class="mt-4">
+            <form method="POST" action="{% url 'SubmitAnswer' question.id %}">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-success mt-2">提交答案</button>
+            </form>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% comment %} {% extends 'base.html' %}
+{% block title %}{{ question.title }}{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4" style="font-family:微軟正黑體; font-weight: bold;">{{ question.title }}</h1>
+
     <!-- 額外資訊區域（如果需要顯示更多資訊） -->
     <div class="mt-4">
         <h5 style="font-family:微軟正黑體; font-weight: bold;">題目說明：</h5>
         <p style="font-family:微軟正黑體; font-size:12pt;">
-            {{ question.description }}
+            {{ question.description|truncatewords:20 }}
         </p>
     </div>
 
@@ -23,4 +58,4 @@
     </div>
     {% endif %}
 </div>
-{% endblock %}
+{% endblock %} {% endcomment %}

@@ -17,7 +17,7 @@ def index(request):
 # 登入
 def sign_in(request):
     if request.user.is_authenticated:
-        return redirect('/')  # 如果使用者已經登入，直接導向首頁
+        return redirect(reverse('Index'))
     
     if request.method == "POST":
         form = LoginForm(request.POST) 
@@ -30,7 +30,7 @@ def sign_in(request):
                 login(request, user)
                 if not remember_me:
                     request.session.set_expiry(0)
-                return redirect('/')  # 導向到首頁
+                return redirect(reverse('Index'))
         else:
             message = '驗證碼錯誤!'
     else:
@@ -38,17 +38,15 @@ def sign_in(request):
 
     return render(request, 'accounts/login.html', locals())
 
-
 # 登出
 def log_out(request):
     logout(request)
     return redirect('/')
-  
+
 # 註冊
 def register(request):
-    # 如果使用者已經登入，直接導向首頁
     if request.user.is_authenticated:
-        return redirect(reverse('/'))
+        return redirect(reverse('Index'))
     
     form = RegisterForm()
     if request.method == "POST":
