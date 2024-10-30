@@ -8,7 +8,7 @@ class QuestionCategoryAdmin(admin.ModelAdmin):
     list_display = ("question_data", "type")
     
 class QuestionAssignmentAdmin(admin.ModelAdmin):
-    list_display = ("student", "question_data")
+    list_display = ("student", "question_data", "answer", "score", "status", "submitted_at")
 
 admin.site.register(QuestionData, QuestionsAdmin)
 admin.site.register(QuestionAssignment, QuestionAssignmentAdmin)

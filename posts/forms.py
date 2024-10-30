@@ -76,31 +76,6 @@ class QuestionDataForm(forms.ModelForm):
             'difficulty': '難度',
             'category': '題目類別'
         }
-        
-# class QuestionAssignmentForm(forms.ModelForm):
-#     def __init__(self, *args, **kwargs):
-#         self.user = kwargs.pop('user', None)
-#         super(QuestionAssignmentForm, self).__init__(*args, **kwargs)
-        
-#         self.fields['student'].required = False
-#         self.fields['question_data'].required = False
-        
-        
-#     question_data = forms.ModelChoiceField(
-#         queryset=QuestionData.objects.none(),
-#         label='選擇題目',
-#         widget=forms.Select(attrs={'class': 'form-control'}),
-#     )
-
-#     def __init__(self, *args, **kwargs):
-#         user = kwargs.pop('user', None)
-#         super(QuestionAssignmentForm, self).__init__(*args, **kwargs)
-#         if user:
-#             self.fields['question_data'].queryset = QuestionData.objects.filter(student=user)
-
-#     class Meta:
-#         model = QuestionAssignment
-#         fields = ['question_data']
 
 class QuestionAssignmentForm(forms.ModelForm):
     class Meta:
@@ -109,3 +84,10 @@ class QuestionAssignmentForm(forms.ModelForm):
         widgets = {
             'answer': forms.Textarea(attrs={'class': 'form-control'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super(QuestionAssignmentForm, self).__init__(*args, **kwargs)
+        # 檢查實例是否存在，並且狀態為 "已評分"
+        if self.instance and self.instance.status == 'graded':
+            # 將 answer 欄位設置為只讀
+            self.fields['answer'].widget.attrs['readonly'] = True

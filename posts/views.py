@@ -18,13 +18,6 @@ def question_create(request):
             question_data.student = student
             question_data.save()
 
-            # 創建 QuestionAssignment 並將 title 設置為 QuestionData 的 title
-            # question_assignment = QuestionAssignment.objects.create(
-            #     student=student,
-            #     question_data=question_data
-            # )
-            # question_assignment.save()
-
             return redirect('/')
         else:
             print(form.errors)  # 打印錯誤訊息
@@ -66,21 +59,6 @@ def question_delete(request, pk):
     question.delete()
     return redirect('/')
 
-# @login_required(login_url='Login')
-# def question_assignment(request):
-#     question_assignment = QuestionAssignment.objects.all()
-#     question_assignment = get_object_or_404(QuestionAssignment)
-#     if request.method == 'POST':
-#         form = QuestionAssignment(request.POST, instance=question_assignment)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('/')
-#     return render(request, 'questions/question_assignment.html')
-
-# def question_assignment(request):
-#     question_assignments = QuestionAssignmentForm.objects.filter(student=request.user)
-#     return render(request, 'questions/question_assignment.html', {'question_assignments': question_assignments})
-
 @login_required(login_url='Login')
 def question_assignment(request):
     question_assignments = QuestionAssignment.objects.filter(student=request.user)
@@ -94,17 +72,21 @@ def question_assignment(request):
 #         question_data=question
 #     )
 
+#     # 取得 URL 中的 mode 參數，默認為 'view'
+#     mode = request.GET.get('mode', 'view')
+
 #     if request.method == 'POST':
 #         form = QuestionAssignmentForm(request.POST, instance=assignment)
 #         if form.is_valid():
 #             form.instance.submitted_at = timezone.now()
 #             form.instance.status = 'submitted'
 #             form.save()
-#             return redirect('QuestionDetail', pk=pk)
+#             return redirect('QuestionAssignment')
 #     else:
 #         form = QuestionAssignmentForm(instance=assignment)
 
-#     return render(request, 'questions/submit_answer.html', {'question': question, 'form': form})
+#     return render(request, 'questions/PostBase.html', {'question': question, 'form': form, 'mode': mode})
+
 @login_required(login_url='Login')
 def submit_answer(request, pk):
     question = get_object_or_404(QuestionData, pk=pk)
@@ -113,12 +95,11 @@ def submit_answer(request, pk):
         question_data=question
     )
 
-    # 取得 URL 中的 mode 參數，默認為 'view'
     mode = request.GET.get('mode', 'view')
 
     if request.method == 'POST':
         form = QuestionAssignmentForm(request.POST, instance=assignment)
-        if form.is_valid():
+        if form.is_valid() and assignment.status != 'graded':  # 僅當未評分時才允許保存
             form.instance.submitted_at = timezone.now()
             form.instance.status = 'submitted'
             form.save()
@@ -126,4 +107,10 @@ def submit_answer(request, pk):
     else:
         form = QuestionAssignmentForm(instance=assignment)
 
-    return render(request, 'questions/PostBase.html', {'question': question, 'form': form, 'mode': mode})
+    return render(request, 'questions/PostBase.html', {
+        'question': question,
+        'form': form,
+        'mode': mode,
+        'status': assignment.status,  # 傳遞 status 以便在模板中使用
+        'score' : assignment.score # 傳遞 score 以便在模板中使用
+    })
