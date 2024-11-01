@@ -4,7 +4,7 @@
 {% load static %}
 
 <div class="container mt-5">
-    <h1 class="mb-4" style="font-family:微軟正黑體; font-weight: bold;">最新問題</h1>
+    <h1 class="mb-4" style="font-family:微軟正黑體; font-weight: bold;">最新題目</h1>
     <div class="row">
       {% if questions %}
       {% for question in questions %}
@@ -22,7 +22,7 @@
         </div>
       {% endfor %}
       {% else %}
-          <p style="font-family:微軟正黑體;">目前沒有問題。</p>
+          <p style="font-family:微軟正黑體;">目前題庫中沒有題目。</p>
       {% endif %}
     </div>
 </div>

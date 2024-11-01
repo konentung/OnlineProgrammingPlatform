@@ -13,7 +13,7 @@
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"
         integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous">
     </script>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/search.css' %}">
     <title>{% block title %}{% endblock %}</title>
 
     <!-- Additional CSS to push content below fixed navbar -->
@@ -65,6 +65,9 @@
                         <li class="my-3 text-center">
                             <a href="{% url 'QuestionAssignment' %}" class="btn btn-outline-primary btn-lg menu-item" role="button">作業區</a>
                         </li>
+                        <li class="my-3 text-center">
+                            <a href="{% url 'UserQuestionHistoryList' %}" class="btn btn-outline-primary btn-lg menu-item" role="button">出題記錄</a>
+                        </li>                        
                     </ul>
                 </div>
             </div>

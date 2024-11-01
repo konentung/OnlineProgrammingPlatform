@@ -6,8 +6,8 @@
     <form method="POST">
         {% csrf_token %}
         <div class="form-group">
-            {{ form.display_student.label_tag }}
-            {{ form.display_student }}
+            {{ form.display_creator.label_tag }}
+            {{ form.display_creator }}
         </div>
         <div class="form-group">
             {{ form.title.label_tag }}
@@ -18,14 +18,10 @@
             {{ form.description }}
         </div>
         <div class="form-group">
-            {{ form.score.label_tag }}
-            {{ form.score }}
+            {{ form.answer.label_tag }}
+            {{ form.answer }}
         </div>
-        <div class="form-group">
-            {{ form.difficulty.label_tag }}
-            {{ form.difficulty }}
-        </div>
-        <button type="submit" class="btn btn-primary">提交</button>
+        <button type="submit" class="btn btn-primary">儲存變更</button>
     </form>
 
     <script>
@@ -43,17 +39,15 @@
             function readonlyMode() {
                 $('input[name="title"]').prop('readonly', true);
                 $('textarea[name="description"]').prop('readonly', true);
-                $('input[name="score"]').prop('readonly', true);
-                $('input[name="difficulty"]').prop('readonly', true);
-                $('input[name="display_student"]').prop('readonly', true);
+                $('input[name="answer"]').prop('readonly', true);
+                $('input[name="display_creator"]').prop('readonly', true);
             }
 
             function editMode() {
                 $('input[name="title"]').prop('readonly', false);
                 $('textarea[name="description"]').prop('readonly', false);
-                $('input[name="score"]').prop('disabled', true);
-                $('input[name="difficulty"]').prop('disabled', true);
-                $('input[name="display_student"]').prop('disabled', true);
+                $('input[name="answer"]').prop('disabled', true);
+                $('input[name="display_creator"]').prop('disabled', true);
             }
         });
     </script>    

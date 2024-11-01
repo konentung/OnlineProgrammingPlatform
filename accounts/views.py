@@ -2,8 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from accounts.models import Student
-from posts.models import QuestionData
-from posts.forms import QuestionDataForm
+from posts.models import Question
 from accounts.forms import RegisterForm, LoginForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -11,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 # 首頁
 @login_required(login_url="Login")
 def index(request):
-    questions = QuestionData.objects.all().order_by('-created_time')
+    questions = Question.objects.all().order_by('-created_at')
     return render(request, 'index.html', {'questions': questions})
 
 # 登入

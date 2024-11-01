@@ -6,28 +6,20 @@
     <form method="POST">
         {% csrf_token %}
         <div class="form-group">
-            {{ form.display_student.label_tag }}
-            {{ form.display_student }}
+            {{ form.display_creator.label_tag }}
+            {{ form.display_creator }}
         </div>
         <div class="form-group">
             {{ form.title.label_tag }}
             {{ form.title }}
         </div>
         <div class="form-group">
-            {{ form.category.label_tag }}
-            {{ form.category }}
-        </div>
-        <div class="form-group">
             {{ form.description.label_tag }}
             {{ form.description }}
         </div>
         <div class="form-group">
-            {{ form.score.label_tag }}
-            {{ form.score }}
-        </div>
-        <div class="form-group">
-            {{ form.difficulty.label_tag }}
-            {{ form.difficulty }}
+            {{ form.answer.label_tag }}
+            {{ form.answer }}
         </div>
         <button type="submit" class="btn btn-primary">提交</button>
     </form>
@@ -47,18 +39,18 @@
             function readonlyMode() {
                 $('input[name="title"]').prop('readonly', true);
                 $('textarea[name="description"]').prop('readonly', true);
-                $('input[name="score"]').prop('readonly', true);
+                $('input[name="answer"]').prop('readonly', true);
                 $('input[name="difficulty"]').prop('readonly', true);
-                // 確保 display_student 是只讀的，不可修改
-                $('input[name="display_student"]').prop('readonly', true);
+                // 確保 display_creator 是只讀的，不可修改
+                $('input[name="display_creator"]').prop('readonly', true);
             }
 
             function editMode() {
                 $('input[name="title"]').prop('readonly', false);
                 $('textarea[name="description"]').prop('readonly', false);
-                $('input[name="score"]').prop('disabled', true);
+                $('input[name="answer"]').prop('disabled', true);
                 $('input[name="difficulty"]').prop('disabled', true);
-                $('input[name="display_student"]').prop('disabled', true);
+                $('input[name="display_creator"]').prop('disabled', true);
             }
         });
     </script>    
