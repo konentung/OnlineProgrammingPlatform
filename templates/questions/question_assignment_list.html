@@ -4,14 +4,14 @@
 <div class="container mt-5">
     <h1 class="mb-4">作業區</h1>
     <div class="row">
-      {% if question_assignments %}
-      {% for assignment in question_assignments %}
+      {% if questions %}
+      {% for question in questions %}
         <div class="col-md-4 mb-4">
             <div class="card h-100 shadow-sm">
-                <a href="{% url 'SubmitAnswer' assignment.question_data.id %}?mode=assignment" class="btn">
+                <a href="{% url 'QuestionAnswer' question.id %}" class="btn">
                     <div class="card-body">
-                        <h5 class="card-title">{{ assignment.question_data.title }}</h5>
-                        <p class="card-text">{{ assignment.question_data.description|truncatewords:20 }}</p>
+                        <h5 class="card-title">{{ question.title }}</h5>
+                        <p class="card-text" style="font-family:微軟正黑體; font-size:12pt; color:gray; text-align: left;">{{ question.description|truncatewords:20 }}</p>
                     </div>
                 </a>
             </div>

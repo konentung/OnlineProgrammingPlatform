@@ -35,10 +35,10 @@ class AnswerHistoryAdmin(admin.ModelAdmin):
 
 # 學生互評管理
 class PeerReviewAdmin(admin.ModelAdmin):
-    list_display = ("reviewer", "reviewed_answer", "reviewed_at")
-    search_fields = ("reviewer__username", "reviewed_answer__question__title")
+    list_display = ("reviewer", "reviewed_question", "reviewed_at")
+    search_fields = ("reviewer__username", "reviewed_question__question__title")
     list_filter = ("reviewed_at",)
-    list_display_links = ("reviewer", "reviewed_answer")
+    list_display_links = ("reviewer", "reviewed_question")
 
 # 教材管理
 class TeachingMaterialAdmin(admin.ModelAdmin):

@@ -3,22 +3,44 @@
 {% block content %}
 <div class="container mt-4">
     <h1 class="mb-4" style="font-family:微軟正黑體; font-weight: bold;">{{ question.title }}</h1>
-
     <div class="mt-4">
         <h5 style="font-family:微軟正黑體; font-weight: bold;">題目說明：</h5>
         <p style="font-family:微軟正黑體; font-size:12pt;">
             {{ question.description }}
         </p>
     </div>
-
-    {% if user.is_authenticated and user == question.creator %}
-    <div class="mt-4">
-        <a href="{% url 'QuestionUpdate' question.id %}" class="btn btn-primary">編輯</a>
-        <form method="POST" action="{% url 'QuestionDelete' question.id %}" style="display:inline;">
+    <div class="mt-5">
+        <h5 class="font-weight-bold">評論</h5>
+        <ul class="list-group">
+            {% for comment in comments %}
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between">
+                        <strong class="text-primary">{{ comment.commenter.username }}</strong>
+                        <small class="text-muted">{{ comment.commented_at|date:"Y-m-d H:i" }}</small>
+                    </div>
+                    <p class="mb-1">{{ comment.content }}</p>
+                </li>
+            {% empty %}
+                <li class="list-group-item text-muted">尚無評論</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="mt-5">
+        <form method="POST" class="card p-3 shadow-sm border-0">
             {% csrf_token %}
-            <button type="submit" class="btn btn-danger">刪除</button>
+            <div class="form-group">
+                {{ comment_form.content.label_tag }}
+                {{ comment_form.content }}
+                {% if comment_form.content.errors %}
+                    <div class="text-danger mt-1">
+                        {% for error in comment_form.content.errors %}
+                            <small>{{ error }}</small><br>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <button type="submit" class="btn btn-primary">提交評論</button>
         </form>
     </div>
-    {% endif %}
 </div>
 {% endblock %}

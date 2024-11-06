@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}{{ question.title }}{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">{{ question.title }}</h1>
+
+    <div class="mt-4">
+        <h5>題目說明：</h5>
+        <p>{{ question.description }}</p>
+    </div>
+
+    <div class="mt-4">
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            {% if status != 'graded' %}
+                <button type="submit" class="btn btn-success mt-2">提交答案</button>
+            {% endif %}
+        </form>
+    </div>
+</div>
+{% endblock %}

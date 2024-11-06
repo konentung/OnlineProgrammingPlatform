@@ -13,7 +13,7 @@ class Question(models.Model):
     def __str__(self):
         return self.title
 
-# 題目歷史表（紀錄每次的編輯歷史）
+# 題目歷史表（每次的編輯紀錄）
 class QuestionHistory(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="edit_history")
     title = models.CharField(max_length=100)
@@ -25,7 +25,7 @@ class QuestionHistory(models.Model):
     def __str__(self):
         return f"Edit history of '{self.question.title}' at {self.edited_at}"
 
-# 學生作答表，增加狀態欄位
+# 學生作答表(教師指派題目給學生，學生作答)
 class StudentAnswer(models.Model):
     STATUS_CHOICES = [
         ('pending', '未作答'),
@@ -38,7 +38,7 @@ class StudentAnswer(models.Model):
     answer_text = models.TextField(blank=True, null=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')  # 狀態欄位
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
 
     def __str__(self):
         return f"Answer by {self.student} for '{self.question.title}'"
@@ -56,17 +56,17 @@ class AnswerHistory(models.Model):
 # 學生互評表
 class PeerReview(models.Model):
     reviewer = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="peer_reviews_given")
-    reviewed_answer = models.ForeignKey(StudentAnswer, on_delete=models.CASCADE, related_name="peer_reviews_received")
-    question_accuracy_score = models.IntegerField(choices=[(i, str(i)) for i in range(4)], default=0)
-    complexity_score = models.IntegerField(choices=[(i, str(i)) for i in range(4)], default=0)
-    practice_score = models.IntegerField(choices=[(i, str(i)) for i in range(4)], default=0)
-    answer_accuracy_score = models.IntegerField(choices=[(i, str(i)) for i in range(4)], default=0)
-    readability_score = models.IntegerField(choices=[(i, str(i)) for i in range(4)], default=0)
+    reviewed_question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="peer_reviews_received")
+    question_accuracy_score = models.IntegerField(choices=[(i, str(i)) for i in range(6)], default=0)
+    complexity_score = models.IntegerField(choices=[(i, str(i)) for i in range(6)], default=0)
+    practice_score = models.IntegerField(choices=[(i, str(i)) for i in range(6)], default=0)
+    answer_accuracy_score = models.IntegerField(choices=[(i, str(i)) for i in range(6)], default=0)
+    readability_score = models.IntegerField(choices=[(i, str(i)) for i in range(6)], default=0)
     comments = models.TextField(blank=True, null=True)
     reviewed_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Review by {self.reviewer} for '{self.reviewed_answer}'"
+        return f"Review by {self.reviewer} for '{self.reviewed_question}'"
 
 # 教材表
 class TeachingMaterial(models.Model):
@@ -88,6 +88,7 @@ class QuestionAssignment(models.Model):
     def __str__(self):
         return f"Assignment of '{self.question.title}' to {self.student}"
 
+# 題目評論表
 class QuestionComment(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="comments")
     commenter = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="comments")

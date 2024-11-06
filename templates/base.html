@@ -54,22 +54,25 @@
                     <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">目錄</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
-                <div class="offcanvas-body">
-                    <ul style="list-style-type: none; padding: 0;">
-                        <li class="my-3 text-center">
-                            <a href="{% url 'Index' %}" class="btn btn-outline-primary btn-lg menu-item" role="button">首頁</a>
+                <div class="offcanvas-body bg-light">
+                    <ul class="list-unstyled text-center">
+                        <li class="my-3">
+                            <a href="{% url 'Index' %}" class="btn btn-lg menu-item w-100 shadow-sm" role="button">首頁</a>
                         </li>
-                        <li class="my-3 text-center">
-                            <a href="{% url 'QuestionCreate' %}" class="btn btn-outline-primary btn-lg menu-item" role="button">出題區</a>
+                        <li class="my-3">
+                            <a href="{% url 'QuestionCreate' %}" class="btn btn-lg menu-item w-100 shadow-sm" role="button">出題區</a>
                         </li>
-                        <li class="my-3 text-center">
-                            <a href="{% url 'QuestionAssignment' %}" class="btn btn-outline-primary btn-lg menu-item" role="button">作業區</a>
+                        <li class="my-3">
+                            <a href="{% url 'QuestionAssignment' %}" class="btn btn-lg menu-item w-100 shadow-sm" role="button">作業區</a>
                         </li>
-                        <li class="my-3 text-center">
-                            <a href="{% url 'UserQuestionHistoryList' %}" class="btn btn-outline-primary btn-lg menu-item" role="button">出題記錄</a>
-                        </li>                        
+                        <li class="my-3">
+                            <a href="{% url 'UserQuestionHistoryList' %}" class="btn btn-lg menu-item w-100 shadow-sm" role="button">出題記錄</a>
+                        </li>
+                        <li class="my-3">
+                            <a href="{% url 'PeerAssessmentList' %}" class="btn btn-lg menu-item w-100 shadow-sm" role="button">題目互評</a>
+                        </li>
                     </ul>
-                </div>
+                </div>                
             </div>
             {% block content %}{% endblock %}
         </div>

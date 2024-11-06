@@ -18,6 +18,9 @@ from django.contrib import admin
 from django.urls import path
 import accounts.views as accounts_views
 import posts.views as questions_views
+from accounts.views import custom_404_view
+
+handler404 = custom_404_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -33,7 +36,9 @@ urlpatterns = [
     path('question/update/<int:pk>/', questions_views.question_update, name='QuestionUpdate'),
     path('question/delete/<int:pk>/', questions_views.question_delete, name='QuestionDelete'),
     path('question/assignment/', questions_views.question_assignment_list, name='QuestionAssignment'),
-    path('submit_answer/<int:pk>/', questions_views.submit_answer, name='SubmitAnswer'),
+    path('question/answer/<int:pk>/', questions_views.question_answer, name='QuestionAnswer'),
     path('question/history/', questions_views.user_question_history_list, name='UserQuestionHistoryList'),
-    path('question/<int:question_id>/history/', questions_views.question_history_list, name='QuestionHistoryList'),
+    path('question/history/<int:question_id>/', questions_views.question_history_list, name='QuestionHistoryList'),
+    path('question/peer_assessment/', questions_views.peer_assessment_list, name='PeerAssessmentList'),
+    path('peer-assessment/<int:question_id>/', questions_views.peer_assessment, name='PeerAssessment'),
 ]

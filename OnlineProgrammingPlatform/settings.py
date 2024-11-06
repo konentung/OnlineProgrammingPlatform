@@ -31,6 +31,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+CSRF_TRUSTED_ORIGINS = [os.environ.get('NGROK_URL')] if ('NGROK_URL') in os.environ else print('NGROK_URL not found')
+
 # Application definition
 AUTH_USER_MODEL = 'accounts.Student'
 INSTALLED_APPS = [

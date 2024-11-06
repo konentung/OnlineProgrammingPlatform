@@ -1,5 +1,5 @@
 from django import forms
-from .models import Question, QuestionHistory, StudentAnswer, AnswerHistory, PeerReview, TeachingMaterial, QuestionAssignment
+from .models import Question, QuestionHistory, StudentAnswer, AnswerHistory, PeerReview, TeachingMaterial, QuestionAssignment, QuestionComment
 from accounts.models import Student
 
 # 題目表單（學生出題）
@@ -97,25 +97,22 @@ class AnswerHistoryForm(forms.ModelForm):
 
 # 學生互評表單（評分和評論）
 class PeerReviewForm(forms.ModelForm):
+    reviewer_name = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control', 'disabled': 'disabled'}),
+        required=False,
+        label="評分學生"
+    )
+    SCORE_CHOICES = [(i, str(i)) for i in range(6)]
+    question_accuracy_score = forms.ChoiceField(choices=SCORE_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}), label='題目正確性')
+    complexity_score = forms.ChoiceField(choices=SCORE_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}), label='題目複雜度')
+    practice_score = forms.ChoiceField(choices=SCORE_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}), label='題目實用性')
+    answer_accuracy_score = forms.ChoiceField(choices=SCORE_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}), label='程式正確性')
+    readability_score = forms.ChoiceField(choices=SCORE_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}), label='程式可讀性')
+    comments = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control'}), required=False, label='評論')
+
     class Meta:
         model = PeerReview
         fields = ['question_accuracy_score', 'complexity_score', 'practice_score', 'answer_accuracy_score', 'readability_score', 'comments']
-        widgets = {
-            'question_accuracy_score': forms.Select(attrs={'class': 'form-control'}),
-            'complexity_score': forms.Select(attrs={'class': 'form-control'}),
-            'practice_score': forms.Select(attrs={'class': 'form-control'}),
-            'answer_accuracy_score': forms.Select(attrs={'class': 'form-control'}),
-            'readability_score': forms.Select(attrs={'class': 'form-control'}),
-            'comments': forms.Textarea(attrs={'class': 'form-control'}),
-        }
-        labels = {
-            'accuracy_score': '題目正確性評分',
-            'complexity_score': '複雜度評分',
-            'practice_score': '實踐性評分',
-            'answer_accuracy_score': '答案正確性評分',
-            'readability_score': '可讀性評分',
-            'comments': '評論',
-        }
 
 # 教材上傳表單
 class TeachingMaterialForm(forms.ModelForm):
@@ -145,4 +142,15 @@ class QuestionAssignmentForm(forms.ModelForm):
         labels = {
             'question': '題目',
             'student': '學生',
+        }
+
+class QuestionCommentForm(forms.ModelForm):
+    class Meta:
+        model = QuestionComment
+        fields = ['content']
+        widgets = {
+            'content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': '輸入您的評論...', 'rows': 3}),
+        }
+        labels = {
+            'content': '新增評論',
         }
