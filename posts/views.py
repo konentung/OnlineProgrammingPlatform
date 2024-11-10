@@ -32,9 +32,6 @@ def question_create(request):
 
 # 顯示題目的頁面
 @login_required(login_url='Login')
-# def question_detail(request, pk):
-#     question = get_object_or_404(Question, pk=pk)
-#     return render(request, 'questions/question_detail.html', {'question': question})
 def question_detail(request, pk):
     question = get_object_or_404(Question, pk=pk)
     comments = question.comments.all()  # 獲取所有相關評論
@@ -195,3 +192,6 @@ def peer_assessment(request, question_id):
         'question': question,
         'form': form
     })
+
+def custom_404_view(request, exception=None):
+    return render(request, '404.html', status=404)

@@ -18,7 +18,10 @@ from django.contrib import admin
 from django.urls import path
 import accounts.views as accounts_views
 import posts.views as questions_views
-from accounts.views import custom_404_view
+from django.conf import settings
+from django.conf.urls.static import static
+# from accounts.views import custom_404_view
+from posts.views import custom_404_view
 
 handler404 = custom_404_view
 
@@ -42,3 +45,7 @@ urlpatterns = [
     path('question/peer_assessment/', questions_views.peer_assessment_list, name='PeerAssessmentList'),
     path('peer-assessment/<int:question_id>/', questions_views.peer_assessment, name='PeerAssessment'),
 ]
+
+
+if not settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
