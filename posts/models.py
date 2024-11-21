@@ -72,7 +72,7 @@ class PeerReview(models.Model):
 class TeachingMaterial(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField(max_length=3000, blank=True, null=True)
-    file = models.FileField(upload_to="teaching_materials/")
+    file = models.FileField(upload_to="teaching_materials/", null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

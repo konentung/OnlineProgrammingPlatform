@@ -44,6 +44,7 @@ urlpatterns = [
     path('question/history/<int:question_id>/', questions_views.question_history_list, name='QuestionHistoryList'),
     path('question/peer_assessment/', questions_views.peer_assessment_list, name='PeerAssessmentList'),
     path('peer-assessment/<int:question_id>/', questions_views.peer_assessment, name='PeerAssessment'),
+    path('teacherdashboard/', questions_views.teacher_dashboard, name='TeacherDashboard'),
 ]
 
 

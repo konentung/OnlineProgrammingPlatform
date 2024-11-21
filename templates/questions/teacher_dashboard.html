@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}老師後台{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4 text-center">老師公告區</h1>
+
+    {% if teaching_materials %}
+        <div class="row">
+            {% for material in teaching_materials %}
+                <div class="col-12 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title font-weight-bold">{{ material.title }}</h5>
+                            <p class="card-text">{{ material.description|truncatewords:20 }}</p>
+                            <p class="card-text">
+                                <small class="text-muted">建立時間：{{ material.created_at|date:"Y-m-d H:i" }}</small>
+                            </p>
+                            {% comment %} <a href="{% url 'TeachingMaterialDetail' material.id %}" class="btn btn-primary">查看詳情</a> {% endcomment %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-center text-muted">目前沒有教學資料。</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -3,8 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.http import JsonResponse
 from accounts.models import Student
-from .models import Question, StudentAnswer, QuestionAssignment, QuestionHistory, PeerReview
-from .forms import QuestionForm, StudentAnswerForm, QuestionHistoryForm, PeerReviewForm, QuestionCommentForm
+from .models import Question, StudentAnswer, QuestionAssignment, QuestionHistory, PeerReview, TeachingMaterial
+from .forms import QuestionForm, StudentAnswerForm, QuestionHistoryForm, PeerReviewForm, QuestionCommentForm, TeachingMaterialForm
 from django.db.models import Q
 
 @login_required(login_url='Login')
@@ -187,6 +187,10 @@ def peer_assessment(request, question_id):
         'question': question,
         'form': form
     })
+
+def teacher_dashboard(request):
+    teaching_materials = TeachingMaterial.objects.all()
+    return render(request, 'questions/teacher_dashboard.html', {'teaching_materials': teaching_materials})
 
 def custom_404_view(request, exception=None):
     return render(request, '404.html', status=404)

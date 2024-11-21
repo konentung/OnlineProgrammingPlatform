@@ -30,10 +30,9 @@ SECRET_KEY = os.environ.get(
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
-
 CSRF_TRUSTED_ORIGINS = [os.environ.get('NGROK_URL')] if ('NGROK_URL') in os.environ else print('NGROK_URL not found')
 
 # Application definition
