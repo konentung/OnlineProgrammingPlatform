@@ -11,7 +11,7 @@
                 <a href="{% url 'QuestionAnswer' question.id %}" class="btn">
                     <div class="card-body">
                         <h5 class="card-title">{{ question.title }}</h5>
-                        <p class="card-text" style="font-family:微軟正黑體; font-size:12pt; color:gray; text-align: left;">{{ question.description|truncatewords:20 }}</p>
+                        <p class="card-text" style="font-family:微軟正黑體; font-size:12pt; color:gray; text-align: left; white-space: pre-wrap;" id="description-{{ question.id }}">{{ question.description }}</p>
                     </div>
                 </a>
             </div>
@@ -22,4 +22,24 @@
       {% endif %}
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var descriptions = document.querySelectorAll('[id^="description-"]');
+      descriptions.forEach(function(descriptionElement) {
+        // 確保最少顯示 5 行且最多顯示 5 行
+        descriptionElement.style.display = '-webkit-box';
+        descriptionElement.style.webkitBoxOrient = 'vertical';
+        descriptionElement.style.webkitLineClamp = '5';
+        descriptionElement.style.overflow = 'hidden';
+  
+        // 如果內容不足 5 行，則添加換行符填充顯示空間
+        var lineHeight = parseFloat(window.getComputedStyle(descriptionElement).lineHeight);
+        var minHeight = lineHeight * 5;
+        while (descriptionElement.offsetHeight < minHeight) {
+          descriptionElement.innerText += '\n';
+        }
+      });
+    });
+</script>
 {% endblock %}

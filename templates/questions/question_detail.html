@@ -5,9 +5,7 @@
     <h1 class="mb-4" style="font-family:微軟正黑體; font-weight: bold;">{{ question.title }}</h1>
     <div class="mt-4">
         <h5 style="font-family:微軟正黑體; font-weight: bold;">題目說明：</h5>
-        <p style="font-family:微軟正黑體; font-size:12pt;">
-            {{ question.description }}
-        </p>
+        <p style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.description }}</p>
     </div>
     <div class="mt-5">
         <h5 class="font-weight-bold">評論</h5>
@@ -26,10 +24,9 @@
         </ul>
     </div>
     <div class="mt-5">
-        <form method="POST" class="card p-3 shadow-sm border-0">
             {% csrf_token %}
+            {{ comment_form.content.label_tag }}
             <div class="form-group">
-                {{ comment_form.content.label_tag }}
                 {{ comment_form.content }}
                 {% if comment_form.content.errors %}
                     <div class="text-danger mt-1">
@@ -38,7 +35,6 @@
                         {% endfor %}
                     </div>
                 {% endif %}
-            </div>
             <button type="submit" class="btn btn-primary">提交評論</button>
         </form>
     </div>

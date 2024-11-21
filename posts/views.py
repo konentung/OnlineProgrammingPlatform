@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.http import JsonResponse
 from accounts.models import Student
 from .models import Question, StudentAnswer, QuestionAssignment, QuestionHistory, PeerReview
 from .forms import QuestionForm, StudentAnswerForm, QuestionHistoryForm, PeerReviewForm, QuestionCommentForm
@@ -31,7 +32,6 @@ def question_create(request):
     return render(request, 'questions/question_create.html', {'form': form, 'mode': 'edit'})
 
 # 顯示題目的頁面
-@login_required(login_url='Login')
 def question_detail(request, pk):
     question = get_object_or_404(Question, pk=pk)
     comments = question.comments.all()  # 獲取所有相關評論
@@ -54,7 +54,6 @@ def question_detail(request, pk):
     })
 
 # 更新題目的頁面
-@login_required(login_url='Login')
 def question_update(request, pk):
     question = get_object_or_404(Question, pk=pk)
 
@@ -80,14 +79,12 @@ def question_update(request, pk):
     
     return render(request, 'questions/question_update.html', {'form': form, 'question': question})
 
-@login_required(login_url='Login')
 def question_delete(request, pk):
     question = get_object_or_404(Question, pk=pk)
     question.delete()
     return redirect('UserQuestionHistoryList')
 
 # 學生的作業總攬頁面
-@login_required(login_url='Login')
 def question_assignment_list(request):
     # 篩選出所有分配給當前使用者的 QuestionAssignment 實例
     assignments = QuestionAssignment.objects.filter(student=request.user)
@@ -96,19 +93,21 @@ def question_assignment_list(request):
     return render(request, 'questions/question_assignment_list.html', {'questions': questions})
 
 # 顯示並處理作答的頁面
-@login_required(login_url='Login')
 def question_answer(request, pk):
     question = get_object_or_404(Question, pk=pk)
     # 獲取或創建學生的作答
-    student_answer = StudentAnswer.objects.get_or_create(student=request.user, question=question)
+    student_answer, created = StudentAnswer.objects.get_or_create(student=request.user, question=question)
 
     if request.method == 'POST':
+        if not created:  # 如果資料已經存在，顯示警告並禁止再次提交
+            return JsonResponse({"error": "您已經提交過此題的作答，無法再次提交。"}, status=400)
+
         form = StudentAnswerForm(request.POST, instance=student_answer)
         if form.is_valid() and student_answer.status != 'graded':  # 僅允許未評分的作答進行修改
             student_answer.submitted_at = timezone.now()
             student_answer.status = 'submitted'
             student_answer.save()
-            return redirect('QuestionAssignment')  # 返回作業總攬頁面
+            return JsonResponse({"success": "作答提交成功。"})
     else:
         form = StudentAnswerForm(instance=student_answer)
 
@@ -120,7 +119,6 @@ def question_answer(request, pk):
     })
 
 # 顯示該題目的歷史紀錄
-@login_required(login_url='Login')
 def question_history_list(request, question_id):
     # 確保該問題存在
     question = get_object_or_404(Question, pk=question_id)
@@ -135,7 +133,6 @@ def question_history_list(request, question_id):
     })
 
 # 顯示使用者建立的所有題目
-@login_required(login_url='Login')
 def user_question_history_list(request):
     # 獲取當前使用者建立的所有題目
     user_questions = Question.objects.filter(creator=request.user).prefetch_related('edit_history')
@@ -144,7 +141,6 @@ def user_question_history_list(request):
     })
 
 # 顯示所有可評分的問題列表，排除當前使用者創建的問題
-@login_required(login_url='Login')
 def peer_assessment_list(request):
     # 取得當前使用者已評分的問題的 ID 和評分時間
     reviewed_questions = PeerReview.objects.filter(reviewer=request.user)
@@ -166,7 +162,6 @@ def peer_assessment_list(request):
 
     return render(request, 'questions/question_peer_assessment_list.html', {'questions_data': questions_data})
 
-@login_required(login_url='Login')
 def peer_assessment(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     

@@ -6,7 +6,7 @@
 
     <div class="mt-4">
         <h5>題目說明：</h5>
-        <p>{{ question.description }}</p>
+        <p style="white-space: pre-wrap;">{{ question.description }}</p>
     </div>
 
     <div class="mt-4">
@@ -19,4 +19,33 @@
         </form>
     </div>
 </div>
+
+<script>
+    document.querySelector('form').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const isConfirmed = confirm("確定要提交答案嗎？");
+        if (isConfirmed) {
+            const formData = new FormData(this);
+            fetch(window.location.href, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else if (data.success) {
+                    alert(data.success);
+                    window.location.href = '/QuestionAssignment';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    });
+</script>
+    
 {% endblock %}
