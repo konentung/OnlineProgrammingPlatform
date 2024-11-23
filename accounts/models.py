@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 class Student(AbstractUser):
-    name = models.CharField(max_length=100, null=False)
+    name = models.CharField(max_length=50, null=False)
     student_id = models.CharField(max_length=9, null=False)
     GENDER_CHOICES = (
         ('M', '男性'),

@@ -4,8 +4,12 @@
 {% load static %}
 
 <div class="container mt-5">
-    <h1 class="mb-4" style="font-family:微軟正黑體; font-weight: bold;">最新題目</h1>
     <div class="row">
+      <h2 class="mb-4" style="font-family:微軟正黑體; font-weight: bold;">活動流程說明</h2>
+      <img src="{% static 'images/student_activities.jpg' %}" alt="學生活動說明圖">
+    </div>
+    <div class="row">
+      <h2 class="mb-4" style="font-family:微軟正黑體; font-weight: bold;">所有題目</h2>
       {% if questions %}
       {% for question in questions %}
         <div class="col-md-4 mb-4">

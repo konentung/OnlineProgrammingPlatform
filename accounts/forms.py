@@ -5,7 +5,7 @@ from accounts.models import Student
 class RegisterForm(UserCreationForm):
     class Meta:
         model = Student
-        fields = ['username', 'email', 'password1', 'password2']
+        fields = ['username', 'email', 'name', 'student_id', 'password1', 'password2']
 
     username = forms.CharField(
         label="帳號",
@@ -15,6 +15,16 @@ class RegisterForm(UserCreationForm):
     email = forms.EmailField(
         label="電子郵件",
         widget=forms.EmailInput(attrs={'class': 'form-control'})
+    )
+    
+    name = forms.CharField(
+        label="姓名",
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    
+    student_id = forms.CharField(
+        label="學號",
+        widget=forms.TextInput(attrs={'class': 'form-control'})
     )
 
     password1 = forms.CharField(

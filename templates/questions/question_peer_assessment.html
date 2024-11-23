@@ -13,7 +13,7 @@
     </div>
     
     <div class="mt-4">
-        <form method="POST">
+        <form id="peer-review-form" method="POST">
             {% csrf_token %}
             <div class="mb-3">
                 {{ form.reviewer_name.label_tag }}
@@ -48,8 +48,41 @@
                 {{ form.comments }}
             </div>
 
-            <button type="submit" class="btn btn-primary mt-2">提交評分</button>
+            {% if not is_disabled %}
+                <button type="submit" id="submit-button" class="btn btn-primary mt-2">提交評分</button>
+            {% else %}
+                <div class="alert alert-info mt-3">您已經提交了評分，此頁內容不可修改。</div>
+            {% endif %}
         </form>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#peer-review-form').on('submit', function(event) {
+            event.preventDefault(); // 防止表單立即提交
+
+            $.ajax({
+                url: "", // 表單提交的 URL，即當前頁面
+                type: "POST",
+                data: $(this).serialize(), // 序列化表單數據
+                success: function(response) {
+                    if (response.success) {
+                        alert(response.success);
+                        // 刷新當前頁面以顯示只讀模式
+                        location.reload();
+                    } else if (response.error) {
+                        alert(response.error); // 顯示錯誤訊息
+                        window.location.href = '/question/peer-assessment/'; // 跳轉到互評問題列表
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert("提交過程中發生錯誤，請稍後再試。");
+                    window.location.href = '/question/peer-assessment/'; // 跳轉到互評問題列表
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}

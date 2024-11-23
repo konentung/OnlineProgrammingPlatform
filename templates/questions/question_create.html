@@ -14,8 +14,32 @@
             {{ form.title }}
         </div>
         <div class="form-group">
+            {{ form.difficulty.label_tag }}
+            {{ form.difficulty }}
+        </div>
+        <div class="form-group">
             {{ form.description.label_tag }}
             {{ form.description }}
+        </div>
+        <div class="form-group">
+            {{ form.input_format.label_tag }}
+            {{ form.input_format }}
+        </div>
+        <div class="form-group">
+            {{ form.output_format.label_tag }}
+            {{ form.output_format }}
+        </div>
+        <div class="form-group">
+            {{ form.input_example.label_tag }}
+            {{ form.input_example }}
+        </div>
+        <div class="form-group">
+            {{ form.output_example.label_tag }}
+            {{ form.output_example }}
+        </div>
+        <div class="form-group">
+            {{ form.hint.label_tag }}
+            {{ form.hint }}
         </div>
         <div class="form-group">
             {{ form.answer.label_tag }}

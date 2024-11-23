@@ -3,53 +3,83 @@
 {% block content %}
 <div class="container mt-5">
     <h2>出題</h2>
-    <form method="POST">
+    <form id="questionForm" method="POST">
         {% csrf_token %}
+        
         <div class="form-group">
             {{ form.display_creator.label_tag }}
-            {{ form.display_creator }}
+            <input type="text" name="display_creator" value="{{ form.display_creator.value }}" class="form-control" readonly>
         </div>
         <div class="form-group">
             {{ form.title.label_tag }}
-            {{ form.title }}
+            <input type="text" name="title" value="{{ form.title.value }}" class="form-control" readonly>
+        </div>
+        <div class="form-group">
+            {{ form.difficulty.label_tag }}
+            <input type="text" name="difficulty" value="{{ form.difficulty.value }}" class="form-control" readonly>
         </div>
         <div class="form-group">
             {{ form.description.label_tag }}
             {{ form.description }}
         </div>
         <div class="form-group">
+            {{ form.input_format.label_tag }}
+            {{ form.input_format }}
+        </div>
+        <div class="form-group">
+            {{ form.output_format.label_tag }}
+            {{ form.output_format }}
+        </div>
+        <div class="form-group">
+            {{ form.input_example.label_tag }}
+            {{ form.input_example }}
+        </div>
+        <div class="form-group">
+            {{ form.output_example.label_tag }}
+            {{ form.output_example }}
+        </div>
+        <div class="form-group">
+            {{ form.hint.label_tag }}
+            {{ form.hint }}
+        </div>
+        <div class="form-group">
             {{ form.answer.label_tag }}
             {{ form.answer }}
         </div>
+
+        <!-- 儲存按鈕 -->
         <button type="submit" class="btn btn-primary">儲存變更</button>
     </form>
-
-    <script>
-        $(document).ready(function() {
-            // 取得當前模式（假設模式在後端模板中設置，如 'view' 或 'edit'）
-            var mode = "{{ mode }}";  // 這裡假設後端傳遞了一個 'mode' 變數到模板
-
-            // 根據模式初始化表單
-            if (mode === 'view') {
-                readonlyMode();
-            } else {
-                editMode();
-            }
-
-            function readonlyMode() {
-                $('input[name="title"]').prop('readonly', true);
-                $('textarea[name="description"]').prop('readonly', true);
-                $('input[name="answer"]').prop('readonly', true);
-                $('input[name="display_creator"]').prop('readonly', true);
-            }
-
-            function editMode() {
-                $('input[name="title"]').prop('readonly', false);
-                $('textarea[name="description"]').prop('readonly', false);
-                $('input[name="answer"]').prop('disabled', true);
-                $('input[name="display_creator"]').prop('disabled', true);
-            }
-        });
-    </script>    
 </div>
+
+<script>
+    document.getElementById('questionForm').onsubmit = function(event) {
+        event.preventDefault();  // 防止默認提交
+
+        const formData = new FormData(this);
+        const url = this.action;
+
+        fetch(url, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',  // 確保請求被識別為 Ajax
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'error') {
+                alert(data.message);  // 顯示錯誤提示
+                console.error(data.form_errors);  // 如果有具體的表單錯誤，可以在控制台檢查具體錯誤信息
+            } else if (data.status === 'success') {
+                alert(data.message);
+                // 根據需求重定向或者刷新頁面
+                window.location.href = '{% url "UserQuestionHistoryList" %}';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    };
+</script>
 {% endblock %}

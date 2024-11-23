@@ -9,7 +9,7 @@
                 <div class="list-group-item p-3 rounded shadow-sm">
                     <a href="{% url 'PeerAssessment' data.question.id %}" class="list-group-item-action text-decoration-none text-dark">
                         <h5 class="mb-1 font-weight-bold">題目：{{ data.question.title }}</h5>
-                        <p class="mb-1 text-muted">學生名稱：{{ data.student }}</p>
+                        <p class="mb-1 text-muted">出題人名稱：{{ data.student.name }}</p>
                         {% if data.is_reviewed %}
                             <p class="text-success">評分時間：{{ data.reviewed_at }}</p>
                         {% else %}
