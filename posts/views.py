@@ -2,8 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.http import JsonResponse
+from django.forms.models import model_to_dict
 from accounts.models import Student
-from .models import Question, StudentAnswer, QuestionAssignment, QuestionHistory, PeerReview, TeachingMaterial
+from .models import Question, StudentAnswer, QuestionHistory, PeerReview, TeachingMaterial
 from .forms import QuestionForm, StudentAnswerForm, QuestionHistoryForm, PeerReviewForm, QuestionCommentForm, TeachingMaterialForm
 from django.db.models import Q
 
@@ -13,7 +14,7 @@ def question_create(request):
         form = QuestionForm(request.POST, user=request.user)
         if form.is_valid():
             question = form.save(commit=False)
-            question.creator = Student.objects.get(username=request.user.username)
+            question.creator = Student.objects.get(name=request.user.name)
             question.save()
             # 保存更新前的題目內容到歷史紀錄
             QuestionHistory.objects.create(
@@ -21,8 +22,13 @@ def question_create(request):
                 title=question.title,
                 description=question.description,
                 answer=question.answer,
-                editor=request.user,  # 設置當前編輯者
-                edited_at=timezone.now()  # 設置編輯時間
+                input_format=question.input_format,
+                output_format=question.output_format,
+                input_example=question.input_example,
+                output_example=question.output_example,
+                hint=question.hint,
+                editor=request.user,
+                edited_at=timezone.now()
             )
             return redirect('/')
         else:
@@ -41,7 +47,7 @@ def question_detail(request, pk):
         if comment_form.is_valid():
             new_comment = comment_form.save(commit=False)
             new_comment.question = question
-            new_comment.commenter = request.user  # 假設當前用戶是 Student 模型的實例
+            new_comment.commenter = request.user
             new_comment.save()
             return redirect('QuestionDetail', pk=question.pk)
     else:
@@ -60,25 +66,55 @@ def question_update(request, pk):
     # 在保存更新之前，將原始資料保存到 QuestionHistory 中
     if request.method == 'POST':
         form = QuestionForm(request.POST, instance=question, user=request.user)
+
         if form.is_valid():
-            form.save()
-            # 保存更新前的題目內容到歷史紀錄
-            QuestionHistory.objects.create(
-                question=question,
-                title=question.title,
-                description=question.description,
-                answer=question.answer,
-                editor=request.user,  # 設置當前編輯者
-                edited_at=timezone.now()  # 設置編輯時間
-            )
-            return redirect('UserQuestionHistoryList')
+            changed_fields = form.changed_data  # 獲取有更動的欄位
+            
+            # 檢查不允許的欄位是否有被更改
+            forbidden_fields = ['title', 'editor', 'difficulty']
+            illegal_changes = [field for field in changed_fields if field in forbidden_fields]
+
+            if illegal_changes:
+                # 返回一個 JsonResponse 提示使用者不允許更改這些欄位
+                return JsonResponse({
+                    'status': 'error',
+                    'message': f"以下欄位不允許更動: {', '.join(illegal_changes)}"
+                })
+
+            # 如果允許更動，則先保存歷史紀錄
+            if changed_fields:
+                QuestionHistory.objects.create(
+                    question=question,
+                    title=question.title,
+                    description=question.description,
+                    answer=question.answer,
+                    input_format=question.input_format,
+                    output_format=question.output_format,
+                    input_example=question.input_example,
+                    output_example=question.output_example,
+                    hint=question.hint,
+                    editor=request.user,  # 設置當前編輯者
+                    edited_at=timezone.now()  # 設置編輯時間
+                )
+                
+                # 保存新的數據到題目
+                form.save()
+
+            return JsonResponse({'status': 'success', 'message': '題目已成功更新！'})
         else:
+            # 如果表單無效，返回表單錯誤
             print(form.errors)
+            return JsonResponse({
+                'status': 'error',
+                'message': '表單無效，請檢查輸入資料。',
+                'errors': form.errors
+            })
     else:
         form = QuestionForm(instance=question, user=request.user)
-    
-    return render(request, 'questions/question_update.html', {'form': form, 'question': question})
 
+    return render(request, 'questions/question_update.html', {'form': form})
+
+# 刪除題目按鈕的處理
 def question_delete(request, pk):
     question = get_object_or_404(Question, pk=pk)
     question.delete()
@@ -87,9 +123,8 @@ def question_delete(request, pk):
 # 學生的作業總攬頁面
 def question_assignment_list(request):
     # 篩選出所有分配給當前使用者的 QuestionAssignment 實例
-    assignments = QuestionAssignment.objects.filter(student=request.user)
     # 使用這些 assignments 中的 question 欄位來篩選 Question
-    questions = Question.objects.filter(assignments__in=assignments).distinct()
+    questions = Question.objects.filter(as_homework=True)
     return render(request, 'questions/question_assignment_list.html', {'questions': questions})
 
 # 顯示並處理作答的頁面
@@ -99,17 +134,26 @@ def question_answer(request, pk):
     student_answer, created = StudentAnswer.objects.get_or_create(student=request.user, question=question)
 
     if request.method == 'POST':
-        if not created:  # 如果資料已經存在，顯示警告並禁止再次提交
+        # 如果學生已經提交過作答，不允許再次提交
+        if not created and student_answer.status == 'submitted':
             return JsonResponse({"error": "您已經提交過此題的作答，無法再次提交。"}, status=400)
 
         form = StudentAnswerForm(request.POST, instance=student_answer)
-        if form.is_valid() and student_answer.status != 'graded':  # 僅允許未評分的作答進行修改
-            student_answer.submitted_at = timezone.now()
-            student_answer.status = 'submitted'
-            student_answer.save()
-            return JsonResponse({"success": "作答提交成功。"})
-    else:
-        form = StudentAnswerForm(instance=student_answer)
+
+        if form.is_valid():
+            # 只允許未評分的作答進行提交或修改
+            if student_answer.status != 'graded':
+                student_answer.submitted_at = timezone.now()
+                student_answer.status = 'submitted'
+                form.save()
+                return JsonResponse({"success": "作答提交成功。"})
+            else:
+                return JsonResponse({"error": "作答已經評分，無法修改。"})
+        else:
+            return JsonResponse({"error": "有欄位未填寫或格式錯誤。"})
+
+    # 如果是 GET 請求，展示表單
+    form = StudentAnswerForm(instance=student_answer)
 
     return render(request, 'questions/question_answer.html', {
         'question': question,
@@ -162,35 +206,49 @@ def peer_assessment_list(request):
 
     return render(request, 'questions/question_peer_assessment_list.html', {'questions_data': questions_data})
 
+# 顯示評分頁面
 def peer_assessment(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     
-    # 確保使用者僅對該問題評分一次
-    peer_review, created = PeerReview.objects.get_or_create(
-        reviewer=request.user,
-        reviewed_question=question
-    )
+    # 檢查是否已經存在評分
+    peer_review = PeerReview.objects.filter(reviewer=request.user, reviewed_question=question).first()
 
     if request.method == 'POST':
+        # 僅在沒有提交評分的情況下才允許提交
+        if peer_review and peer_review.reviewed_at:
+            return JsonResponse({"error": "您已經評分過此題目，無法再次修改。"})
+
+        if not peer_review:
+            peer_review = PeerReview(reviewer=request.user, reviewed_question=question)
         form = PeerReviewForm(request.POST, instance=peer_review)
         if form.is_valid():
             peer_review = form.save(commit=False)
             peer_review.reviewed_at = timezone.now()
             peer_review.save()
-            return redirect('PeerAssessmentList')
-    else:
-        form = PeerReviewForm(instance=peer_review)
-        # 設置 reviewer_name 初始值
-        form.fields['reviewer_name'].initial = request.user.username
+            return JsonResponse({"success": "評分提交成功！\n送出後無法修改，請確認內容無誤。"})
+        else:
+            return JsonResponse({"error": "有欄位未填寫或格式錯誤。"})
+
+    # GET 請求
+    form = PeerReviewForm(instance=peer_review)
+    form.fields['reviewer_name'].initial = request.user.name
+
+    # 如果已經評分，將表單設置為只讀
+    if peer_review and peer_review.reviewed_at:
+        for field in form.fields:
+            form.fields[field].widget.attrs['disabled'] = True
 
     return render(request, 'questions/question_peer_assessment.html', {
         'question': question,
-        'form': form
+        'form': form,
+        'is_disabled': peer_review and peer_review.reviewed_at
     })
 
+# 顯示教師公告頁面
 def teacher_dashboard(request):
     teaching_materials = TeachingMaterial.objects.all()
     return render(request, 'questions/teacher_dashboard.html', {'teaching_materials': teaching_materials})
 
+# 錯誤頁面
 def custom_404_view(request, exception=None):
     return render(request, '404.html', status=404)

@@ -7,6 +7,16 @@
     <div class="mt-4">
         <h5>題目說明：</h5>
         <p style="white-space: pre-wrap;">{{ question.description }}</p>
+        <h5>題目提示：</h5>
+        <p style="white-space: pre-wrap;">{{ question.hint }}</p>
+        <h5>輸入格式</h5>
+        <p>{{ question.input_format }}</p>
+        <h5>輸出格式</h5>
+        <p>{{ question.output_format }}</p>
+        <h5>輸入範例</h5>
+        <p>{{ question.input_example }}</p>
+        <h5>輸出範例</h5>
+        <p>{{ question.output_example }}</p>
     </div>
 
     <div class="mt-4">
@@ -23,7 +33,7 @@
 <script>
     document.querySelector('form').addEventListener('submit', function (event) {
         event.preventDefault();
-        const isConfirmed = confirm("確定要提交答案嗎？");
+        const isConfirmed = confirm("確定要提交答案嗎？\n提交答案之後就不可以修改了喔");
         if (isConfirmed) {
             const formData = new FormData(this);
             fetch(window.location.href, {
@@ -38,9 +48,10 @@
             .then(data => {
                 if (data.error) {
                     alert(data.error);
+                    window.location.href = '/question/assignment/';
                 } else if (data.success) {
                     alert(data.success);
-                    window.location.href = '/QuestionAssignment';
+                    window.location.href = '/question/assignment/';
                 }
             })
             .catch(error => console.error('Error:', error));

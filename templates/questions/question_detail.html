@@ -6,6 +6,20 @@
     <div class="mt-4">
         <h5 style="font-family:微軟正黑體; font-weight: bold;">題目說明：</h5>
         <p style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.description }}</p>
+        <h5 style="font-family:微軟正黑體; font-weight: bold;">出題者：</h5>
+        <p style="font-family:微軟正黑體; font-size:12pt;">{{ question.creator.name }}</p>
+        <h5 style="font-family:微軟正黑體; font-weight: bold;">難度：</h5>
+        <p style="font-family:微軟正黑體; font-size:12pt;">{{ question.get_difficulty_display }}</p>
+        <h5 style="font-family:微軟正黑體; font-weight: bold;">輸入格式：</h5>
+        <p style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.input_format }}</p>
+        <h5 style="font-family:微軟正黑體; font-weight: bold;">輸出格式：</h5>
+        <p style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.output_format }}</p>
+        <h5 style="font-family:微軟正黑體; font-weight: bold;">輸入範例：</h5>
+        <p style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.input_example }}</p>
+        <h5 style="font-family:微軟正黑體; font-weight: bold;">輸出範例：</h5>
+        <p style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.output_example }}</p>
+        <h5 style="font-family:微軟正黑體; font-weight: bold;">提示：</h5>
+        <p style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.hint }}</p>
     </div>
     <div class="mt-5">
         <h5 class="font-weight-bold">評論</h5>
@@ -13,7 +27,7 @@
             {% for comment in comments %}
                 <li class="list-group-item">
                     <div class="d-flex justify-content-between">
-                        <strong class="text-primary">{{ comment.commenter.username }}</strong>
+                        <strong class="text-primary">{{ comment.commenter.name }}</strong>
                         <small class="text-muted">{{ comment.commented_at|date:"Y-m-d H:i" }}</small>
                     </div>
                     <p class="mb-1">{{ comment.content }}</p>
@@ -24,6 +38,7 @@
         </ul>
     </div>
     <div class="mt-5">
+        <form method="post">
             {% csrf_token %}
             {{ comment_form.content.label_tag }}
             <div class="form-group">

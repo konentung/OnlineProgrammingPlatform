@@ -3,10 +3,8 @@ from .models import (
     Question,
     QuestionHistory,
     StudentAnswer,
-    AnswerHistory,
     PeerReview,
-    TeachingMaterial,
-    QuestionAssignment
+    TeachingMaterial
 )
 
 # 題目管理
@@ -56,7 +54,5 @@ class QuestionAssignmentAdmin(admin.ModelAdmin):
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(QuestionHistory, QuestionHistoryAdmin)
 admin.site.register(StudentAnswer, StudentAnswerAdmin)
-admin.site.register(AnswerHistory, AnswerHistoryAdmin)
 admin.site.register(PeerReview, PeerReviewAdmin)
 admin.site.register(TeachingMaterial, TeachingMaterialAdmin)
-admin.site.register(QuestionAssignment, QuestionAssignmentAdmin)
