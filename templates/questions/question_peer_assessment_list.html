@@ -3,23 +3,21 @@
 {% block content %}
 <div class="container mt-4">
     <h1>題目評分</h1>
-    <div class="list-group mt-4">
+    <div class="list-group mt-4 d-flex flex-column gap-3">
         {% if questions_data %}
             {% for data in questions_data %}
-                <div class="list-group-item p-3 rounded shadow-sm">
-                    <a href="{% url 'PeerAssessment' data.question.id %}" class="list-group-item-action text-decoration-none text-dark">
-                        <h5 class="mb-1 font-weight-bold">題目：{{ data.question.title }}</h5>
-                        <p class="mb-1 text-muted">出題人名稱：{{ data.student.name }}</p>
-                        {% if data.is_reviewed %}
-                            <p class="text-success">評分時間：{{ data.reviewed_at }}</p>
-                        {% else %}
-                            <p class="text-warning">尚未評分</p>
-                        {% endif %}
-                    </a>
-                </div>
+                <a href="{% url 'PeerAssessment' data.question.id %}" class="list-group-item list-group-item-action p-3 rounded shadow-sm text-decoration-none text-dark">
+                    <h5 class="mb-1 font-weight-bold">題目：{{ data.question.title }}</h5>
+                    <p class="ps-0.5 mb-2 text-muted">出題人名稱：{{ data.student.name }}</p>
+                    {% if data.is_reviewed %}
+                        <p class="ps-0.5 mb-0 text-success">評分時間：{{ data.reviewed_at }}</p>
+                    {% else %}
+                        <p class="mb-0 text-warning">尚未評分</p>
+                    {% endif %}
+                </a>
             {% endfor %}
         {% else %}
-            <p>題目評分</p>
+            <p class="text-center text-muted">目前尚無題目</p>
         {% endif %}
     </div>
 </div>
