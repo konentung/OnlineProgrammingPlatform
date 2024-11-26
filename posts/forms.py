@@ -3,11 +3,14 @@ from .models import Question, QuestionHistory, StudentAnswer, PeerReview, Teachi
 from accounts.models import Student
 
 # 題目表單（學生出題
+
+
 class QuestionForm(forms.ModelForm):
     display_creator = forms.CharField(
         label='出題者名稱',
         required=False,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'})
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'readonly': 'readonly'})
     )
 
     def __init__(self, *args, **kwargs):
@@ -17,7 +20,8 @@ class QuestionForm(forms.ModelForm):
         if self.user:
             self.fields['display_creator'].initial = self.user.name
             try:
-                self.fields['creator'].initial = Student.objects.get(name=self.user.name)
+                self.fields['creator'].initial = Student.objects.get(
+                    name=self.user.name)
             except Student.DoesNotExist:
                 self.fields['creator'].initial = None
 
@@ -39,7 +43,8 @@ class QuestionForm(forms.ModelForm):
         # 確保 'creator' 有值
         if not cleaned_data.get('creator') and self.user:
             try:
-                cleaned_data['creator'] = Student.objects.get(name=self.user.name)
+                cleaned_data['creator'] = Student.objects.get(
+                    name=self.user.name)
             except Student.DoesNotExist:
                 raise forms.ValidationError('找不到對應的出題者，請確認用戶存在')
 
@@ -61,7 +66,8 @@ class QuestionForm(forms.ModelForm):
 
     class Meta:
         model = Question
-        fields = ['display_creator', 'title', 'description', 'answer', 'creator', 'input_format', 'output_format', 'input_example', 'output_example', 'difficulty', 'hint']
+        fields = ['display_creator', 'title', 'description', 'answer', 'creator', 'input_format',
+                  'output_format', 'input_example', 'output_example', 'difficulty', 'hint']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control'}),
@@ -133,6 +139,8 @@ class QuestionHistoryForm(forms.ModelForm):
         }
 
 # 學生作答表單，根據 status 設定可否編輯
+
+
 class StudentAnswerForm(forms.ModelForm):
     class Meta:
         model = StudentAnswer
@@ -146,25 +154,46 @@ class StudentAnswerForm(forms.ModelForm):
             self.fields['answer'].widget.attrs['disabled'] = 'disabled'
 
 # 學生互評表單（評分和評論）
+
+
 class PeerReviewForm(forms.ModelForm):
     reviewer_name = forms.CharField(
-        widget=forms.TextInput(attrs={'class': 'form-control', 'disabled': 'disabled'}),
+        widget=forms.TextInput(
+            attrs={'class': 'form-control', 'disabled': 'disabled'}),
         required=False,
         label="評分學生"
     )
     SCORE_CHOICES = [(i, str(i)) for i in range(6)]
+<<<<<<< HEAD
+    question_accuracy_score = forms.ChoiceField(choices=SCORE_CHOICES, widget=forms.Select(
+        attrs={'class': 'form-control', 'style': 'text-align-last: center'}), label='題目正確性')
+    complexity_score = forms.ChoiceField(choices=SCORE_CHOICES, widget=forms.Select(
+        attrs={'class': 'form-control', 'style': 'text-align-last: center'}), label='題目複雜度')
+    practice_score = forms.ChoiceField(choices=SCORE_CHOICES, widget=forms.Select(
+        attrs={'class': 'form-control', 'style': 'text-align-last: center'}), label='題目實用性')
+    answer_accuracy_score = forms.ChoiceField(choices=SCORE_CHOICES, widget=forms.Select(
+        attrs={'class': 'form-control', 'style': 'text-align-last: center'}), label='程式正確性')
+    readability_score = forms.ChoiceField(choices=SCORE_CHOICES, widget=forms.Select(
+        attrs={'class': 'form-control', 'style': 'text-align-last: center'}), label='程式可讀性')
+    comments = forms.CharField(widget=forms.Textarea(
+        attrs={'class': 'form-control'}), required=False, label='評論')
+=======
     question_accuracy_score = forms.ChoiceField(choices=SCORE_CHOICES, widget=forms.Select(attrs={'class': 'form-control', 'style': 'text-align-last: center'}), label='題目正確性')
     complexity_score = forms.ChoiceField(choices=SCORE_CHOICES, widget=forms.Select(attrs={'class': 'form-control', 'style': 'text-align-last: center'}), label='題目複雜度')
     practice_score = forms.ChoiceField(choices=SCORE_CHOICES, widget=forms.Select(attrs={'class': 'form-control', 'style': 'text-align-last: center'}), label='題目實用性')
     answer_accuracy_score = forms.ChoiceField(choices=SCORE_CHOICES, widget=forms.Select(attrs={'class': 'form-control', 'style': 'text-align-last: center'}), label='程式正確性')
     readability_score = forms.ChoiceField(choices=SCORE_CHOICES, widget=forms.Select(attrs={'class': 'form-control', 'style': 'text-align-last: center'}), label='程式可讀性')
     comments = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control'}), required=False, label='評論')
+>>>>>>> 0f6330503eb5acd333a2aac48063c9b9e54fbc41
 
     class Meta:
         model = PeerReview
-        fields = ['question_accuracy_score', 'complexity_score', 'practice_score', 'answer_accuracy_score', 'readability_score', 'comments']
+        fields = ['question_accuracy_score', 'complexity_score', 'practice_score',
+                  'answer_accuracy_score', 'readability_score', 'comments']
 
 # 教材上傳表單
+
+
 class TeachingMaterialForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(TeachingMaterialForm, self).__init__(*args, **kwargs)
@@ -184,7 +213,11 @@ class TeachingMaterialForm(forms.ModelForm):
             'file': '檔案',
         }
 
+<<<<<<< HEAD
+
+=======
 # 留言表單
+>>>>>>> 0f6330503eb5acd333a2aac48063c9b9e54fbc41
 class QuestionCommentForm(forms.ModelForm):
     class Meta:
         model = QuestionComment
