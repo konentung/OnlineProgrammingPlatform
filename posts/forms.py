@@ -7,9 +7,7 @@ class QuestionForm(forms.ModelForm):
     display_creator = forms.CharField(
         label='出題者名稱',
         required=False,
-        widget=forms.TextInput(
-            attrs={'class': 'form-control', 'readonly': 'readonly'})
-    )
+        widget=forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}))
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
@@ -41,8 +39,7 @@ class QuestionForm(forms.ModelForm):
         # 確保 'creator' 有值
         if not cleaned_data.get('creator') and self.user:
             try:
-                cleaned_data['creator'] = Student.objects.get(
-                    name=self.user.name)
+                cleaned_data['creator'] = Student.objects.get(name=self.user.name)
             except Student.DoesNotExist:
                 raise forms.ValidationError('找不到對應的出題者，請確認用戶存在')
 
@@ -64,8 +61,7 @@ class QuestionForm(forms.ModelForm):
 
     class Meta:
         model = Question
-        fields = ['display_creator', 'title', 'description', 'answer', 'creator', 'input_format',
-                  'output_format', 'input_example', 'output_example', 'difficulty', 'hint']
+        fields = ['display_creator', 'title', 'description', 'answer', 'creator', 'input_format', 'output_format', 'input_example', 'output_example', 'difficulty', 'hint']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control'}),
@@ -141,9 +137,7 @@ class StudentAnswerForm(forms.ModelForm):
     class Meta:
         model = StudentAnswer
         fields = ['answer']
-        widgets = {
-            'answer': forms.Textarea(attrs={'class': 'form-control'}),
-        }
+        widgets = {'answer': forms.Textarea(attrs={'class': 'form-control'}),}
 
     def __init__(self, *args, **kwargs):
         super(StudentAnswerForm, self).__init__(*args, **kwargs)
@@ -154,8 +148,7 @@ class StudentAnswerForm(forms.ModelForm):
 # 學生互評表單（評分和評論）
 class PeerReviewForm(forms.ModelForm):
     reviewer_name = forms.CharField(
-        widget=forms.TextInput(
-            attrs={'class': 'form-control', 'disabled': 'disabled'}),
+        widget=forms.TextInput(attrs={'class': 'form-control', 'disabled': 'disabled'}),
         required=False,
         label="評分學生"
     )
@@ -175,8 +168,7 @@ class PeerReviewForm(forms.ModelForm):
 
     class Meta:
         model = PeerReview
-        fields = ['question_accuracy_score', 'complexity_score', 'practice_score',
-                  'answer_accuracy_score', 'readability_score', 'comments']
+        fields = ['question_accuracy_score', 'complexity_score', 'practice_score', 'answer_accuracy_score', 'readability_score', 'comments']
 
 # 教材上傳表單
 class TeachingMaterialForm(forms.ModelForm):
