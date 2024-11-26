@@ -36,3 +36,33 @@ h2 {
 .shadow-sm {
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
+
+textarea {
+    resize: none; /* 禁止使用者手動調整大小 */
+    height: auto; /* 使 textarea 根據內容自適應高度 */
+}
+
+#id_description, #id_hint { /* 描述與提示框 */
+    min-height: 150px;
+    max-height: 200px;
+}
+
+#id_input_format, #id_output_format,
+#id_input_example, #id_output_example { /* 輸入/輸出格式與範例框 */
+    min-height: 100px;
+    max-height: 120px;
+}
+
+#id_answer { /* 答案框 */
+    min-height: 1000px; /* 明確增加答案框高度 */
+    max-height: 1200px; /* 可選：防止超過某個限制 */
+}
+
+.answer-box {
+    overflow-y: auto;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 15px;
+    height: 1036px;
+}

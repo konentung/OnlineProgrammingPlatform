@@ -2,50 +2,65 @@
 {% block title %}出題{% endblock %}
 {% block content %}
 <div class="container mt-5">
-    <h2>出題</h2>
+    <h2 class="text-center mb-4">出題區</h2>
     <form method="POST">
         {% csrf_token %}
-        <div class="form-group">
-            {{ form.display_creator.label_tag }}
-            {{ form.display_creator }}
+        <div class="row align-items-stretch" style="height: 100%;"> <!-- 確保左右對齊 -->
+            <!-- 左側的表單區塊 -->
+            <div class="col-md-6 left-side">
+                <div class="mb-3">
+                    <label for="display_creator" class="form-label">{{ form.display_creator.label }}</label>
+                    {{ form.display_creator }}
+                </div>
+                <div class="mb-3">
+                    <label for="title" class="form-label">{{ form.title.label }}</label>
+                    {{ form.title }}
+                </div>
+                <div class="mb-3">
+                    <label for="difficulty" class="form-label">{{ form.difficulty.label }}</label>
+                    {{ form.difficulty }}
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">{{ form.description.label }}</label>
+                    {{ form.description }}
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="input_format" class="form-label">{{ form.input_format.label }}</label>
+                        {{ form.input_format }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="output_format" class="form-label">{{ form.output_format.label }}</label>
+                        {{ form.output_format }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="input_example" class="form-label">{{ form.input_example.label }}</label>
+                        {{ form.input_example }}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="output_example" class="form-label">{{ form.output_example.label }}</label>
+                        {{ form.output_example }}
+                    </div>
+                    <div class="col-md-12">
+                        <label for="hint" class="form-label">{{ form.hint.label }}</label>
+                        {{ form.hint }}
+                    </div>
+                </div>
+            </div>
+            <!-- 右側的答案區塊 -->
+            <div class="col-md-6 right-side">
+                <div class="mb-3" style="height: 100%;">
+                    <label for="answer" class="form-label">{{ form.answer.label }}</label>
+                    <div class="answer-box">
+                        {{ form.answer }}
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            {{ form.title.label_tag }}
-            {{ form.title }}
+        <!-- 提交按鈕 -->
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-primary btn-lg">提交</button>
         </div>
-        <div class="form-group">
-            {{ form.difficulty.label_tag }}
-            {{ form.difficulty }}
-        </div>
-        <div class="form-group">
-            {{ form.description.label_tag }}
-            {{ form.description }}
-        </div>
-        <div class="form-group">
-            {{ form.input_format.label_tag }}
-            {{ form.input_format }}
-        </div>
-        <div class="form-group">
-            {{ form.output_format.label_tag }}
-            {{ form.output_format }}
-        </div>
-        <div class="form-group">
-            {{ form.input_example.label_tag }}
-            {{ form.input_example }}
-        </div>
-        <div class="form-group">
-            {{ form.output_example.label_tag }}
-            {{ form.output_example }}
-        </div>
-        <div class="form-group">
-            {{ form.hint.label_tag }}
-            {{ form.hint }}
-        </div>
-        <div class="form-group">
-            {{ form.answer.label_tag }}
-            {{ form.answer }}
-        </div>
-        <button type="submit" class="btn btn-primary">提交</button>
     </form>
 
     <script>
