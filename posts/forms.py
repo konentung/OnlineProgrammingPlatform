@@ -94,14 +94,6 @@ class QuestionForm(forms.ModelForm):
 
 # 題目歷史表單（紀錄每次的編輯）
 class QuestionHistoryForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(QuestionHistory, self).__init__(*args, **kwargs)
-
-        # 禁用不允許更改的欄位
-        self.fields['display_creator'].disabled = True
-        self.fields['title'].disabled = True
-        self.fields['difficulty'].disabled = True
-
     class Meta:
         model = QuestionHistory
         fields = [
@@ -164,7 +156,6 @@ class PeerReviewForm(forms.ModelForm):
         label="評分學生"
     )
     SCORE_CHOICES = [(i, str(i)) for i in range(6)]
-<<<<<<< HEAD
     question_accuracy_score = forms.ChoiceField(choices=SCORE_CHOICES, widget=forms.Select(
         attrs={'class': 'form-control', 'style': 'text-align-last: center'}), label='題目正確性')
     complexity_score = forms.ChoiceField(choices=SCORE_CHOICES, widget=forms.Select(
@@ -177,14 +168,6 @@ class PeerReviewForm(forms.ModelForm):
         attrs={'class': 'form-control', 'style': 'text-align-last: center'}), label='程式可讀性')
     comments = forms.CharField(widget=forms.Textarea(
         attrs={'class': 'form-control'}), required=False, label='評論')
-=======
-    question_accuracy_score = forms.ChoiceField(choices=SCORE_CHOICES, widget=forms.Select(attrs={'class': 'form-control', 'style': 'text-align-last: center'}), label='題目正確性')
-    complexity_score = forms.ChoiceField(choices=SCORE_CHOICES, widget=forms.Select(attrs={'class': 'form-control', 'style': 'text-align-last: center'}), label='題目複雜度')
-    practice_score = forms.ChoiceField(choices=SCORE_CHOICES, widget=forms.Select(attrs={'class': 'form-control', 'style': 'text-align-last: center'}), label='題目實用性')
-    answer_accuracy_score = forms.ChoiceField(choices=SCORE_CHOICES, widget=forms.Select(attrs={'class': 'form-control', 'style': 'text-align-last: center'}), label='程式正確性')
-    readability_score = forms.ChoiceField(choices=SCORE_CHOICES, widget=forms.Select(attrs={'class': 'form-control', 'style': 'text-align-last: center'}), label='程式可讀性')
-    comments = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control'}), required=False, label='評論')
->>>>>>> 0f6330503eb5acd333a2aac48063c9b9e54fbc41
 
     class Meta:
         model = PeerReview
@@ -213,11 +196,7 @@ class TeachingMaterialForm(forms.ModelForm):
             'file': '檔案',
         }
 
-<<<<<<< HEAD
-
-=======
 # 留言表單
->>>>>>> 0f6330503eb5acd333a2aac48063c9b9e54fbc41
 class QuestionCommentForm(forms.ModelForm):
     class Meta:
         model = QuestionComment
