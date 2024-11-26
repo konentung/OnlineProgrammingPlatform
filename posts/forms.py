@@ -7,7 +7,8 @@ class QuestionForm(forms.ModelForm):
     display_creator = forms.CharField(
         label='出題者名稱',
         required=False,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}))
+        widget=forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'})
+    )
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
@@ -16,8 +17,7 @@ class QuestionForm(forms.ModelForm):
         if self.user:
             self.fields['display_creator'].initial = self.user.name
             try:
-                self.fields['creator'].initial = Student.objects.get(
-                    name=self.user.name)
+                self.fields['creator'].initial = Student.objects.get(name=self.user.name)
             except Student.DoesNotExist:
                 self.fields['creator'].initial = None
 
