@@ -3,8 +3,6 @@ from .models import Question, QuestionHistory, StudentAnswer, PeerReview, Teachi
 from accounts.models import Student
 
 # 題目表單（學生出題
-
-
 class QuestionForm(forms.ModelForm):
     display_creator = forms.CharField(
         label='出題者名稱',
@@ -92,7 +90,6 @@ class QuestionForm(forms.ModelForm):
             'hint': '提示',
         }
 
-
 # 題目歷史表單（紀錄每次的編輯）
 class QuestionHistoryForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -140,8 +137,6 @@ class QuestionHistoryForm(forms.ModelForm):
         }
 
 # 學生作答表單，根據 status 設定可否編輯
-
-
 class StudentAnswerForm(forms.ModelForm):
     class Meta:
         model = StudentAnswer
@@ -157,8 +152,6 @@ class StudentAnswerForm(forms.ModelForm):
             self.fields['answer'].widget.attrs['disabled'] = 'disabled'
 
 # 學生互評表單（評分和評論）
-
-
 class PeerReviewForm(forms.ModelForm):
     reviewer_name = forms.CharField(
         widget=forms.TextInput(
@@ -186,8 +179,6 @@ class PeerReviewForm(forms.ModelForm):
                   'answer_accuracy_score', 'readability_score', 'comments']
 
 # 教材上傳表單
-
-
 class TeachingMaterialForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(TeachingMaterialForm, self).__init__(*args, **kwargs)
@@ -207,7 +198,7 @@ class TeachingMaterialForm(forms.ModelForm):
             'file': '檔案',
         }
 
-
+# 留言表單
 class QuestionCommentForm(forms.ModelForm):
     class Meta:
         model = QuestionComment
