@@ -1,9 +1,12 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}題目評分{% endblock %}
 {% block content %}
 <div class="container mt-4">
-    <h1>題目評分</h1>
     <div class="list-group mt-4 d-flex flex-column gap-3">
+        <h2 class="mb-4" style="font-family:微軟正黑體; font-weight: bold;">評分細項說明</h2>
+        <img src="{% static 'images/student_score.jpg' %}" alt="評分細項說明" style="max-width: 70%; text-align: center; margin:auto">
+        <h2>題目評分</h2>
         {% if questions_data %}
             {% for data in questions_data %}
                 <a href="{% url 'PeerAssessment' data.question.id %}" class="list-group-item list-group-item-action p-3 rounded shadow-sm text-decoration-none text-dark">
