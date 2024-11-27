@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}頁面維護中{% endblock %}
+
+{% block content %}
+<div class="container text-center mt-5">
+    <h1 class="display-4 text-danger">頁面維護中</h1>
+    <p class="lead">抱歉，您訪問的頁面正在維護中<br>工程師正在進行維護</p>
+    <a href="{% url 'Index' %}" class="btn btn-primary mt-3">返回首頁</a>
+</div>
+{% endblock %}
