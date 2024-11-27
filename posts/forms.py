@@ -1,16 +1,14 @@
 from django import forms
 from .models import Question, QuestionHistory, StudentAnswer, PeerReview, TeachingMaterial, QuestionComment
 from accounts.models import Student
+from enum import Enum, IntEnum
 
-# 題目表單（學生出題
-
-
+# 題目表單（學生出題）
 class QuestionForm(forms.ModelForm):
     display_creator = forms.CharField(
         label='出題者名稱',
         required=False,
-        widget=forms.TextInput(
-            attrs={'class': 'form-control', 'readonly': 'readonly'})
+        widget=forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'})
     )
 
     def __init__(self, *args, **kwargs):
@@ -131,13 +129,11 @@ class QuestionHistoryForm(forms.ModelForm):
         }
 
 # 學生作答表單，根據 status 設定可否編輯
-
-
 class StudentAnswerForm(forms.ModelForm):
     class Meta:
         model = StudentAnswer
         fields = ['answer']
-        widgets = {'answer': forms.Textarea(attrs={'class': 'form-control'}),}
+        widgets = {'answer': forms.Textarea(attrs={'class': 'form-control'})}
 
     def __init__(self, *args, **kwargs):
         super(StudentAnswerForm, self).__init__(*args, **kwargs)
@@ -146,28 +142,43 @@ class StudentAnswerForm(forms.ModelForm):
             self.fields['answer'].widget.attrs['disabled'] = 'disabled'
 
 # 學生互評表單（評分和評論）
-
-
 class PeerReviewForm(forms.ModelForm):
     reviewer_name = forms.CharField(
-        widget=forms.TextInput(
-            attrs={'class': 'form-control', 'disabled': 'disabled'}),
+        widget=forms.TextInput(attrs={'class': 'form-control', 'disabled': 'disabled'}),
         required=False,
         label="評分學生"
     )
     SCORE_CHOICES = [(i, str(i)) for i in range(6)]
-    question_accuracy_score = forms.ChoiceField(choices=SCORE_CHOICES, widget=forms.Select(
-        attrs={'class': 'form-control', 'style': 'text-align-last: center'}), label='題目正確性')
-    complexity_score = forms.ChoiceField(choices=SCORE_CHOICES, widget=forms.Select(
-        attrs={'class': 'form-control', 'style': 'text-align-last: center'}), label='題目複雜度')
-    practice_score = forms.ChoiceField(choices=SCORE_CHOICES, widget=forms.Select(
-        attrs={'class': 'form-control', 'style': 'text-align-last: center'}), label='題目實用性')
-    answer_accuracy_score = forms.ChoiceField(choices=SCORE_CHOICES, widget=forms.Select(
-        attrs={'class': 'form-control', 'style': 'text-align-last: center'}), label='程式正確性')
-    readability_score = forms.ChoiceField(choices=SCORE_CHOICES, widget=forms.Select(
-        attrs={'class': 'form-control', 'style': 'text-align-last: center'}), label='程式可讀性')
-    comments = forms.CharField(widget=forms.Textarea(
-        attrs={'class': 'form-control'}), required=False, label='評論')
+    question_accuracy_score = forms.ChoiceField(
+        choices=SCORE_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control', 'style': 'text-align-last: center'}),
+        label='題目正確性'
+    )
+    complexity_score = forms.ChoiceField(
+        choices=SCORE_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control', 'style': 'text-align-last: center'}),
+        label='題目複雜度'
+    )
+    practice_score = forms.ChoiceField(
+        choices=SCORE_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control', 'style': 'text-align-last: center'}),
+        label='題目實用性'
+    )
+    answer_accuracy_score = forms.ChoiceField(
+        choices=SCORE_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control', 'style': 'text-align-last: center'}),
+        label='程式正確性'
+    )
+    readability_score = forms.ChoiceField(
+        choices=SCORE_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control', 'style': 'text-align-last: center'}),
+        label='程式可讀性'
+    )
+    comments = forms.CharField(
+        widget=forms.Textarea(attrs={'class': 'form-control'}),
+        required=False,
+        label='評論'
+    )
 
     class Meta:
         model = PeerReview
@@ -207,3 +218,11 @@ class QuestionCommentForm(forms.ModelForm):
         labels = {
             'content': '新增評論',
         }
+
+class FuntionStatus(IntEnum):
+    # 功能開放
+    OPEN = 1
+    # 功能關閉
+    CLOSED = 2
+    # 維護中
+    FIXING = 3

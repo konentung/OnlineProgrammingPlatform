@@ -5,11 +5,19 @@ from django.http import JsonResponse
 from django.forms.models import model_to_dict
 from accounts.models import Student
 from .models import Question, StudentAnswer, QuestionHistory, PeerReview, TeachingMaterial
-from .forms import QuestionForm, StudentAnswerForm, QuestionHistoryForm, PeerReviewForm, QuestionCommentForm, TeachingMaterialForm
+from .forms import QuestionForm, StudentAnswerForm, QuestionHistoryForm, PeerReviewForm, QuestionCommentForm, TeachingMaterialForm, FuntionStatus
 from django.db.models import Q
+
+# 定義功能狀態
+STATUS = FuntionStatus
 
 @login_required(login_url='Login')
 def question_create(request):
+    status = STATUS.OPEN
+    if status == STATUS.FIXING:
+        return redirect('Maintenance')
+    if status == STATUS.CLOSED:
+        return redirect('Close')
     if request.method == 'POST':
         form = QuestionForm(request.POST, user=request.user)
         if form.is_valid():
@@ -39,6 +47,11 @@ def question_create(request):
 
 # 顯示題目的頁面
 def question_detail(request, pk):
+    status = STATUS.OPEN
+    if status == STATUS.FIXING:
+        return redirect('Maintenance')
+    if status == STATUS.CLOSED:
+        return redirect('Close')
     question = get_object_or_404(Question, pk=pk)
     comments = question.comments.all()  # 獲取所有相關評論
 
@@ -61,6 +74,11 @@ def question_detail(request, pk):
 
 # 更新題目的頁面
 def question_update(request, pk):
+    status = STATUS.OPEN
+    if status == STATUS.FIXING:
+        return redirect('Maintenance')
+    if status == STATUS.CLOSED:
+        return redirect('Close')
     question = get_object_or_404(Question, pk=pk)
 
     # 在保存更新之前，將原始資料保存到 QuestionHistory 中
@@ -116,12 +134,22 @@ def question_update(request, pk):
 
 # 刪除題目按鈕的處理
 def question_delete(request, pk):
+    status = STATUS.OPEN
+    if status == STATUS.FIXING:
+        return redirect('Maintenance')
+    if status == STATUS.CLOSED:
+        return redirect('Close')
     question = get_object_or_404(Question, pk=pk)
     question.delete()
     return redirect('UserQuestionHistoryList')
 
 # 學生的作業總攬頁面
 def question_assignment_list(request):
+    status = STATUS.CLOSED
+    if status == STATUS.FIXING:
+        return redirect('Maintenance')
+    if status == STATUS.CLOSED:
+        return redirect('Close')
     # 篩選出所有分配給當前使用者的 QuestionAssignment 實例
     # 使用這些 assignments 中的 question 欄位來篩選 Question
     questions = Question.objects.filter(as_homework=True)
@@ -129,6 +157,11 @@ def question_assignment_list(request):
 
 # 顯示並處理作答的頁面
 def question_answer(request, pk):
+    status = STATUS.CLOSED
+    if status == STATUS.FIXING:
+        return redirect('Maintenance')
+    if status == STATUS.CLOSED:
+        return redirect('Close')
     question = get_object_or_404(Question, pk=pk)
     # 獲取或創建學生的作答
     student_answer, created = StudentAnswer.objects.get_or_create(student=request.user, question=question)
@@ -164,6 +197,11 @@ def question_answer(request, pk):
 
 # 顯示該題目的歷史紀錄
 def question_history_list(request, question_id):
+    status = STATUS.OPEN
+    if status == STATUS.FIXING:
+        return redirect('Maintenance')
+    if status == STATUS.CLOSED:
+        return redirect('Close')
     # 確保該問題存在
     question = get_object_or_404(Question, pk=question_id)
     
@@ -178,6 +216,11 @@ def question_history_list(request, question_id):
 
 # 顯示使用者建立的所有題目
 def user_question_history_list(request):
+    status = STATUS.OPEN
+    if status == STATUS.FIXING:
+        return redirect('Maintenance')
+    if status == STATUS.CLOSED:
+        return redirect('Close')
     # 獲取當前使用者建立的所有題目
     user_questions = Question.objects.filter(creator=request.user).prefetch_related('edit_history')
     return render(request, 'questions/user_question_history_list.html', {
@@ -186,6 +229,11 @@ def user_question_history_list(request):
 
 # 顯示所有可評分的問題列表，排除當前使用者創建的問題
 def peer_assessment_list(request):
+    status = STATUS.CLOSED
+    if status == STATUS.FIXING:
+        return redirect('Maintenance')
+    if status == STATUS.CLOSED:
+        return redirect('Close')
     # 取得當前使用者已評分的問題的 ID 和評分時間
     reviewed_questions = PeerReview.objects.filter(reviewer=request.user)
 
@@ -208,6 +256,11 @@ def peer_assessment_list(request):
 
 # 顯示評分頁面
 def peer_assessment(request, question_id):
+    status = STATUS.CLOSED
+    if status == STATUS.FIXING:
+        return redirect('Maintenance')
+    if status == STATUS.CLOSED:
+        return redirect('Close')
     question = get_object_or_404(Question, pk=question_id)
     
     # 檢查是否已經存在評分
@@ -246,8 +299,21 @@ def peer_assessment(request, question_id):
 
 # 顯示教師公告頁面
 def teacher_dashboard(request):
+    status = STATUS.OPEN
+    if status == STATUS.FIXING:
+        return redirect('Maintenance')
+    if status == STATUS.CLOSED:
+        return redirect('Close')
     teaching_materials = TeachingMaterial.objects.all()
     return render(request, 'questions/teacher_dashboard.html', {'teaching_materials': teaching_materials})
+
+# 關閉功能頁面
+def close_view(request):
+    return render(request, 'close.html')
+
+# 維護中畫面
+def maintenance_view(request):
+    return render(request, 'maintenance.html')
 
 # 錯誤頁面
 def custom_404_view(request, exception=None):
