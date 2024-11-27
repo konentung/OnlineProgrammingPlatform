@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}頁面不能使用{% endblock %}
+
+{% block content %}
+<div class="container text-center mt-5">
+    <h1 class="display-4 text-danger">頁面不能使用</h1>
+    <p class="lead">抱歉，您訪問的頁面尚未開放使用<br>頁面將於未來開放</p>
+    <a href="{% url 'Index' %}" class="btn btn-primary mt-3">返回首頁</a>
+</div>
+{% endblock %}

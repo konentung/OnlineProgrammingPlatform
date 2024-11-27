@@ -27,6 +27,10 @@ handler404 = custom_404_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # ----------------- develop -----------------
+    path('maintenance/', questions_views.maintenance_view, name='Maintenance'),
+    path('close/', questions_views.close_view, name='Close'),
+    
     # ----------------- accounts -----------------
     path('', accounts_views.index, name='Index'),
     path('login/', accounts_views.sign_in, name='Login'),
