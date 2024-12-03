@@ -49,6 +49,7 @@ urlpatterns = [
     path('question/peer_assessment/', questions_views.peer_assessment_list, name='PeerAssessmentList'),
     path('question/peer_assessment/<int:question_id>/', questions_views.peer_assessment, name='PeerAssessment'),
     path('teacherdashboard/', questions_views.teacher_dashboard, name='TeacherDashboard'),
+    path('ranking/', questions_views.student_ranking, name='Ranking'),
 ]
 
 if not settings.DEBUG:

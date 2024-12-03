@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.http import JsonResponse
 from django.forms.models import model_to_dict
+from django.db.models import Count
 from accounts.models import Student
 from .models import Question, StudentAnswer, QuestionHistory, PeerReview, TeachingMaterial
 from .forms import QuestionForm, StudentAnswerForm, QuestionHistoryForm, PeerReviewForm, QuestionCommentForm, TeachingMaterialForm, FuntionStatus
@@ -306,6 +307,36 @@ def teacher_dashboard(request):
         return redirect('Close')
     teaching_materials = TeachingMaterial.objects.all()
     return render(request, 'questions/teacher_dashboard.html', {'teaching_materials': teaching_materials})
+
+# 學生出題排行榜
+def student_ranking(request):
+    status = STATUS.OPEN
+    if status == STATUS.FIXING:
+        return redirect('Maintenance')
+    if status == STATUS.CLOSED:
+        return redirect('Close')
+    
+    # 查詢每個學生的出題數量，並按數量降序排序
+    students_with_question_count = Student.objects.annotate(
+        question_count=Count('created_questions')
+    ).order_by('-question_count')
+    
+    # 獲取當前用戶
+    user = request.user
+
+    # 查找當前登入用戶的出題數量
+    user_question_count = students_with_question_count.filter(id=user.id).first()
+
+    # 計算用戶的排名
+    user_rank = None
+    if user_question_count:
+        user_rank = list(students_with_question_count).index(user_question_count) + 1
+
+    return render(request, 'questions/ranking.html', {
+        'students_with_question_count': students_with_question_count,
+        'user_question_count': user_question_count,
+        'user_rank': user_rank,
+    })
 
 # 關閉功能頁面
 def close_view(request):
