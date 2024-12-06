@@ -53,7 +53,7 @@
                     <label for="answer" class="form-label">{{ form.answer.label }}</label>
                     <div class="answer-box">
                         <!-- 替換原本的 {{ form.answer }} 為 textarea 用於初始化 CodeMirror -->
-                        <textarea id="answer-editor" name="answer">{{ form.answer.value }}</textarea>
+                        <textarea id="answer-editor" name="answer">{{ form.answer.value|default_if_none:"" }}</textarea>
                     </div>
                 </div>
             </div>

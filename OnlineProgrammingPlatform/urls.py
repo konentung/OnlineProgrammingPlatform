@@ -38,6 +38,7 @@ urlpatterns = [
     path('register/', accounts_views.register, name='Register'),
     
     # ----------------- questions -----------------
+    path('userdashboard/', questions_views.user_dashboard, name='UserDashboard'),
     path('question/<int:pk>/', questions_views.question_detail, name='QuestionDetail'),
     path('question/create/', questions_views.question_create, name='QuestionCreate'),
     path('question/update/<int:pk>/', questions_views.question_update, name='QuestionUpdate'),

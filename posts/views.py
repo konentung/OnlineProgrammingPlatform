@@ -338,6 +338,49 @@ def student_ranking(request):
         'user_rank': user_rank,
     })
 
+def user_dashboard(request):
+    # 檢查功能狀態
+    status = STATUS.OPEN
+    if status == STATUS.FIXING:
+        return redirect('Maintenance')
+    if status == STATUS.CLOSED:
+        return redirect('Close')
+
+    # 獲取當前用戶
+    user = request.user
+    
+    student = Student.objects.get(name=user.name)
+    
+    # 查找當前用戶創建的所有問題、作答和評分
+    user_questions = Question.objects.filter(creator=student)
+    user_answers = StudentAnswer.objects.filter(student=student)
+    user_reviews = PeerReview.objects.filter(reviewer=student)
+    user_questions_amount = user_questions.count() if user_questions else 0
+    user_answers_amount = user_answers.count() if user_answers else 0
+
+    # 計算使用者總分數
+    user_score = 0
+    for answer in user_answers:
+        if answer.question.difficulty == 'hard':
+            user_score += 20
+        elif answer.question.difficulty == 'medium':
+            user_score += 10
+        elif answer.question.difficulty == 'easy':
+            user_score += 5
+        else:
+            user_score += 0
+
+    # 渲染模板並傳遞必要的上下文變量
+    return render(request, 'user_dashboard.html', {
+        'student': student,
+        'user_questions_amount': user_questions_amount,
+        'user_answers_amount': user_answers_amount,
+        'user_questions': user_questions,
+        'user_answers': user_answers,
+        'user_reviews': user_reviews,
+        'user_score': user_score
+    })
+
 # 關閉功能頁面
 def close_view(request):
     return render(request, 'close.html')
