@@ -38,6 +38,7 @@ urlpatterns = [
     path('register/', accounts_views.register, name='Register'),
     
     # ----------------- questions -----------------
+    path('userdashboard/', questions_views.user_dashboard, name='UserDashboard'),
     path('question/<int:pk>/', questions_views.question_detail, name='QuestionDetail'),
     path('question/create/', questions_views.question_create, name='QuestionCreate'),
     path('question/update/<int:pk>/', questions_views.question_update, name='QuestionUpdate'),
@@ -49,6 +50,7 @@ urlpatterns = [
     path('question/peer_assessment/', questions_views.peer_assessment_list, name='PeerAssessmentList'),
     path('question/peer_assessment/<int:question_id>/', questions_views.peer_assessment, name='PeerAssessment'),
     path('teacherdashboard/', questions_views.teacher_dashboard, name='TeacherDashboard'),
+    path('ranking/', questions_views.student_ranking, name='Ranking'),
 ]
 
 if not settings.DEBUG:

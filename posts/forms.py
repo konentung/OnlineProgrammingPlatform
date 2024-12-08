@@ -176,18 +176,15 @@ class PeerReviewForm(forms.ModelForm):
     )
     comments = forms.CharField(
         widget=forms.Textarea(attrs={'class': 'form-control'}),
-        required=False,
+        required=True,
         label='評論'
     )
 
     class Meta:
         model = PeerReview
-        fields = ['question_accuracy_score', 'complexity_score', 'practice_score',
-                  'answer_accuracy_score', 'readability_score', 'comments']
+        fields = ['question_accuracy_score', 'complexity_score', 'practice_score', 'answer_accuracy_score', 'readability_score', 'comments']
 
 # 教材上傳表單
-
-
 class TeachingMaterialForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(TeachingMaterialForm, self).__init__(*args, **kwargs)

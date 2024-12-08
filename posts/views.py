@@ -3,10 +3,11 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.http import JsonResponse
 from django.forms.models import model_to_dict
+from django.db.models import Count
 from accounts.models import Student
 from .models import Question, StudentAnswer, QuestionHistory, PeerReview, TeachingMaterial
 from .forms import QuestionForm, StudentAnswerForm, QuestionHistoryForm, PeerReviewForm, QuestionCommentForm, TeachingMaterialForm, FuntionStatus
-from django.db.models import Q
+from django.db.models import Q, Exists, OuterRef
 
 # 定義功能狀態
 STATUS = FuntionStatus
@@ -145,7 +146,7 @@ def question_delete(request, pk):
 
 # 學生的作業總攬頁面
 def question_assignment_list(request):
-    status = STATUS.CLOSED
+    status = STATUS.OPEN
     if status == STATUS.FIXING:
         return redirect('Maintenance')
     if status == STATUS.CLOSED:
@@ -157,7 +158,7 @@ def question_assignment_list(request):
 
 # 顯示並處理作答的頁面
 def question_answer(request, pk):
-    status = STATUS.CLOSED
+    status = STATUS.OPEN
     if status == STATUS.FIXING:
         return redirect('Maintenance')
     if status == STATUS.CLOSED:
@@ -229,16 +230,25 @@ def user_question_history_list(request):
 
 # 顯示所有可評分的問題列表，排除當前使用者創建的問題
 def peer_assessment_list(request):
-    status = STATUS.CLOSED
+    status = STATUS.OPEN
     if status == STATUS.FIXING:
         return redirect('Maintenance')
     if status == STATUS.CLOSED:
         return redirect('Close')
-    # 取得當前使用者已評分的問題的 ID 和評分時間
+    
+    # 確定當前使用者的已評分記錄
     reviewed_questions = PeerReview.objects.filter(reviewer=request.user)
-
-    # 過濾出其他學生創建的問題
-    questions_to_review = Question.objects.filter(~Q(creator=request.user))
+    
+    # 過濾出當前使用者已作答但未創建的問題
+    questions_to_review = Question.objects.filter(
+        ~Q(creator=request.user),  # 排除自己創建的問題
+        Exists(
+            StudentAnswer.objects.filter(
+                question=OuterRef('pk'),  # 匹配問題的主鍵
+                student=request.user     # 僅限當前使用者的回答
+            )
+        )
+    )
 
     # 構建一個查詢集，添加每個問題的評分狀態和時間
     questions_data = []
@@ -256,13 +266,14 @@ def peer_assessment_list(request):
 
 # 顯示評分頁面
 def peer_assessment(request, question_id):
-    status = STATUS.CLOSED
+    status = STATUS.OPEN
     if status == STATUS.FIXING:
         return redirect('Maintenance')
     if status == STATUS.CLOSED:
         return redirect('Close')
+
     question = get_object_or_404(Question, pk=question_id)
-    
+
     # 檢查是否已經存在評分
     peer_review = PeerReview.objects.filter(reviewer=request.user, reviewed_question=question).first()
 
@@ -273,14 +284,32 @@ def peer_assessment(request, question_id):
 
         if not peer_review:
             peer_review = PeerReview(reviewer=request.user, reviewed_question=question)
+        
         form = PeerReviewForm(request.POST, instance=peer_review)
         if form.is_valid():
+            # 檢查所有分數欄位是否為 0
+            score_fields = ['question_accuracy_score', 'complexity_score', 'practice_score', 
+                            'answer_accuracy_score', 'readability_score']
+            for field in score_fields:
+                if form.cleaned_data.get(field, 0) == 0:
+                    # 顯示錯誤訊息
+                    error_message = f"{form.fields[field].label} 的分數不可為 0，請重新填寫！"
+                    return render(request, 'questions/question_peer_assessment.html', {
+                        'question': question,
+                        'form': form,
+                        'error_message': error_message
+                    })
+
             peer_review = form.save(commit=False)
             peer_review.reviewed_at = timezone.now()
             peer_review.save()
             return JsonResponse({"success": "評分提交成功！\n送出後無法修改，請確認內容無誤。"})
         else:
-            return JsonResponse({"error": "有欄位未填寫或格式錯誤。"})
+            return render(request, 'questions/question_peer_assessment.html', {
+                'question': question,
+                'form': form,
+                'error_message': "有欄位未填寫或格式錯誤，請重新檢查！"
+            })
 
     # GET 請求
     form = PeerReviewForm(instance=peer_review)
@@ -306,6 +335,79 @@ def teacher_dashboard(request):
         return redirect('Close')
     teaching_materials = TeachingMaterial.objects.all()
     return render(request, 'questions/teacher_dashboard.html', {'teaching_materials': teaching_materials})
+
+# 學生出題排行榜
+def student_ranking(request):
+    status = STATUS.OPEN
+    if status == STATUS.FIXING:
+        return redirect('Maintenance')
+    if status == STATUS.CLOSED:
+        return redirect('Close')
+    
+    # 查詢每個學生的出題數量，並按數量降序排序
+    students_with_question_count = Student.objects.annotate(
+        question_count=Count('created_questions')
+    ).order_by('-question_count')
+    
+    # 獲取當前用戶
+    user = request.user
+
+    # 查找當前登入用戶的出題數量
+    user_question_count = students_with_question_count.filter(id=user.id).first()
+
+    # 計算用戶的排名
+    user_rank = None
+    if user_question_count:
+        user_rank = list(students_with_question_count).index(user_question_count) + 1
+
+    return render(request, 'questions/ranking.html', {
+        'students_with_question_count': students_with_question_count,
+        'user_question_count': user_question_count,
+        'user_rank': user_rank,
+    })
+
+def user_dashboard(request):
+    # 檢查功能狀態
+    status = STATUS.OPEN
+    if status == STATUS.FIXING:
+        return redirect('Maintenance')
+    if status == STATUS.CLOSED:
+        return redirect('Close')
+
+    # 獲取當前用戶
+    user = request.user
+    
+    student = Student.objects.get(name=user.name)
+    
+    # 查找當前用戶創建的所有問題、作答和評分
+    user_questions = Question.objects.filter(creator=student)
+    user_answers = StudentAnswer.objects.filter(student=student)
+    user_reviews = PeerReview.objects.filter(reviewer=student)
+    user_questions_amount = user_questions.count() if user_questions else 0
+    user_answers_amount = user_answers.count() if user_answers else 0
+
+    # 計算使用者總分數
+    user_score = 0
+    for answer in user_answers:
+        if answer.question.difficulty == 'hard':
+            user_score += 20
+        elif answer.question.difficulty == 'medium':
+            user_score += 10
+        elif answer.question.difficulty == 'easy':
+            user_score += 5
+        else:
+            user_score += 0
+
+    # 渲染模板並傳遞必要的上下文變量
+    return render(request, 'user_dashboard.html', {
+        'student': student,
+        'user_questions_amount': user_questions_amount,
+        'user_answers_amount': user_answers_amount,
+        'user_questions': user_questions,
+        'user_answers': user_answers,
+        'user_reviews': user_reviews,
+        'user_score': user_score
+    })
 
 # 關閉功能頁面
 def close_view(request):

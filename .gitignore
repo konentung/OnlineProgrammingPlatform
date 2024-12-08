@@ -8,3 +8,5 @@ __pycache__/
 # Ignore SQLite database files
 db.sqlite3
 db_bak.sqlite3
+
+.env
