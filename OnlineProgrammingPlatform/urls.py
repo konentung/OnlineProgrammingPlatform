@@ -47,6 +47,7 @@ urlpatterns = [
     path('question/answer/<int:pk>/', questions_views.question_answer, name='QuestionAnswer'),
     path('question/history/', questions_views.user_question_history_list, name='UserQuestionHistoryList'),
     path('question/history/<int:question_id>/', questions_views.question_history_list, name='QuestionHistoryList'),
+    path('question/question_review/<int:question_id>', questions_views.question_review, name='QuestionReview'),
     path('question/peer_assessment/', questions_views.peer_assessment_list, name='PeerAssessmentList'),
     path('question/peer_assessment/<int:question_id>/', questions_views.peer_assessment, name='PeerAssessment'),
     path('teacherdashboard/', questions_views.teacher_dashboard, name='TeacherDashboard'),
