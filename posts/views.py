@@ -7,7 +7,7 @@ from django.db.models import Count
 from accounts.models import Student
 from .models import Question, StudentAnswer, QuestionHistory, PeerReview, TeachingMaterial
 from .forms import QuestionForm, StudentAnswerForm, QuestionHistoryForm, PeerReviewForm, QuestionCommentForm, TeachingMaterialForm, FuntionStatus
-from django.db.models import Q
+from django.db.models import Q, Exists, OuterRef
 
 # 定義功能狀態
 STATUS = FuntionStatus
@@ -146,7 +146,7 @@ def question_delete(request, pk):
 
 # 學生的作業總攬頁面
 def question_assignment_list(request):
-    status = STATUS.CLOSED
+    status = STATUS.OPEN
     if status == STATUS.FIXING:
         return redirect('Maintenance')
     if status == STATUS.CLOSED:
@@ -158,7 +158,7 @@ def question_assignment_list(request):
 
 # 顯示並處理作答的頁面
 def question_answer(request, pk):
-    status = STATUS.CLOSED
+    status = STATUS.OPEN
     if status == STATUS.FIXING:
         return redirect('Maintenance')
     if status == STATUS.CLOSED:
@@ -230,16 +230,25 @@ def user_question_history_list(request):
 
 # 顯示所有可評分的問題列表，排除當前使用者創建的問題
 def peer_assessment_list(request):
-    status = STATUS.CLOSED
+    status = STATUS.OPEN
     if status == STATUS.FIXING:
         return redirect('Maintenance')
     if status == STATUS.CLOSED:
         return redirect('Close')
-    # 取得當前使用者已評分的問題的 ID 和評分時間
+    
+    # 確定當前使用者的已評分記錄
     reviewed_questions = PeerReview.objects.filter(reviewer=request.user)
-
-    # 過濾出其他學生創建的問題
-    questions_to_review = Question.objects.filter(~Q(creator=request.user))
+    
+    # 過濾出當前使用者已作答但未創建的問題
+    questions_to_review = Question.objects.filter(
+        ~Q(creator=request.user),  # 排除自己創建的問題
+        Exists(
+            StudentAnswer.objects.filter(
+                question=OuterRef('pk'),  # 匹配問題的主鍵
+                student=request.user     # 僅限當前使用者的回答
+            )
+        )
+    )
 
     # 構建一個查詢集，添加每個問題的評分狀態和時間
     questions_data = []
@@ -257,13 +266,14 @@ def peer_assessment_list(request):
 
 # 顯示評分頁面
 def peer_assessment(request, question_id):
-    status = STATUS.CLOSED
+    status = STATUS.OPEN
     if status == STATUS.FIXING:
         return redirect('Maintenance')
     if status == STATUS.CLOSED:
         return redirect('Close')
+
     question = get_object_or_404(Question, pk=question_id)
-    
+
     # 檢查是否已經存在評分
     peer_review = PeerReview.objects.filter(reviewer=request.user, reviewed_question=question).first()
 
@@ -274,14 +284,32 @@ def peer_assessment(request, question_id):
 
         if not peer_review:
             peer_review = PeerReview(reviewer=request.user, reviewed_question=question)
+        
         form = PeerReviewForm(request.POST, instance=peer_review)
         if form.is_valid():
+            # 檢查所有分數欄位是否為 0
+            score_fields = ['question_accuracy_score', 'complexity_score', 'practice_score', 
+                            'answer_accuracy_score', 'readability_score']
+            for field in score_fields:
+                if form.cleaned_data.get(field, 0) == 0:
+                    # 顯示錯誤訊息
+                    error_message = f"{form.fields[field].label} 的分數不可為 0，請重新填寫！"
+                    return render(request, 'questions/question_peer_assessment.html', {
+                        'question': question,
+                        'form': form,
+                        'error_message': error_message
+                    })
+
             peer_review = form.save(commit=False)
             peer_review.reviewed_at = timezone.now()
             peer_review.save()
             return JsonResponse({"success": "評分提交成功！\n送出後無法修改，請確認內容無誤。"})
         else:
-            return JsonResponse({"error": "有欄位未填寫或格式錯誤。"})
+            return render(request, 'questions/question_peer_assessment.html', {
+                'question': question,
+                'form': form,
+                'error_message': "有欄位未填寫或格式錯誤，請重新檢查！"
+            })
 
     # GET 請求
     form = PeerReviewForm(instance=peer_review)
