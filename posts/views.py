@@ -14,7 +14,7 @@ STATUS = FuntionStatus
 
 @login_required(login_url='Login')
 def question_create(request):
-    status = STATUS.OPEN
+    status = STATUS.CLOSED
     if status == STATUS.FIXING:
         return redirect('Maintenance')
     if status == STATUS.CLOSED:
@@ -75,7 +75,7 @@ def question_detail(request, pk):
 
 # 更新題目的頁面
 def question_update(request, pk):
-    status = STATUS.OPEN
+    status = STATUS.CLOSED
     if status == STATUS.FIXING:
         return redirect('Maintenance')
     if status == STATUS.CLOSED:
@@ -145,6 +145,12 @@ def question_delete(pk):
     return redirect('UserQuestionHistoryList')
 
 def question_review(request, question_id):
+    status = STATUS.OPEN
+    if status == STATUS.FIXING:
+        return redirect('Maintenance')
+    if status == STATUS.CLOSED:
+        return redirect('Close')
+
     # 驗證題目是否存在
     question = get_object_or_404(Question, pk=question_id)
 
@@ -211,7 +217,7 @@ def question_answer(request, pk):
 
 # 顯示該題目的歷史紀錄
 def question_history_list(request, question_id):
-    status = STATUS.OPEN
+    status = STATUS.CLOSED
     if status == STATUS.FIXING:
         return redirect('Maintenance')
     if status == STATUS.CLOSED:
@@ -230,7 +236,7 @@ def question_history_list(request, question_id):
 
 # 顯示使用者建立的所有題目
 def user_question_history_list(request):
-    status = STATUS.OPEN
+    status = STATUS.CLOSED
     if status == STATUS.FIXING:
         return redirect('Maintenance')
     if status == STATUS.CLOSED:
