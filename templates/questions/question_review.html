@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}題目評分{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mt-5" style="font-family: 微軟正黑體; font-weight: bold; text-align: center;">題目評論</h2>
+
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        {% if peer_reviews %}
+            {% for review in peer_reviews %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title font-weight-bold">評論者：{{ review.reviewer.name }}</h5>
+                            <p class="card-text text-muted">評論時間：{{ review.reviewed_at|date:"Y-m-d H:i" }}</p>
+                            <ul class="list-unstyled">
+                                <li>題目正確性評分：{{ review.question_accuracy_score }} / 5</li>
+                                <li>題目複雜度評分：{{ review.complexity_score }} / 5</li>
+                                <li>練習性評分：{{ review.practice_score }} / 5</li>
+                                <li>答案正確性評分：{{ review.answer_accuracy_score }} / 5</li>
+                                <li>可讀性評分：{{ review.readability_score }} / 5</li>
+                            </ul>
+                            <p class="card-text">評論內容：{{ review.comments }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-center text-muted">目前尚無評論。</p>
+        {% endif %}
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

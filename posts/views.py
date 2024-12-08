@@ -134,7 +134,7 @@ def question_update(request, pk):
     return render(request, 'questions/question_update.html', {'form': form})
 
 # 刪除題目按鈕的處理
-def question_delete(request, pk):
+def question_delete(pk):
     status = STATUS.OPEN
     if status == STATUS.FIXING:
         return redirect('Maintenance')
@@ -143,6 +143,19 @@ def question_delete(request, pk):
     question = get_object_or_404(Question, pk=pk)
     question.delete()
     return redirect('UserQuestionHistoryList')
+
+def question_review(request, question_id):
+    # 驗證題目是否存在
+    question = get_object_or_404(Question, pk=question_id)
+
+    # 檢索該題目的所有評分
+    peer_reviews = PeerReview.objects.filter(reviewed_question=question)
+
+    # 傳遞資料到模板
+    return render(request, 'questions/question_review.html', {
+        'question': question,
+        'peer_reviews': peer_reviews,
+    })
 
 # 學生的作業總攬頁面
 def question_assignment_list(request):
