@@ -1,11 +1,43 @@
 {% extends "base.html" %}
 
 {% block title %}404 - Page Not Found{% endblock %}
-
 {% block content %}
-<div class="container text-center mt-5">
-    <h1 class="display-4 text-danger">404 - Page Not Found</h1>
-    <p class="lead">抱歉，您訪問的頁面不存在。</p>
-    <a href="{% url 'Index' %}" class="btn btn-primary mt-3">返回首頁</a>
+{% load static %}
+
+<style>
+    /* 設定背景圖片與樣式 */
+    .error-content {
+        background-color: rgba(255, 255, 255, 0.9); /* 半透明背景，顏色稍亮 */
+        border-radius: 20px; 
+        display: inline-block;
+        max-width: 700px; 
+        margin: auto;
+    }
+
+    .error-description {
+        font-size: 1.5rem; 
+        color: #6c757d; 
+    }
+
+    .btn-primary {
+        border-radius: 50px;
+        padding: 15px 40px; 
+        font-size: 1.25rem; 
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        text-decoration: underline;
+    }
+</style>
+
+<div class="container vh-100 d-flex align-items-center justify-content-center">
+    <img src="{% static 'images/404_Page_not_found.png' %}" alt="404 Page Not Found" class="img-fluid mb-4" style="max-width: 1000px ; margin-top: -50px;"> 
+    <div class="error-content ">
+        <a href="{% url 'Index' %}" class="btn btn-primary mt-4">返回首頁</a>
+    </div>
 </div>
 {% endblock %}
