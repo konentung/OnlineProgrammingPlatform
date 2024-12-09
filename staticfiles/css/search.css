@@ -64,3 +64,10 @@ textarea {
 .CodeMirror.cm-s-default {
     height: 1000px; 
 }
+
+.Difficulty-Select {
+    cursor: pointer;
+    margin-right: 10px;
+    font-family:微軟正黑體;
+    font-weight: bold;
+}
