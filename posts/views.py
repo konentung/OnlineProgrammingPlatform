@@ -3,18 +3,19 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.http import JsonResponse
 from django.forms.models import model_to_dict
-from django.db.models import Count
+from django.db.models import Count, Case, When, IntegerField, Sum, F, Window
 from accounts.models import Student
 from .models import Question, StudentAnswer, QuestionHistory, PeerReview, TeachingMaterial
 from .forms import QuestionForm, StudentAnswerForm, QuestionHistoryForm, PeerReviewForm, QuestionCommentForm, TeachingMaterialForm, FuntionStatus
 from django.db.models import Q, Exists, OuterRef
+from django.db.models.functions import DenseRank
 
 # 定義功能狀態
 STATUS = FuntionStatus
 
 @login_required(login_url='Login')
 def question_create(request):
-    status = STATUS.CLOSED
+    status = STATUS.OPEN
     if status == STATUS.FIXING:
         return redirect('Maintenance')
     if status == STATUS.CLOSED:
@@ -355,34 +356,58 @@ def teacher_dashboard(request):
     teaching_materials = TeachingMaterial.objects.all()
     return render(request, 'questions/teacher_dashboard.html', {'teaching_materials': teaching_materials})
 
-# 學生出題排行榜
+# 學生排行榜
 def student_ranking(request):
     status = STATUS.OPEN
     if status == STATUS.FIXING:
         return redirect('Maintenance')
     if status == STATUS.CLOSED:
         return redirect('Close')
-    
-    # 查詢每個學生的出題數量，並按數量降序排序
-    students_with_question_count = Student.objects.annotate(
-        question_count=Count('created_questions')
-    ).order_by('-question_count')
-    
+
+    # 出題數量排行榜 (同分同排名)
+    students_with_question_count = (
+        Student.objects.annotate(
+            question_count=Count('created_questions'),
+            rank=Window(
+                expression=DenseRank(),
+                order_by=F('question_count').desc()
+            )
+        ).order_by('rank')
+    )
+
+    # 總分數排行榜 (同分同排名)
+    students_with_scores = (
+        Student.objects.annotate(
+            total_score=Sum(
+                Case(
+                    When(answers__question__difficulty='hard', then=20),
+                    When(answers__question__difficulty='medium', then=10),
+                    When(answers__question__difficulty='easy', then=5),
+                    default=0,
+                    output_field=IntegerField(),
+                )
+            ),
+            rank=Window(
+                expression=DenseRank(),
+                order_by=F('total_score').desc()
+            )
+        ).order_by('rank')
+    )
+
     # 獲取當前用戶
     user = request.user
 
-    # 查找當前登入用戶的出題數量
+    # 當前用戶在出題數量排行榜中的數據與排名
     user_question_count = students_with_question_count.filter(id=user.id).first()
 
-    # 計算用戶的排名
-    user_rank = None
-    if user_question_count:
-        user_rank = list(students_with_question_count).index(user_question_count) + 1
+    # 當前用戶在總分數排行榜中的數據與排名
+    user_total_score = students_with_scores.filter(id=user.id).first()
 
     return render(request, 'questions/ranking.html', {
         'students_with_question_count': students_with_question_count,
+        'students_with_scores': students_with_scores,
         'user_question_count': user_question_count,
-        'user_rank': user_rank,
+        'user_total_score': user_total_score,
     })
 
 def user_dashboard(request):

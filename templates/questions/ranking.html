@@ -19,7 +19,7 @@
         <!-- 顯示登入用戶的出題數量和排名 -->
         <div class="alert alert-info text-center">
             {% if user_question_count %}
-                <p>您的排名：<strong>{{ user_question_rank }}</strong></p>
+                <p>您的排名：<strong>{{ user_question_count.rank }}</strong></p>
                 <p>您的出題數量：<strong>{{ user_question_count.question_count }}</strong></p>
             {% else %}
                 <p>您目前尚未創建任何題目。</p>
@@ -40,7 +40,7 @@
                     {% if students_with_question_count %}
                         {% for student in students_with_question_count %}
                             <tr>
-                                <th scope="row">{{ forloop.counter }}</th>
+                                <th scope="row">{{ student.rank }}</th>
                                 <td>{{ student.name }}</td>
                                 <td>{{ student.question_count }}</td>
                             </tr>
@@ -62,7 +62,7 @@
         <!-- 顯示登入用戶的總分數和排名 -->
         <div class="alert alert-info text-center">
             {% if user_total_score %}
-                <p>您的排名：<strong>{{ user_score_rank }}</strong></p>
+                <p>您的排名：<strong>{{ user_total_score.rank }}</strong></p>
                 <p>您的總分數：<strong>{{ user_total_score.total_score }}</strong></p>
             {% else %}
                 <p>您目前尚未參與答題。</p>
@@ -83,7 +83,7 @@
                     {% if students_with_scores %}
                         {% for student in students_with_scores %}
                             <tr>
-                                <th scope="row">{{ forloop.counter }}</th>
+                                <th scope="row">{{ student.rank }}</th>
                                 <td>{{ student.name }}</td>
                                 <td>{{ student.total_score }}</td>
                             </tr>
