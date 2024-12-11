@@ -2,56 +2,66 @@
 {% block title %}{{ question.title }}{% endblock %}
 {% block content %}
 <div class="container mt-4">
-    <h1 class="mb-4" style="font-family:微軟正黑體; font-weight: bold;">{{ question.title }}</h1>
-    <div class="mt-4">
-        <h5 style="font-family:微軟正黑體; font-weight: bold;">題目說明：</h5>
-        <p style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.description }}</p>
-        <h5 style="font-family:微軟正黑體; font-weight: bold;">出題者：</h5>
-        <p style="font-family:微軟正黑體; font-size:12pt;">{{ question.creator.name }}</p>
-        <h5 style="font-family:微軟正黑體; font-weight: bold;">難度：</h5>
-        <p style="font-family:微軟正黑體; font-size:12pt;">{{ question.get_difficulty_display }}</p>
-        <h5 style="font-family:微軟正黑體; font-weight: bold;">輸入格式：</h5>
-        <p style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.input_format }}</p>
-        <h5 style="font-family:微軟正黑體; font-weight: bold;">輸出格式：</h5>
-        <p style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.output_format }}</p>
-        <h5 style="font-family:微軟正黑體; font-weight: bold;">輸入範例：</h5>
-        <p style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.input_example }}</p>
-        <h5 style="font-family:微軟正黑體; font-weight: bold;">輸出範例：</h5>
-        <p style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.output_example }}</p>
-        <h5 style="font-family:微軟正黑體; font-weight: bold;">提示：</h5>
-        <p style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.hint }}</p>
+    <div class="card mb-4">
+        <div class="card-body">
+            <h1 class="card-title" style="font-family:微軟正黑體; font-weight: bold;">{{ question.title }}</h1>
+            <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">題目說明：</h5>
+            <p class="card-text" style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.description }}</p>
+            <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">出題者：</h5>
+            <p class="card-text" style="font-family:微軟正黑體; font-size:12pt;">{{ question.creator.name }}</p>
+            <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">難度：</h5>
+            <p class="card-text" style="font-family:微軟正黑體; font-size:12pt;">{{ question.get_difficulty_display }}</p>
+            <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">輸入格式：</h5>
+            <p class="card-text" style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.input_format }}</p>
+            <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">輸出格式：</h5>
+            <p class="card-text" style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.output_format }}</p>
+            <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">輸入範例：</h5>
+            <p class="card-text" style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.input_example }}</p>
+            <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">輸出範例：</h5>
+            <p class="card-text" style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.output_example }}</p>
+            <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">提示：</h5>
+            <p class="card-text" style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.hint }}</p>
+        </div>
     </div>
-    <div class="mt-5">
-        <h5 class="font-weight-bold">評論</h5>
-        <ul class="list-group">
-            {% for comment in comments %}
-                <li class="list-group-item">
-                    <div class="d-flex justify-content-between">
-                        <strong class="text-primary">{{ comment.commenter.name }}</strong>
-                        <small class="text-muted">{{ comment.commented_at|date:"Y-m-d H:i" }}</small>
-                    </div>
-                    <p class="mb-1">{{ comment.content }}</p>
-                </li>
-            {% empty %}
-                <li class="list-group-item text-muted">尚無評論</li>
-            {% endfor %}
-        </ul>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">評論</h5>
+            <ul class="list-group list-group-flush">
+                {% for comment in comments %}
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <strong class="text-primary">{{ comment.commenter.name }}</strong>
+                            <small class="text-muted">{{ comment.commented_at|date:"Y-m-d H:i" }}</small>
+                        </div>
+                        <p class="mb-1">{{ comment.content }}</p>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-muted">尚無評論</li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
-    <div class="mt-5">
-        <form method="post">
-            {% csrf_token %}
-            {{ comment_form.content.label_tag }}
-            <div class="form-group">
-                {{ comment_form.content }}
-                {% if comment_form.content.errors %}
-                    <div class="text-danger mt-1">
-                        {% for error in comment_form.content.errors %}
-                            <small>{{ error }}</small><br>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            <button type="submit" class="btn btn-primary">提交評論</button>
-        </form>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ comment_form.content.label_tag }}
+                <div class="form-group">
+                    {{ comment_form.content|add_class:"form-control" }}
+                    {% if comment_form.content.errors %}
+                        <div class="text-danger mt-1">
+                            {% for error in comment_form.content.errors %}
+                                <small>{{ error }}</small><br>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <button type="submit" class="btn btn-primary">提交評論</button>
+            </form>
+        </div>
     </div>
 </div>
 {% endblock %}
+
