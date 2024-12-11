@@ -2,61 +2,82 @@
 {% block title %}{{ question.title }}{% endblock %}
 {% block content %}
 <div class="container mt-4">
-    <h1 class="mb-4">{{ question.title }}</h1>
+    <h1 class="mb-4 text-center">{{ question.title }}</h1>
 
-    <div class="mt-4">
-        <h5>題目說明：</h5>
-        <p style="white-space: pre-wrap;">{{ question.description }}</p>
-        <h5>題目提示：</h5>
-        <p style="white-space: pre-wrap;">{{ question.hint }}</p>
-        <h5>輸入格式</h5>
-        <p>{{ question.input_format }}</p>
-        <h5>輸出格式</h5>
-        <p>{{ question.output_format }}</p>
-        <h5>輸入範例</h5>
-        <p>{{ question.input_example }}</p>
-        <h5>輸出範例</h5>
-        <p>{{ question.output_example }}</p>
-    </div>
+    <div class="row">
+        <!-- 左側：題目區 -->
+        <div class="col-md-6">
+            <div class="mt-4">
+                <h5>題目說明：</h5>
+                <p style="white-space: pre-wrap;">{{ question.description }}</p>
+                <h5>題目提示：</h5>
+                <p style="white-space: pre-wrap;">{{ question.hint }}</p>
+                <h5>輸入格式</h5>
+                <p>{{ question.input_format }}</p>
+                <h5>輸出格式</h5>
+                <p>{{ question.output_format }}</p>
+                <h5>輸入範例</h5>
+                <p>{{ question.input_example }}</p>
+                <h5>輸出範例</h5>
+                <p>{{ question.output_example }}</p>
+            </div>
+        </div>
 
-    <div class="mt-4">
-        <form method="POST">
-            {% csrf_token %}
-            {{ form.as_p }}
-            {% if status != 'graded' %}
-                <button type="submit" class="btn btn-success mt-2">提交答案</button>
-            {% endif %}
-        </form>
+        <!-- 右側：作答區 -->
+        <div class="col-md-6">
+            <div class="mt-4">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="answer-box">
+                        <textarea id="answer-editor" name="answer">{{ form.answer.value|default_if_none:"" }}</textarea>
+                    </div>
+                    {% if status != 'graded' %}
+                        <button type="submit" class="btn btn-success mt-2">提交答案</button>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
-    document.querySelector('form').addEventListener('submit', function (event) {
-        event.preventDefault();
-        const isConfirmed = confirm("確定要提交答案嗎？\n提交答案之後就不可以修改了喔");
-        if (isConfirmed) {
-            const formData = new FormData(this);
-            fetch(window.location.href, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    alert(data.error);
-                    window.location.href = '/question/assignment/';
-                } else if (data.success) {
-                    alert(data.success);
-                    window.location.href = '/question/assignment/';
-                }
-            })
-            .catch(error => console.error('Error:', error));
-        }
+    document.addEventListener('DOMContentLoaded', function () {
+        // 初始化 CodeMirror 編輯器
+        var editor = CodeMirror.fromTextArea(document.getElementById("answer-editor"), {
+            lineNumbers: true,
+            mode: "python", // 設置程式語言模式為 Python
+            indentUnit: 4,
+            tabSize: 4,
+            matchBrackets: true
+        });
+
+        document.querySelector('form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const isConfirmed = confirm("確定要提交答案嗎？\n提交答案之後就不可以修改了喔");
+            if (isConfirmed) {
+                const formData = new FormData(this);
+                fetch(window.location.href, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                        window.location.href = '/question/assignment/';
+                    } else if (data.success) {
+                        alert(data.success);
+                        window.location.href = '/question/assignment/';
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        });
     });
 </script>
-    
+
 {% endblock %}

@@ -52,7 +52,8 @@
                 <div class="mb-3" style="height: 100%;">
                     <label for="answer" class="form-label">{{ form.answer.label }}</label>
                     <div class="answer-box">
-                        {{ form.answer }}
+                        <!-- 替換原本的 {{ form.answer }} 為 textarea 用於初始化 CodeMirror -->
+                        <textarea id="answer-editor" name="answer">{{ form.answer.value|default_if_none:"" }}</textarea>
                     </div>
                 </div>
             </div>
@@ -67,7 +68,15 @@
         $(document).ready(function() {
             // 取得當前模式（假設模式在後端模板中設置，如 'view' 或 'edit'）
             var mode = "{{ mode }}";  // 這裡假設後端傳遞了一個 'mode' 變數到模板
-
+            // 初始化 CodeMirror 編輯器
+            var editor = CodeMirror.fromTextArea(document.getElementById("answer-editor"), {
+                lineNumbers: true,  // 顯示行號
+                mode: "python",     // 設置程式語言模式，例如 python
+                indentUnit: 4,      // 設置縮排
+                tabSize: 4,         // 設置 tab 鍵大小
+                matchBrackets: true // 高亮顯示括號對
+            });
+    
             // 根據模式初始化表單
             if (mode === 'view') {
                 readonlyMode();
@@ -76,22 +85,26 @@
             }
 
             function readonlyMode() {
+                editor.setOption("readOnly", true);  // 設置 CodeMirror 為只讀模式
                 $('input[name="title"]').prop('readonly', true);
                 $('textarea[name="description"]').prop('readonly', true);
                 $('input[name="answer"]').prop('readonly', true);
                 $('input[name="difficulty"]').prop('readonly', true);
                 // 確保 display_creator 是只讀的，不可修改
                 $('input[name="display_creator"]').prop('readonly', true);
+                $('input, textarea').prop('disabled', true);  // 禁用所有表單欄位
             }
 
             function editMode() {
+                editor.setOption("readOnly", false); // 設置 CodeMirror 為可編輯模式
                 $('input[name="title"]').prop('readonly', false);
                 $('textarea[name="description"]').prop('readonly', false);
                 $('input[name="answer"]').prop('disabled', true);
                 $('input[name="difficulty"]').prop('disabled', true);
                 $('input[name="display_creator"]').prop('disabled', true);
+                $('input, textarea').prop('disabled', false);  // 啟用所有表單欄位
             }
         });
-    </script>    
+    </script>
 </div>
 {% endblock %}

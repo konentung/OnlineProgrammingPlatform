@@ -34,6 +34,8 @@
                         <form method="POST" action="{% url 'QuestionDelete' question.id %}" style="display:inline;">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-danger">刪除</button>
+                        </form>
+                        <a href="{% url 'QuestionReview' question.id %}" class="btn btn-primary">查看評論</a>
                         <a href="{% url 'QuestionHistoryList' question.id %}" class="btn btn-primary">查看歷史紀錄</a>
                     </td>
                 </tr>

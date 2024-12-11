@@ -52,10 +52,6 @@ textarea {
     max-height: 120px;
 }
 
-#id_answer { /* 答案框 */
-    min-height: 1000px; /* 明確增加答案框高度 */
-    max-height: 1200px; /* 可選：防止超過某個限制 */
-}
 
 .answer-box {
     overflow-y: auto;
@@ -64,4 +60,14 @@ textarea {
     border-radius: 4px;
     padding: 15px;
     height: 1036px;
+}
+.CodeMirror.cm-s-default {
+    height: 1000px; 
+}
+
+.Difficulty-Select {
+    cursor: pointer;
+    margin-right: 10px;
+    font-family:微軟正黑體;
+    font-weight: bold;
 }

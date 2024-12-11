@@ -1,8 +1,22 @@
 {% extends 'base.html' %}
 {% block title %}老師後台{% endblock %}
 {% block content %}
+
+<style>
+    .card {
+        background: linear-gradient(135deg, #f0f9ff, #cfe0fc); /* 藍色漸層背景 */
+        border: none;
+        border-radius: 15px; /* 增加圓角 */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 陰影效果 */
+    }
+</style>
+
 <div class="container mt-4">
-    <h1 class="mb-4 text-center">老師公告區</h1>
+    <div class="text-center mb-5">
+        <h1 class="display-4 text-primary" style="font-family:微軟正黑體; font-weight: bold;">老師公告區</h1>
+        <p class="text-muted">隨時查看與管理最新的教學資料</p>
+        <hr class="w-50 mx-auto">
+    </div>
 
     {% if teaching_materials %}
         <div class="row">
@@ -10,7 +24,9 @@
                 <div class="col-12 mb-4">
                     <div class="card shadow-sm">
                         <div class="card-body">
-                            <h5 class="card-title font-weight-bold">{{ material.title }}</h5>
+                            <h5 class="card-title text-dark font-weight-bold mb-3">
+                                <i class="fas fa-book"></i> {{ material.title }}
+                            </h5>
                             <p class="card-text">{{ material.description|truncatewords:20 }}</p>
                             <p class="card-text">
                                 <small class="text-muted">建立時間：{{ material.created_at|date:"Y-m-d H:i" }}</small>
@@ -22,7 +38,10 @@
             {% endfor %}
         </div>
     {% else %}
-        <p class="text-center text-muted">目前沒有教學資料。</p>
+        <div class="text-center text-muted py-5">
+            <i class="fas fa-box-open fa-3x mb-3"></i>
+            <p class="lead">目前沒有教學資料。</p>
+        </div>
     {% endif %}
 </div>
 {% endblock %}

@@ -15,6 +15,13 @@
     </script>
     <link rel="stylesheet" type="text/css" href="{% static 'css/search.css' %}">
     <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    <!-- 引入 CodeMirror 的 CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/codemirror.min.css">
+
+    <!-- 引入 CodeMirror 的語法Highlight、程式碼模式 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/theme/dracula.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/mode/python/python.min.js"></script> <!-- 這裡是以 Python 為例 -->
     <title>{% block title %}{% endblock %}</title>
 
     <!-- Additional CSS to push content below fixed navbar -->
@@ -26,7 +33,7 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-md navbar-dark fixed-top" style="background-color: #a5cdef;">
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top" style="background-color: #4584b6;">
         <div class="col-sm-1 text-center">
             <button class="btn btn-light" type="button" data-bs-toggle="offcanvas"
                 data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">
@@ -34,12 +41,12 @@
             </button>
         </div>
         <a href="{% url 'Index' %}" class="navbar-brand mx-auto col-sm-10" style="font-weight: bold;text-align: center;">
-            <img src="{% static 'images/logo.png' %}" width="30" height="30" class="d-inline-block align-top" alt="">
+            <img src="{% static 'images/learning.png' %}" width="30" height="30" class="d-inline-block align-top" alt="">
             <span style="vertical-align: middle;">程式題目平台</span>
         </a>
         <div class="col-sm-1 text-center">
             {% if user.is_authenticated %}
-            <a class="btn" href="{% url 'Logout' %}" style="color: white; background-color: #5ca2e7;">Log Out</a>
+            <a class="btn" href="{% url 'Logout' %}" style="color: #646464; background-color: #ffde57;"><b>Log Out</b></a>
             {% else %}
             <a class="btn btn-outline-light me-2" href="{% url 'Index' %}">Login</a>
             <a class="btn btn-warning" href="#">Sign-up</a>
@@ -52,28 +59,35 @@
             <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
                 aria-labelledby="offcanvasWithBothOptionsLabel">
                 <div class="offcanvas-header">
-                    <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">目錄</h5>
+                    <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel"><b>目錄</b></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
                 <div class="offcanvas-body bg-light">
                     <ul class="list-unstyled text-center">
                         <li class="my-3">
-                            <a href="{% url 'Index' %}" class="btn btn-lg menu-item w-100 shadow-sm" role="button">首頁</a>
+                            <a href="{% url 'Index' %}" class="btn btn-lg menu-item w-100 shadow-sm" role="button"><b>首頁</b></a>
                         </li>
                         <li class="my-3">
-                            <a href="{% url 'QuestionCreate' %}" class="btn btn-lg menu-item w-100 shadow-sm" role="button">出題區</a>
+                            <a href="{% url 'UserDashboard' %}" class="btn btn-lg menu-item w-100 shadow-sm" role="button"><b>個人主頁</b></a>
                         </li>
                         <li class="my-3">
-                            <a href="{% url 'QuestionAssignment' %}" class="btn btn-lg menu-item w-100 shadow-sm" role="button">作業區</a>
+                            <a href="{% url 'QuestionCreate' %}" class="btn btn-lg menu-item w-100 shadow-sm" role="button"><b>出題區</b></a>
                         </li>
                         <li class="my-3">
-                            <a href="{% url 'UserQuestionHistoryList' %}" class="btn btn-lg menu-item w-100 shadow-sm" role="button">出題記錄</a>
+                            <a href="{% url 'QuestionAssignment' %}" class="btn btn-lg menu-item w-100 shadow-sm" role="button"><b>作業區</b></a>
                         </li>
                         <li class="my-3">
-                            <a href="{% url 'PeerAssessmentList' %}" class="btn btn-lg menu-item w-100 shadow-sm" role="button">題目互評</a>
+                            <a href="{% url 'UserQuestionHistoryList' %}" class="btn btn-lg menu-item w-100 shadow-sm" role="button"><b>出題記錄</b></a>
                         </li>
                         <li class="my-3">
-                            <a href="{% url 'TeacherDashboard' %}" class="btn btn-lg menu-item w-100 shadow-sm" role="button">老師公告區</a>
+                            <a href="{% url 'PeerAssessmentList' %}" class="btn btn-lg menu-item w-100 shadow-sm" role="button"><b>題目互評</b></a>
+                        </li>
+                        <li class="my-3">
+                            <a href="{% url 'TeacherDashboard' %}" class="btn btn-lg menu-item w-100 shadow-sm" role="button"><b>老師公告區</b></a>
+                        </li>
+                        <li class="my-3">
+                            <a href="{% url 'Ranking' %}" class="btn btn-lg menu-item w-100 shadow-sm" role="button"><b>學生排行榜</b></a>
+                        </li>
                     </ul>
                 </div>                
             </div>
@@ -85,6 +99,10 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous">
     </script>
+    <!-- 引入 CodeMirror 的 JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/mode/python/python.min.js"></script>
 </body>
+
 
 </html>
