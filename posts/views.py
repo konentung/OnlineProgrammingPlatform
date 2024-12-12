@@ -376,13 +376,17 @@ def teacher_dashboard(request):
 
 # 學生排行榜
 def student_ranking(request):
-    status = STATUS.OPEN
+    # 系統狀態檢查
+    status = STATUS.OPEN  # 假設系統狀態從某處獲取
     if status == STATUS.FIXING:
         return redirect('Maintenance')
     if status == STATUS.CLOSED:
         return redirect('Close')
 
-    # 出題數量排行榜 (同分同排名)
+    # 獲取當前用戶
+    user = request.user
+
+    # 獲取所有學生的出題數量與排名
     students_with_question_count = (
         Student.objects.annotate(
             question_count=Count('created_questions'),
@@ -393,7 +397,17 @@ def student_ranking(request):
         ).order_by('rank')
     )
 
-    # 總分數排行榜 (同分同排名)
+    # 獲取當前用戶的出題數量與排名
+    user_question_count = None
+    for student in students_with_question_count:
+        if student.id == user.id:
+            user_question_count = {
+                'question_count': student.question_count,
+                'rank': student.rank
+            }
+            break
+
+    # 獲取所有學生的總分數與排名
     students_with_scores = (
         Student.objects.annotate(
             total_score=Sum(
@@ -412,14 +426,15 @@ def student_ranking(request):
         ).order_by('rank')
     )
 
-    # 獲取當前用戶
-    user = request.user
-
-    # 當前用戶在出題數量排行榜中的數據與排名
-    user_question_count = students_with_question_count.filter(id=user.id).first()
-
-    # 當前用戶在總分數排行榜中的數據與排名
-    user_total_score = students_with_scores.filter(id=user.id).first()
+    # 獲取當前用戶的總分數與排名
+    user_total_score = None
+    for student in students_with_scores:
+        if student.id == user.id:
+            user_total_score = {
+                'total_score': student.total_score,
+                'rank': student.rank
+            }
+            break
 
     return render(request, 'questions/ranking.html', {
         'students_with_question_count': students_with_question_count,
