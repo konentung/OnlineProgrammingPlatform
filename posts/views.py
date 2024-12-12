@@ -171,9 +171,20 @@ def question_assignment_list(request):
         return redirect('Maintenance')
     if status == STATUS.CLOSED:
         return redirect('Close')
-    # 篩選出所有分配給當前使用者的 QuestionAssignment 實例
-    # 使用這些 assignments 中的 question 欄位來篩選 Question
-    questions = Question.objects.filter(as_homework=True)
+    
+    # 篩選出未被學生提交的作答題目
+    questions = Question.objects.filter(
+        as_homework=True
+    ).exclude(
+        Exists(
+            StudentAnswer.objects.filter(
+                student=request.user,
+                question=OuterRef('pk'),
+                status='submitted'
+            )
+        )
+    )
+    
     return render(request, 'questions/question_assignment_list.html', {'questions': questions})
 
 # 顯示並處理作答的頁面
@@ -183,13 +194,20 @@ def question_answer(request, pk):
         return redirect('Maintenance')
     if status == STATUS.CLOSED:
         return redirect('Close')
-    question = get_object_or_404(Question, pk=pk)
-    # 獲取或創建學生的作答
-    student_answer, created = StudentAnswer.objects.get_or_create(student=request.user, question=question)
 
+    # 獲取題目，但不主動建立 StudentAnswer
+    question = get_object_or_404(Question, pk=pk)
+    
+    # 嘗試取得現有作答紀錄，但不自動建立
+    student_answer = StudentAnswer.objects.filter(student=request.user, question=question).first()
+    
     if request.method == 'POST':
+        if not student_answer:
+            # 如果還未建立，僅在送出表單時建立
+            student_answer = StudentAnswer(student=request.user, question=question)
+        
         # 如果學生已經提交過作答，不允許再次提交
-        if not created and student_answer.status == 'submitted':
+        if student_answer.status == 'submitted':
             return JsonResponse({"error": "您已經提交過此題的作答，無法再次提交。"}, status=400)
 
         form = StudentAnswerForm(request.POST, instance=student_answer)
@@ -207,13 +225,13 @@ def question_answer(request, pk):
             return JsonResponse({"error": "有欄位未填寫或格式錯誤。"})
 
     # 如果是 GET 請求，展示表單
-    form = StudentAnswerForm(instance=student_answer)
+    form = StudentAnswerForm(instance=student_answer if student_answer else None)
 
     return render(request, 'questions/question_answer.html', {
         'question': question,
         'form': form,
-        'status': student_answer.status,
-        'score': student_answer.score if hasattr(student_answer, 'score') else None,
+        'status': student_answer.status if student_answer else 'unattempted',
+        'score': student_answer.score if student_answer and hasattr(student_answer, 'score') else None,
     })
 
 # 顯示該題目的歷史紀錄
