@@ -21,7 +21,7 @@ class QuestionHistoryAdmin(admin.ModelAdmin):
 
 # 學生作答管理
 class StudentAnswerAdmin(admin.ModelAdmin):
-    list_display = ("student", "question", "submitted_at", "updated_at")
+    list_display = ("student", "question", "answer", "submitted_at", "updated_at")
     search_fields = ("student__username", "question__title")
     list_filter = ("submitted_at", "updated_at")
 
