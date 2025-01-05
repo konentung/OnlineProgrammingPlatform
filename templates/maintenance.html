@@ -1,11 +1,50 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}頁面維護中{% endblock %}
 
 {% block content %}
-<div class="container text-center mt-5">
-    <h1 class="display-4 text-danger">頁面維護中</h1>
-    <p class="lead">抱歉，您訪問的頁面正在維護中<br>工程師正在進行維護</p>
-    <a href="{% url 'Index' %}" class="btn btn-primary mt-3">返回首頁</a>
+<div class="container text-center mt-5" style="color: #555; font-family: 'Verdana', sans-serif; padding: 20px; max-width: 600px;">
+    <img src="{% static 'images/maintenance.png' %}" alt="維護中標誌" style="height: 160px; margin-bottom: 20px;">
+    <h1 style="font-size: 2.5rem; color: #436ce7; margin-bottom: 20px;">頁面正在維護中</h1>
+    <p style="font-size: 1.125rem; margin-bottom: 30px; line-height: 1.5;">工程師正在進行維護</p>
+    <div class="d-flex justify-content-center" style="display: flex; gap: 15px;">
+        <!-- Reload 按鈕 -->
+        <button class="reload-btn" onclick="window.location.reload();" aria-label="重新載入頁面" style="
+            border: 2px solid #333; 
+            color: #333; 
+            background-color: transparent; 
+            padding: 10px 20px; 
+            font-size: 1rem; 
+            font-weight: bold; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            transition: background-color 0.3s, transform 0.2s;
+        ">重新載入</button>
+        <!-- Contact Us 按鈕 -->
+        <a href="{% url 'Index' %}" class="contact-btn" aria-label="返回首頁" style="
+            background-color: #333; 
+            color: #fff; 
+            padding: 10px 20px; 
+            font-size: 1rem; 
+            font-weight: bold; 
+            border-radius: 5px; 
+            text-decoration: none; 
+            cursor: pointer; 
+            transition: background-color 0.3s, transform 0.2s;
+        ">返回首頁</a>
+    </div>
 </div>
+
+<style>
+    /* 按鈕懸停效果 */
+    .reload-btn:hover, .contact-btn:hover {
+        transform: scale(1.05); /* 懸停時放大 */
+        background-color: #ddd; /* 改變背景顏色 */
+    }
+    .contact-btn:hover {
+        background-color: #555; /* Contact Us 按鈕懸停的特定背景顏色 */
+        color: #fff; /* 確保文字顏色可讀 */
+    }
+</style>
 {% endblock %}
