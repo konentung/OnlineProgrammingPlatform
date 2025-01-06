@@ -2,28 +2,68 @@
 {% block title %}{{ question.title }}{% endblock %}
 {% block content %}
 <div class="container mt-4">
+    <!-- 第一個區塊 -->
+    <div class="card mb-4">
+        <div class="card-body" style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: 1rem;">
+            <div style="grid-column: 1 / span 2; text-align: center;">
+                <h1 class="card-title" style="font-family:微軟正黑體; font-weight: bold;">{{ question.title }}</h1>
+            </div>
+            <div style="grid-column: 1;">
+                <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">題目說明：</h5>
+                <p class="card-text" style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.description }}</p>
+            </div>
+            <div style="grid-column: 2;">
+                <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">出題者：</h5>
+                <p class="card-text" style="font-family:微軟正黑體; font-size:12pt;">{{ question.creator.name }}</p>
+                <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">難度：</h5>
+                <p class="card-text" style="font-family:微軟正黑體; font-size:12pt;">{{ question.get_difficulty_display }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第二個區塊 -->
+    <div class="card mb-4">
+        <div class="card-body" style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: 1rem;">
+            <div style="grid-column: 1 / span 2;">
+                <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">輸入與輸出格式</h5>
+            </div>
+            <div style="grid-column: 1;">
+                <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">輸入格式：</h5>
+                <p class="card-text" style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.input_format }}</p>
+            </div>
+            <div style="grid-column: 2;">
+                <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">輸出格式：</h5>
+                <p class="card-text" style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.output_format }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第三個區塊 -->
+    <div class="card mb-4">
+        <div class="card-body" style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: 1rem;">
+            <div style="grid-column: 1 / span 2;">
+                <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">範例</h5>
+            </div>
+            <div style="grid-column: 1;">
+                <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">輸入範例：</h5>
+                <p class="card-text" style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.input_example }}</p>
+            </div>
+            <div style="grid-column: 2;">
+                <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">輸出範例：</h5>
+                <p class="card-text" style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.output_example }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第四個區塊 -->
     <div class="card mb-4">
         <div class="card-body">
-            <h1 class="card-title" style="font-family:微軟正黑體; font-weight: bold;">{{ question.title }}</h1>
-            <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">題目說明：</h5>
-            <p class="card-text" style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.description }}</p>
-            <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">出題者：</h5>
-            <p class="card-text" style="font-family:微軟正黑體; font-size:12pt;">{{ question.creator.name }}</p>
-            <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">難度：</h5>
-            <p class="card-text" style="font-family:微軟正黑體; font-size:12pt;">{{ question.get_difficulty_display }}</p>
-            <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">輸入格式：</h5>
-            <p class="card-text" style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.input_format }}</p>
-            <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">輸出格式：</h5>
-            <p class="card-text" style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.output_format }}</p>
-            <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">輸入範例：</h5>
-            <p class="card-text" style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.input_example }}</p>
-            <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">輸出範例：</h5>
-            <p class="card-text" style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.output_example }}</p>
             <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">提示：</h5>
             <p class="card-text" style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.hint }}</p>
         </div>
     </div>
 
+    <!-- 第五個區塊 -->
     <div class="card mb-4">
         <div class="card-body">
             <h5 class="card-title">評論</h5>
@@ -43,25 +83,34 @@
         </div>
     </div>
 
+    <!-- 第六個區塊 -->
     <div class="card">
-        <div class="card-body">
-            <form method="post">
-                {% csrf_token %}
-                {{ comment_form.content.label_tag }}
-                <div class="form-group">
-                    {{ comment_form.content|add_class:"form-control" }}
-                    {% if comment_form.content.errors %}
-                        <div class="text-danger mt-1">
-                            {% for error in comment_form.content.errors %}
-                                <small>{{ error }}</small><br>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
+        <div class="card-body" style="display: grid; grid-template-rows: auto auto auto; gap: 1rem;">
+            <div>
+                <h5 class="card-title">新增評論</h5>
+            </div>
+            <div>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ comment_form.content.label_tag }}
+                    <div class="form-group">
+                        {{ comment_form.content }}
+                        {% if comment_form.content.errors %}
+                            <div class="text-danger mt-1">
+                                {% for error in comment_form.content.errors %}
+                                    <small>{{ error }}</small><br>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+            </div>
+            <div>
                 <button type="submit" class="btn btn-primary">提交評論</button>
-            </form>
+            </div>
+                </form>
         </div>
     </div>
 </div>
 {% endblock %}
+
 
