@@ -2,55 +2,83 @@
 {% block title %}{{ question.title }}{% endblock %}
 {% block content %}
 <div class="container mt-4">
+    <style>
+        /* 動態調整佈局及文字換行設定 */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-rows: auto;
+            gap: 1rem;
+        }
+
+        .break-word {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        .card-title, .card-text {
+            font-family: 微軟正黑體;
+        }
+
+        .card-title {
+            font-weight: bold;
+        }
+        
+        .subtitle-bold {
+            font-weight: bold;
+        }
+    </style>
+    
     <!-- 第一個區塊 -->
     <div class="card mb-4">
-        <div class="card-body" style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: 1rem;">
+        <div class="card-body content-grid">
             <div style="grid-column: 1 / span 2; text-align: center;">
                 <h1 class="card-title" style="font-family:微軟正黑體; font-weight: bold;">{{ question.title }}</h1>
             </div>
             <div style="grid-column: 1;">
-                <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">題目說明：</h5>
-                <p class="card-text" style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.description }}</p>
+                <h5 class="subtitle-bold text-muted">題目說明：</h5>
+                <p class="card-text break-word">{{ question.description }}</p>
             </div>
             <div style="grid-column: 2;">
                 <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">出題者：</h5>
-                <p class="card-text" style="font-family:微軟正黑體; font-size:12pt;">{{ question.creator.name }}</p>
+                <p class="card-text break-word">{{ question.creator.name }}</p>
                 <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">難度：</h5>
-                <p class="card-text" style="font-family:微軟正黑體; font-size:12pt;">{{ question.get_difficulty_display }}</p>
+                <p class="card-text break-word">{{ question.get_difficulty_display }}</p>
             </div>
         </div>
     </div>
 
     <!-- 第二個區塊 -->
     <div class="card mb-4">
-        <div class="card-body" style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: 1rem;">
+        <div class="card-body content-grid">
             <div style="grid-column: 1 / span 2;">
                 <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">輸入與輸出格式</h5>
             </div>
             <div style="grid-column: 1;">
                 <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">輸入格式：</h5>
-                <p class="card-text" style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.input_format }}</p>
+                <p class="card-text break-word">{{ question.input_format }}</p>
             </div>
             <div style="grid-column: 2;">
                 <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">輸出格式：</h5>
-                <p class="card-text" style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.output_format }}</p>
+                <p class="card-text break-word">{{ question.output_format }}</p>
             </div>
         </div>
     </div>
 
     <!-- 第三個區塊 -->
     <div class="card mb-4">
-        <div class="card-body" style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: 1rem;">
+        <div class="card-body content-grid">
             <div style="grid-column: 1 / span 2;">
                 <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">範例</h5>
             </div>
             <div style="grid-column: 1;">
                 <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">輸入範例：</h5>
-                <p class="card-text" style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.input_example }}</p>
+                <p class="card-text break-word">{{ question.input_example }}</p>
             </div>
             <div style="grid-column: 2;">
                 <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">輸出範例：</h5>
-                <p class="card-text" style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.output_example }}</p>
+                <p class="card-text break-word">{{ question.output_example }}</p>
             </div>
         </div>
     </div>
@@ -59,7 +87,7 @@
     <div class="card mb-4">
         <div class="card-body">
             <h5 class="card-subtitle mb-2 text-muted" style="font-family:微軟正黑體; font-weight: bold;">提示：</h5>
-            <p class="card-text" style="font-family:微軟正黑體; font-size:12pt; white-space: pre-wrap;">{{ question.hint }}</p>
+            <p class="card-text break-word">{{ question.hint }}</p>
         </div>
     </div>
 
