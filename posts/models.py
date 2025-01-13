@@ -10,11 +10,11 @@ class Question(models.Model):
         ('hard', 'hard')
     ]
     title = models.CharField(max_length=100)
-    description = models.TextField(max_length=3000)
-    input_format = models.TextField(max_length=1000)
-    output_format = models.TextField(max_length=1000)
-    input_example = models.TextField(max_length=1000)
-    output_example = models.TextField(max_length=1000)
+    description = models.TextField()
+    input_format = models.TextField()
+    output_format = models.TextField()
+    input_example = models.TextField()
+    output_example = models.TextField()
     answer = models.TextField(blank=True, null=True)
     creator = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="created_questions")
     difficulty = models.CharField(max_length=10, choices=difficulty_choices, default='select')
@@ -32,14 +32,14 @@ class QuestionHistory(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="edit_history")
     title = models.CharField(max_length=50)
     difficulty = models.CharField(max_length=10)
-    description = models.TextField(max_length=3000)
-    input_format = models.TextField(max_length=1000)
-    output_format = models.TextField(max_length=1000)
-    input_example = models.TextField(max_length=1000)
-    output_example = models.TextField(max_length=1000)
+    description = models.TextField()
+    input_format = models.TextField()
+    output_format = models.TextField()
+    input_example = models.TextField()
+    output_example = models.TextField()
     hint = models.TextField(max_length=500, blank=True, null=True)
-    answer = models.TextField(max_length=3000)
-    editor = models.ForeignKey(Student, on_delete=models.SET_NULL, related_name="edited_questions" ,null=True)
+    answer = models.TextField()
+    editor = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="edited_questions", null=True)
     edited_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -55,8 +55,9 @@ class StudentAnswer(models.Model):
 
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="answers")
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="answers")
-    answer = models.TextField(max_length=3000)
+    answer = models.TextField()
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    score = models.IntegerField(blank=True, null=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -72,7 +73,7 @@ class PeerReview(models.Model):
     practice_score = models.IntegerField(choices=[(i, str(i)) for i in range(6)], default=0)
     answer_accuracy_score = models.IntegerField(choices=[(i, str(i)) for i in range(6)], default=0)
     readability_score = models.IntegerField(choices=[(i, str(i)) for i in range(6)], default=0)
-    comments = models.TextField(max_length=500, blank=True, null=True)
+    comments = models.TextField(blank=True, null=True)
     reviewed_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -81,19 +82,19 @@ class PeerReview(models.Model):
 # 教材表
 class TeachingMaterial(models.Model):
     title = models.CharField(max_length=100)
-    description = models.TextField(max_length=3000, null=True)
-    file = models.FileField(upload_to="teaching_materials/", null=True)
+    description = models.TextField()
+    file = models.FileField(upload_to="teaching_materials/", blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.title
 
-# 題目評論表
+# 題目留言板
 class QuestionComment(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="comments")
     commenter = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="comments")
-    content = models.TextField(max_length=3000)
+    content = models.TextField()
     commented_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

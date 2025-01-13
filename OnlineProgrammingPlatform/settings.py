@@ -83,11 +83,25 @@ WSGI_APPLICATION = 'OnlineProgrammingPlatform.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+def get_env_variable(var_name):
+    value = os.environ.get(var_name)
+    if value is None:
+        print(f'{var_name} not found')
+    return value
+
+DATABASE_NAME = get_env_variable('DATABASE_NAME')
+DATABASE_HOST = get_env_variable('DATABASE_HOST')
+DATABASE_PORT = get_env_variable('DATABASE_PORT')
+DATABASE_PASSWORD = get_env_variable('DATABASE_PASSWORD')
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',  #PostgreSQL
+        'NAME': DATABASE_NAME,  #資料庫名稱
+        'USER': 'postgres',  #資料庫帳號
+        'PASSWORD': DATABASE_PASSWORD,  #資料庫密碼
+        'HOST': 'localhost',  #Server(伺服器)位址
+        'PORT': DATABASE_PORT  #PostgreSQL Port號
     }
 }
 
