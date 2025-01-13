@@ -33,7 +33,7 @@ SECRET_KEY = os.environ.get(
 DEBUG = False
 
 ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = [os.environ.get('NGROK_URL')] if ('NGROK_URL') in os.environ else print('NGROK_URL not found')
+CSRF_TRUSTED_ORIGINS = [os.environ.get('CSRF_TRUSTED_ORIGINS_URL')] if ('CSRF_TRUSTED_ORIGINS_URL') in os.environ else print('CSRF_TRUSTED_ORIGINS_URL not found')
 
 # Application definition
 AUTH_USER_MODEL = 'accounts.Student'
@@ -83,25 +83,24 @@ WSGI_APPLICATION = 'OnlineProgrammingPlatform.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-def get_env_variable(var_name):
-    value = os.environ.get(var_name)
-    if value is None:
-        print(f'{var_name} not found')
-    return value
-
-DATABASE_NAME = get_env_variable('DATABASE_NAME')
-DATABASE_HOST = get_env_variable('DATABASE_HOST')
-DATABASE_PORT = get_env_variable('DATABASE_PORT')
-DATABASE_PASSWORD = get_env_variable('DATABASE_PASSWORD')
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',  #PostgreSQL
-        'NAME': DATABASE_NAME,  #資料庫名稱
-        'USER': 'postgres',  #資料庫帳號
-        'PASSWORD': DATABASE_PASSWORD,  #資料庫密碼
-        'HOST': 'localhost',  #Server(伺服器)位址
-        'PORT': DATABASE_PORT  #PostgreSQL Port號
+        'NAME': os.getenv('DATABASE_NAME'),  #資料庫名稱
+        'USER': os.getenv('DATABASE_USER'),  #資料庫帳號
+        'PASSWORD': os.getenv('DATABASE_PASSWORD'),  #資料庫密碼
+        'HOST': os.getenv('DATABASE_HOST'),  #Server(伺服器)位址
+    }
+}
+
+CACHES = {
+        "default": {  
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": os.environ.get('CACHELOCATION'),
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
     }
 }
 
