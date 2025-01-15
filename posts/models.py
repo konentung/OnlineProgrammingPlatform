@@ -10,40 +10,50 @@ class Question(models.Model):
         ('hard', 'hard')
     ]
     title = models.CharField(max_length=100)
-    description = models.TextField()
-    input_format = models.TextField()
-    output_format = models.TextField()
-    input_example = models.TextField()
-    output_example = models.TextField()
-    answer = models.TextField(blank=True, null=True)
     creator = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="created_questions")
+    description = models.TextField(blank=True, null=False)
+    input_format = models.TextField(blank=True, null=False)
+    output_format = models.TextField(blank=True, null=False)
+    input_example = models.TextField(blank=True, null=False)
+    output_example = models.TextField(blank=True, null=False)
+    answer = models.TextField(blank=True, null=True)
+    hint = models.TextField(blank=True, null=False)
     difficulty = models.CharField(max_length=10, choices=difficulty_choices, default='select')
-    hint = models.TextField(max_length=500, blank=True, null=True)
-    as_homework = models.BooleanField(default=False, blank=True, null=True)
-    answer_display = models.BooleanField(default=False, blank=True, null=True)
+    as_homework = models.BooleanField(default=False, blank=True, null=False)
+    answer_display = models.BooleanField(default=False, blank=True, null=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.title
 
-# 題目歷史表（每次的編輯紀錄）
 class QuestionHistory(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="edit_history")
-    title = models.CharField(max_length=50)
-    difficulty = models.CharField(max_length=10)
-    description = models.TextField()
-    input_format = models.TextField()
-    output_format = models.TextField()
-    input_example = models.TextField()
-    output_example = models.TextField()
-    hint = models.TextField(max_length=500, blank=True, null=True)
-    answer = models.TextField()
-    editor = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="edited_questions", null=True)
-    edited_at = models.DateTimeField(auto_now_add=True)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="histories")
+    title = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=False)
+    input_format = models.TextField(blank=True, null=False)
+    output_format = models.TextField(blank=True, null=False)
+    input_example = models.TextField(blank=True, null=False)
+    output_example = models.TextField(blank=True, null=False)
+    answer = models.TextField(blank=True, null=True)
+    creator = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="created_question_histories")
+    difficulty = models.CharField(max_length=10, choices=Question.difficulty_choices, default='select')
+    hint = models.TextField(blank=True, null=False)
+    as_homework = models.BooleanField(default=False, blank=True, null=False)
+    answer_display = models.BooleanField(default=False, blank=True, null=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Edit history of '{self.question.title}' at {self.edited_at}"
+        return self.title
+
+# 題目標籤表
+class QuestionTag(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="tags")
+    tag = models.CharField(max_length=20)
+
+    def __str__(self):
+        return self.tag
 
 # 學生作答表(教師指派題目給學生，學生作答)
 class StudentAnswer(models.Model):
@@ -55,11 +65,10 @@ class StudentAnswer(models.Model):
 
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="answers")
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="answers")
-    answer = models.TextField()
+    answer = models.TextField(blank=True, null=False)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     score = models.IntegerField(blank=True, null=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"Answer by {self.student} for '{self.question.title}'"
@@ -73,7 +82,8 @@ class PeerReview(models.Model):
     practice_score = models.IntegerField(choices=[(i, str(i)) for i in range(6)], default=0)
     answer_accuracy_score = models.IntegerField(choices=[(i, str(i)) for i in range(6)], default=0)
     readability_score = models.IntegerField(choices=[(i, str(i)) for i in range(6)], default=0)
-    comments = models.TextField(blank=True, null=True)
+    question_advice = models.TextField(blank=True, null=False)
+    answer_advice = models.TextField(blank=True, null=False)
     reviewed_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -82,8 +92,7 @@ class PeerReview(models.Model):
 # 教材表
 class TeachingMaterial(models.Model):
     title = models.CharField(max_length=100)
-    description = models.TextField()
-    file = models.FileField(upload_to="teaching_materials/", blank=True, null=True)
+    description = models.TextField(blank=True, null=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -94,8 +103,39 @@ class TeachingMaterial(models.Model):
 class QuestionComment(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="comments")
     commenter = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="comments")
-    content = models.TextField()
+    content = models.TextField(blank=True, null=False)
     commented_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Comment by {self.commenter} for '{self.question.title}'"
+
+# 階段表
+class Stage(models.Model):
+    STAGE_CHOICES = [
+        ('create_questions', '出題階段'),
+        ('answer_questions', '作答階段'),
+        ('peer_review', '互評階段'),
+        ('update_questions', '更新題目階段'),
+        ('end', '結束'),
+        ('all', '全部')
+    ]
+    stage = models.CharField(max_length=20, choices=STAGE_CHOICES, default='create_questions')
+
+    def __str__(self):
+        return
+
+# 功能表
+class FunctionStatus(models.Model):
+    function = models.CharField(max_length=50, unique=True)
+    status = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.function
+
+class GPTQuestion(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="gpt_questions")
+    question = models.TextField(blank=True, null=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.question

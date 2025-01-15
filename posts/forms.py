@@ -1,7 +1,6 @@
 from django import forms
 from .models import Question, QuestionHistory, StudentAnswer, PeerReview, TeachingMaterial, QuestionComment
 from accounts.models import Student
-from enum import Enum, IntEnum
 
 # 題目表單（學生出題）
 class QuestionForm(forms.ModelForm):
@@ -103,7 +102,7 @@ class QuestionHistoryForm(forms.ModelForm):
             'input_example',
             'output_example',
             'answer',
-            'editor'
+            'creator',
         ]
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control', 'disabled': 'true'}),
@@ -114,7 +113,7 @@ class QuestionHistoryForm(forms.ModelForm):
             'input_example': forms.Textarea(attrs={'class': 'form-control'}),
             'output_example': forms.Textarea(attrs={'class': 'form-control'}),
             'answer': forms.Textarea(attrs={'class': 'form-control'}),
-            'editor': forms.Select(attrs={'class': 'form-control', 'disabled': 'true'}),
+            'creator': forms.Select(attrs={'class': 'form-control', 'disabled': 'true'}),
         }
         labels = {
             'title': '標題',
@@ -125,7 +124,7 @@ class QuestionHistoryForm(forms.ModelForm):
             'input_example': '輸入範例',
             'output_example': '輸出範例',
             'answer': '答案',
-            'editor': '編輯者',
+            'creator': '編輯者',
         }
 
 # 學生作答表單，根據 status 設定可否編輯
@@ -192,16 +191,14 @@ class TeachingMaterialForm(forms.ModelForm):
 
     class Meta:
         model = TeachingMaterial
-        fields = ['title', 'description', 'file']
+        fields = ['title', 'description']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control'}),
-            'file': forms.FileInput(attrs={'class': 'form-control'}),
         }
         labels = {
             'title': '教材標題',
             'description': '教材描述',
-            'file': '檔案',
         }
 
 # 留言表單
@@ -215,11 +212,3 @@ class QuestionCommentForm(forms.ModelForm):
         labels = {
             'content': '新增評論',
         }
-
-class FuntionStatus(IntEnum):
-    # 功能開放
-    OPEN = 1
-    # 功能關閉
-    CLOSED = 2
-    # 維護中
-    FIXING = 3
