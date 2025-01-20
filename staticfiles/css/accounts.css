@@ -8,7 +8,7 @@
 body {
     margin: 0;
     padding: 0;
-    background: linear-gradient(135deg, #a5cdef, #f5f5f5);
+    background: linear-gradient(60deg, #1c92d2, #f2fcfe);
     height: 100vh;
     overflow: hidden;
 }
@@ -23,7 +23,7 @@ body {
     background: white;
     border-radius: 15px;
     /* box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.05); */
-    box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+    box-shadow: rgba(0, 0, 0, 0.10) 0px 10px 20px, rgba(0, 0, 0, 0.16) 0px 6px 6px;
 }
 
 .center h1 {
@@ -88,8 +88,10 @@ form .txt_field {
 }
 
 .btn-submit:hover {
-    border-color: #2e2f2f;
-    transition: .5s;
+    background: #e9f4fb;
+    color: #5ca2e7;
+    border-color: #5ca2e7;
+    transition: .25s;
 }
 
 .signup_link {
