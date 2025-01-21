@@ -2,10 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.http import JsonResponse
-from django.forms.models import model_to_dict
 from django.db.models import Count, Case, When, IntegerField, Sum, F, Window
 from accounts.models import Student
-from .models import Question, StudentAnswer, QuestionHistory, PeerReview, TeachingMaterial, FunctionStatus, Stage
+from .models import Question, StudentAnswer, QuestionHistory, PeerReview, TeachingMaterial, FunctionStatus
 from .forms import QuestionForm, StudentAnswerForm, QuestionHistoryForm, PeerReviewForm, QuestionCommentForm
 from django.db.models import Q, Exists, OuterRef
 from django.db.models.functions import DenseRank
@@ -24,10 +23,17 @@ def question_create(request):
     if request.method == 'POST':
         form = QuestionForm(request.POST, user=request.user)
         if form.is_valid():
+            if form.cleaned_data.get('difficulty') == 'select':
+                return JsonResponse({'success': False, 'errors': {'難度': ['未選擇難度']}}, status=400)
+            try:
+                creator = Student.objects.get(name=request.user.name)
+            except Student.DoesNotExist:
+                return JsonResponse({'success': False, 'errors': {'general': ['找不到對應的學生，請確認用戶資料是否完整']}}, status=400)
+            
             question = form.save(commit=False)
-            question.creator = Student.objects.get(name=request.user.name)
+            question.creator = creator
             question.save()
-            # 保存更新前的題目內容到歷史紀錄
+
             QuestionHistory.objects.create(
                 question=question,
                 title=question.title,
@@ -38,14 +44,20 @@ def question_create(request):
                 input_example=question.input_example,
                 output_example=question.output_example,
                 hint=question.hint,
-                creator=request.user,
-                created_at=timezone.now()
+                creator=creator,
+                created_at=question.created_at
             )
-            return redirect('/')
+
+            return JsonResponse({'success': True, 'message': '題目已成功建立！'}, status=200)
         else:
-            print(form.errors)
-    else:
-        form = QuestionForm(user=request.user)
+            # 返回詳細的欄位錯誤訊息
+            errors = {}
+            for field, error_list in form.errors.items():
+                field_label = form.fields[field].label
+                errors[field_label] = error_list
+            return JsonResponse({'success': False, 'errors': errors}, status=400)
+
+    form = QuestionForm(user=request.user)
     return render(request, 'questions/question_create.html', {'form': form, 'mode': 'edit'})
 
 # 顯示題目的頁面
@@ -109,8 +121,7 @@ def question_update(request, pk):
                     input_example=question.input_example,
                     output_example=question.output_example,
                     hint=question.hint,
-                    editor=request.user,  # 設置當前編輯者
-                    edited_at=timezone.now()  # 設置編輯時間
+                    creator=request.user,
                 )
                 
                 # 保存新的數據到題目
@@ -131,7 +142,7 @@ def question_update(request, pk):
     return render(request, 'questions/question_update.html', {'form': form})
 
 # 刪除題目按鈕的處理
-def question_delete(pk):
+def question_delete(request, pk):
     if get_function_status('question_delete'):
         return redirect('Close')
 
@@ -199,6 +210,8 @@ def question_answer(request, pk):
 
         if form.is_valid():
             # 只允許未評分的作答進行提交或修改
+            if student_answer.answer == "":
+                return JsonResponse({"error": "作答不可為空。"})
             if student_answer.status != 'graded':
                 student_answer.submitted_at = timezone.now()
                 student_answer.status = 'submitted'
@@ -228,7 +241,7 @@ def question_history_list(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
 
     # 在視圖中，先查詢資料庫中的資料
-    history_records = QuestionHistory.objects.filter(question=question).order_by('-edited_at')
+    history_records = QuestionHistory.objects.filter(question=question).order_by('-created_at')
 
     # 將查詢的資料傳遞給模板
     return render(request, 'questions/question_history_list.html', {
@@ -242,7 +255,7 @@ def user_question_history_list(request):
         return redirect('Close')
 
     # 獲取當前使用者建立的所有題目
-    user_questions = Question.objects.filter(creator=request.user).prefetch_related('edit_history')
+    user_questions = Question.objects.filter(creator=request.user).prefetch_related('histories')
     return render(request, 'questions/user_question_history_list.html', {
         'user_questions': user_questions,
     })

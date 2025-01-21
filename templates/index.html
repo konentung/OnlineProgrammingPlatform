@@ -37,54 +37,6 @@
     </div>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // 限制描述顯示的行數
-        var descriptions = $('[id^="description-"]');
-        $.each(descriptions, function(index, descriptionElement) {
-            descriptionElement.style.display = '-webkit-box';
-            descriptionElement.style.webkitBoxOrient = 'vertical';
-            descriptionElement.style.webkitLineClamp = '5';
-            descriptionElement.style.overflow = 'hidden';
-
-            // 如果內容不足 5 行，則添加換行符填充顯示空間
-            var lineHeight = parseFloat(window.getComputedStyle(descriptionElement).lineHeight);
-            var minHeight = lineHeight * 5;
-            while (descriptionElement.offsetHeight < minHeight) {
-                descriptionElement.innerText += '\n';
-            }
-        });
-        
-        descriptions.forEach(function(descriptionElement) {
-            descriptionElement.style.display = '-webkit-box';
-            descriptionElement.style.webkitBoxOrient = 'vertical';
-            descriptionElement.style.webkitLineClamp = '5';
-            descriptionElement.style.overflow = 'hidden';
-
-            // 如果內容不足 5 行，則添加換行符填充顯示空間
-            var lineHeight = parseFloat(window.getComputedStyle(descriptionElement).lineHeight);
-            var minHeight = lineHeight * 5;
-            while (descriptionElement.offsetHeight < minHeight) {
-                descriptionElement.innerText += '\n';
-            }
-        });
-    });
-
-        // 篩選難易度
-        var difficultyFilters = $('.difficulty-filter');
-        var questionItems = $('.question-item');
-
-        $('.difficulty-filter').on('click', function() {
-            var selectedDifficulty = $(this).data('difficulty');
-
-            questionItems.each(function(index, item) {
-                if (selectedDifficulty === 'all' || $(item).data('difficulty') === selectedDifficulty) {
-                    $(item).show();
-                } else {
-                    $(item).hide();
-                }
-            });
-        });
-</script>
+<script src="{% static 'js/question_card.js' %}"></script>
 
 {% endblock %}

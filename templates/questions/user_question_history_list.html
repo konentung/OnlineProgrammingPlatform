@@ -21,10 +21,10 @@
                 {% for question in user_questions %}
                 <tr>
                     <td style="font-family:微軟正黑體;">{{ question.title }}</td>
-                    <td style="font-family:微軟正黑體; text-align: center;">{{ question.edit_history.count }}</td>
+                    <td style="font-family:微軟正黑體; text-align: center;">{{ question.histories.count }}</td>
                     <td style="font-family:微軟正黑體; text-align: center;">
-                        {% if question.edit_history.last %}
-                            {{ question.edit_history.last.edited_at|date:"Y-m-d H:i" }}
+                        {% if question.histories.last %}
+                            {{ question.histories.last.created_at|date:"Y-m-d H:i" }}
                         {% else %}
                             無歷史紀錄
                         {% endif %}

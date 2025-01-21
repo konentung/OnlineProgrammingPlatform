@@ -16,7 +16,7 @@ class Question(models.Model):
     output_format = models.TextField(blank=True, null=False)
     input_example = models.TextField(blank=True, null=False)
     output_example = models.TextField(blank=True, null=False)
-    answer = models.TextField(blank=True, null=True)
+    answer = models.TextField(blank=True, null=False)
     hint = models.TextField(blank=True, null=False)
     difficulty = models.CharField(max_length=10, choices=difficulty_choices, default='select')
     as_homework = models.BooleanField(default=False, blank=True, null=False)
