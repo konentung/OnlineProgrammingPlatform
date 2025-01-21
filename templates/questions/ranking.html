@@ -14,7 +14,7 @@
 
     <!-- 出題排行榜 -->
     <div id="tab-questions" class="ranking-tab">
-        <h2 class="text-center mb-4">出題排行榜</h2>
+        <h3 class="text-center mb-4">出題排行榜</h3>
         
         <!-- 顯示登入用戶的出題數量和排名 -->
         <div class="alert alert-info text-center">
@@ -41,9 +41,12 @@
                     {% if students_with_question_count %}
                         {% for student in students_with_question_count %}
                             <tr>
-                                <th scope="row">{{ student.rank }}</th>
-                                <td>{{ student.name }}</td>
-                                <td>{{ student.student_id }}</td>
+                                <th scope="row"style="{% if student.rank <= 3 %}font-weight: bold;{% else %}font-weight: normal;{% endif %}">
+                                    {{ student.rank }}
+                                </th>
+                                <td scope="row"style="{% if student.rank <= 3 %}font-weight: bold;{% else %}font-weight: normal;{% endif %}">
+                                    {{ student.name }}
+                                </td>
                                 <td>{{ student.question_count }}</td>
                             </tr>
                         {% endfor %}
@@ -59,7 +62,7 @@
 
     <!-- 總分數排行榜 -->
     <div id="tab-scores" class="ranking-tab" style="display: none;">
-        <h2 class="text-center mb-4">總分數排行榜</h2>
+        <h3 class="text-center mb-4">總分數排行榜</h3>
         
         <!-- 顯示登入用戶的總分數和排名 -->
         <div class="alert alert-info text-center">
@@ -86,9 +89,12 @@
                     {% if students_with_scores %}
                         {% for student in students_with_scores %}
                             <tr>
-                                <th scope="row">{{ student.rank }}</th>
-                                <td>{{ student.name }}</td>
-                                <td>{{ student.student_id }}</td>
+                                <th scope="row"style="{% if student.rank <= 3 %}font-weight: bold;{% else %}font-weight: normal;{% endif %}">
+                                    {{ student.rank }}
+                                </th>
+                                <td scope="row"style="{% if student.rank <= 3 %}font-weight: bold;{% else %}font-weight: normal;{% endif %}">
+                                    {{ student.name }}
+                                </td>
                                 <td>{{ student.total_score }}</td>
                             </tr>
                         {% endfor %}
