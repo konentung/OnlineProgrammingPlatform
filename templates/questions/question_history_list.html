@@ -25,9 +25,9 @@
                     <td style="font-family:微軟正黑體; font-size:12pt; color:gray; text-align: left;">
                         {{ record.description|truncatewords:20 }}
                     </td>
-                    <td style="font-family:微軟正黑體;">{{ record.editor.username }}</td>
+                    <td style="font-family:微軟正黑體;">{{ record.creator.username }}</td>
                     <td style="font-family:微軟正黑體;">{{ record.answer }}</td>
-                    <td style="font-family:微軟正黑體;">{{ record.edited_at|date:"Y-m-d H:i" }}</td>
+                    <td style="font-family:微軟正黑體;">{{ record.created_at|date:"Y-m-d H:i" }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
