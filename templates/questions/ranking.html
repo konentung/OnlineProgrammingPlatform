@@ -33,6 +33,7 @@
                     <tr>
                         <th scope="col">排名</th>
                         <th scope="col">學生名稱</th>
+                        <th scope="col">學號</th>
                         <th scope="col">數量</th>
                     </tr>
                 </thead>
@@ -42,6 +43,7 @@
                             <tr>
                                 <th scope="row">{{ student.rank }}</th>
                                 <td>{{ student.name }}</td>
+                                <td>{{ student.student_id }}</td>
                                 <td>{{ student.question_count }}</td>
                             </tr>
                         {% endfor %}
@@ -76,6 +78,7 @@
                     <tr>
                         <th scope="col">排名</th>
                         <th scope="col">學生名稱</th>
+                        <th scope="col">學號</th>
                         <th scope="col">分數</th>
                     </tr>
                 </thead>
@@ -85,6 +88,7 @@
                             <tr>
                                 <th scope="row">{{ student.rank }}</th>
                                 <td>{{ student.name }}</td>
+                                <td>{{ student.student_id }}</td>
                                 <td>{{ student.total_score }}</td>
                             </tr>
                         {% endfor %}
