@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}{{ question.title }}{% endblock %}
 {% block content %}
 <div class="container mt-4">
@@ -40,44 +41,7 @@
     </div>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // 初始化 CodeMirror 編輯器
-        var editor = CodeMirror.fromTextArea(document.getElementById("answer-editor"), {
-            lineNumbers: true,
-            mode: "python", // 設置程式語言模式為 Python
-            indentUnit: 4,
-            tabSize: 4,
-            matchBrackets: true
-        });
-
-        document.querySelector('form').addEventListener('submit', function (event) {
-            event.preventDefault();
-            const isConfirmed = confirm("確定要提交答案嗎？\n提交答案之後就不可以修改了喔");
-            if (isConfirmed) {
-                const formData = new FormData(this);
-                fetch(window.location.href, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        alert(data.error);
-                        window.location.href = '/question/assignment/';
-                    } else if (data.success) {
-                        alert(data.success);
-                        window.location.href = '/question/assignment/';
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            }
-        });
-    });
-</script>
+<script src="{% static 'js/codespace.js' %}"></script>
+<script src="{% static 'js/answer_submit.js' %}"></script>
 
 {% endblock %}

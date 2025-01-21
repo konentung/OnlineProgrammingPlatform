@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}出題{% endblock %}
 {% block content %}
 <div class="container mt-5">
@@ -65,66 +66,8 @@
     </form>
 </div>
 
-<script>
-    $(document).ready(function() {
-        // 取得當前模式（假設模式在後端模板中設置，如 'view' 或 'edit'）
-        var mode = "{{ mode }}";  // 這裡假設後端傳遞了一個 'mode' 變數到模板
+<script> questionListUrl = "{% url 'UserQuestionHistoryList' %}"</script>
+<script src="{% static 'js/codespace.js' %}"></script>
+<script src="{% static 'js/question_update.js' %}"></script>
 
-        // 初始化 CodeMirror 編輯器
-        var editor = CodeMirror.fromTextArea(document.getElementById("answer-editor"), {
-            lineNumbers: true,  // 顯示行號
-            mode: "python",     // 設置程式語言模式，例如 python
-            indentUnit: 4,      // 設置縮排
-            tabSize: 4,         // 設置 tab 鍵大小
-            matchBrackets: true // 高亮顯示括號對
-        });
-
-        // 根據模式初始化表單
-        if (mode === 'view') {
-            readonlyMode();
-        } else {
-            editMode();
-        }
-
-        function readonlyMode() {
-            editor.setOption("readOnly", true);  // 設置 CodeMirror 為只讀模式
-            $('input, textarea').prop('disabled', true);  // 禁用表單欄位
-        }
-
-        function editMode() {
-            editor.setOption("readOnly", false); // 設置 CodeMirror 為可編輯模式
-            $('input, textarea').prop('disabled', false);  // 啟用表單欄位
-        }
-
-        // 提交表單的處理邏輯
-        document.getElementById('questionForm').onsubmit = function(event) {
-            event.preventDefault();  // 防止默認提交
-
-            const formData = new FormData(this);
-            const url = this.action;
-
-            fetch(url, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',  // 確保請求被識別為 Ajax
-                },
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'error') {
-                    alert(data.message);  // 顯示錯誤提示
-                    console.error(data.form_errors);  // 如果有具體的表單錯誤，可以在控制台檢查具體錯誤信息
-                } else if (data.status === 'success') {
-                    alert(data.message);
-                    // 根據需求重定向或者刷新頁面
-                    window.location.href = '{% url "UserQuestionHistoryList" %}';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        };
-    });
-</script>
 {% endblock %}

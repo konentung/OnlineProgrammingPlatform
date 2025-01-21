@@ -1,11 +1,48 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}頁面不能使用{% endblock %}
 
 {% block content %}
-<div class="container text-center mt-5">
-    <h1 class="display-4 text-danger">頁面不能使用</h1>
-    <p class="lead">抱歉，您訪問的頁面尚未開放使用<br>頁面將於未來開放</p>
-    <a href="{% url 'Index' %}" class="btn btn-primary mt-3">返回首頁</a>
+<div class="container text-center mt-5" style="color: #555; font-family: 'Verdana', sans-serif; padding: 20px; max-width: 600px;">
+    <!-- 使用 Lottie 動畫，居中對齊 -->
+    <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
+    <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+        <dotlottie-player 
+            src="https://lottie.host/eb222637-b5ed-435a-b386-74e4b0c14010/EdZ7FxZ8yZ.lottie" 
+            background="transparent" 
+            speed="1" 
+            style="width: 300px; height: 300px;" 
+            loop 
+            autoplay>
+        </dotlottie-player>
+    </div>
+
+    <h1 style="font-size: 2.5rem; color: #eb3d3d; margin-bottom: 20px;">您訪問的頁面尚未開放使用</h1>
+    <p style="font-size: 1.125rem; margin-bottom: 30px; line-height: 1.5;">頁面將於未來開放</p>
+    
+    <!-- 返回首頁按鈕居中 -->
+    <div style="display: flex; justify-content: center;">
+        <a href="{% url 'Index' %}" class="contact-btn" aria-label="返回首頁" style="
+            background-color: #333; 
+            color: #fff; 
+            padding: 10px 20px; 
+            font-size: 1rem; 
+            font-weight: bold; 
+            border-radius: 5px; 
+            text-decoration: none; 
+            cursor: pointer; 
+            transition: background-color 0.3s, transform 0.2s;
+        ">返回首頁</a>
+    </div>
 </div>
-{% endblock %}
+
+<style>
+    /* 按鈕懸停效果 */
+    .contact-btn:hover {
+        transform: scale(1.05); /* 懸停時放大 */
+        background-color: #555; /* Contact Us 按鈕懸停的特定背景顏色 */
+        color: #fff; /* 確保文字顏色可讀 */
+    }
+</style>
+{% endblock %} 

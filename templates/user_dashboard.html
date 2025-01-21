@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}學生面板{% endblock %}
 {% block content %}
 <div class="container mt-5" style="max-width: 1000px;">
@@ -105,23 +106,6 @@
     </div>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-      var descriptions = document.querySelectorAll('[id^="description-"]');
-      descriptions.forEach(function(descriptionElement) {
-        // 確保最少顯示 5 行且最多顯示 5 行
-        descriptionElement.style.display = '-webkit-box';
-        descriptionElement.style.webkitBoxOrient = 'vertical';
-        descriptionElement.style.webkitLineClamp = '5';
-        descriptionElement.style.overflow = 'hidden';
-  
-        // 如果內容不足 5 行，則添加換行符填充顯示空間
-        var lineHeight = parseFloat(window.getComputedStyle(descriptionElement).lineHeight);
-        var minHeight = lineHeight * 5;
-        while (descriptionElement.offsetHeight < minHeight) {
-          descriptionElement.innerText += '\n';
-        }
-      });
-    });
-</script>
+<script src="{% static 'js/question_card.js' %}"></script>
+
 {% endblock %}
