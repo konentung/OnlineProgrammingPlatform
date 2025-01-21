@@ -1,7 +1,6 @@
 from django import forms
 from .models import Question, QuestionHistory, StudentAnswer, PeerReview, TeachingMaterial, QuestionComment
 from accounts.models import Student
-from enum import Enum, IntEnum
 
 # 題目表單（學生出題）
 class QuestionForm(forms.ModelForm):
@@ -35,6 +34,7 @@ class QuestionForm(forms.ModelForm):
         self.fields['output_format'].required = True
         self.fields['input_example'].required = True
         self.fields['output_example'].required = True
+        self.fields['hint'].required = True
 
     def clean(self):
         cleaned_data = super().clean()
@@ -46,26 +46,9 @@ class QuestionForm(forms.ModelForm):
             except Student.DoesNotExist:
                 raise forms.ValidationError('找不到對應的出題者，請確認用戶存在')
 
-        # 檢查 'title', 'description', 'answer', 'input_format', 'output_format', 'input_example', 'output_example' 是否有值
-        if not cleaned_data.get('title'):
-            raise forms.ValidationError('標題不能為空')
-        if not cleaned_data.get('description'):
-            raise forms.ValidationError('題目敘述不能為空')
-        if not cleaned_data.get('answer'):
-            raise forms.ValidationError('答案不能為空')
-        if not cleaned_data.get('input_format'):
-            raise forms.ValidationError('輸入格式不能為空')
-        if not cleaned_data.get('output_format'):
-            raise forms.ValidationError('輸出格式不能為空')
-        if not cleaned_data.get('input_example'):
-            raise forms.ValidationError('輸入範例不能為空')
-        if not cleaned_data.get('output_example'):
-            raise forms.ValidationError('輸出範例不能為空')
-
     class Meta:
         model = Question
-        fields = ['display_creator', 'title', 'description', 'answer', 'creator', 'input_format',
-                  'output_format', 'input_example', 'output_example', 'difficulty', 'hint']
+        fields = ['display_creator', 'title', 'description', 'answer', 'creator', 'input_format', 'output_format', 'input_example', 'output_example', 'difficulty', 'hint']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control'}),
@@ -89,6 +72,34 @@ class QuestionForm(forms.ModelForm):
             'difficulty': '難度',
             'hint': '提示',
         }
+        required = ['title', 'description', 'answer', 'input_format', 'output_format', 'input_example', 'output_example', 'hint']
+        error_messages = {
+            'title': {
+                'required': '這個欄位需要填寫',
+                'max_length': '標題不能超過 100 個字',
+            },
+            'description': {
+                'required': '請提供題目描述',
+            },
+            'input_format': {
+                'required': '請填寫輸入格式',
+            },
+            'output_format': {
+                'required': '請填寫輸出格式',
+            },
+            'input_example': {
+                'required': '請填寫輸入範例',
+            },
+            'output_example': {
+                'required': '請填寫輸出範例',
+            },
+            'answer': {
+                'required': '請填寫答案',
+            },
+            'hint': {
+                'required': '提示不能為空',
+            }
+        }
 
 # 題目歷史表單（紀錄每次的編輯）
 class QuestionHistoryForm(forms.ModelForm):
@@ -103,7 +114,7 @@ class QuestionHistoryForm(forms.ModelForm):
             'input_example',
             'output_example',
             'answer',
-            'editor'
+            'creator',
         ]
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control', 'disabled': 'true'}),
@@ -114,7 +125,7 @@ class QuestionHistoryForm(forms.ModelForm):
             'input_example': forms.Textarea(attrs={'class': 'form-control'}),
             'output_example': forms.Textarea(attrs={'class': 'form-control'}),
             'answer': forms.Textarea(attrs={'class': 'form-control'}),
-            'editor': forms.Select(attrs={'class': 'form-control', 'disabled': 'true'}),
+            'creator': forms.Select(attrs={'class': 'form-control', 'disabled': 'true'}),
         }
         labels = {
             'title': '標題',
@@ -125,7 +136,7 @@ class QuestionHistoryForm(forms.ModelForm):
             'input_example': '輸入範例',
             'output_example': '輸出範例',
             'answer': '答案',
-            'editor': '編輯者',
+            'creator': '編輯者',
         }
 
 # 學生作答表單，根據 status 設定可否編輯
@@ -174,15 +185,18 @@ class PeerReviewForm(forms.ModelForm):
         widget=forms.Select(attrs={'class': 'form-control', 'style': 'text-align-last: center'}),
         label='程式可讀性'
     )
-    comments = forms.CharField(
-        widget=forms.Textarea(attrs={'class': 'form-control'}),
-        required=True,
-        label='評論'
+    question_advice = forms.CharField(
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        label='題目建議'
+    )
+    answer_advice = forms.CharField(
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        label='程式建議'
     )
 
     class Meta:
         model = PeerReview
-        fields = ['question_accuracy_score', 'complexity_score', 'practice_score', 'answer_accuracy_score', 'readability_score', 'comments']
+        fields = ['question_accuracy_score', 'complexity_score', 'practice_score', 'answer_accuracy_score', 'readability_score', 'question_advice', 'answer_advice']
 
 # 教材上傳表單
 class TeachingMaterialForm(forms.ModelForm):
@@ -192,16 +206,14 @@ class TeachingMaterialForm(forms.ModelForm):
 
     class Meta:
         model = TeachingMaterial
-        fields = ['title', 'description', 'file']
+        fields = ['title', 'description']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control'}),
-            'file': forms.FileInput(attrs={'class': 'form-control'}),
         }
         labels = {
             'title': '教材標題',
             'description': '教材描述',
-            'file': '檔案',
         }
 
 # 留言表單
@@ -215,11 +227,3 @@ class QuestionCommentForm(forms.ModelForm):
         labels = {
             'content': '新增評論',
         }
-
-class FuntionStatus(IntEnum):
-    # 功能開放
-    OPEN = 1
-    # 功能關閉
-    CLOSED = 2
-    # 維護中
-    FIXING = 3

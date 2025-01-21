@@ -34,11 +34,11 @@
                     <!-- 題目內容 -->
                     <td style="font-family: '微軟正黑體'; vertical-align: middle; word-wrap: break-word;">{{ question.title }}</td>
                     <td style="font-family: '微軟正黑體'; text-align: center; vertical-align: middle;">
-                        {{ question.edit_history.count }}
+                        {{ question.histories.count }}
                     </td>
-                    <td style="font-family: '微軟正黑體'; text-align: center; vertical-align: middle;">
-                        {% if question.edit_history.last %}
-                            {{ question.edit_history.last.edited_at|date:"Y-m-d H:i" }}
+                    <td style="font-family: '微軟正黑體'; text-align: center; vertical-align: middle;"> 
+                        {% if question.histories.last %}
+                            {{ question.histories.last.created_at|date:"Y-m-d H:i" }}
                         {% else %}
                             <span class="text-muted">無歷史紀錄</span>
                         {% endif %}

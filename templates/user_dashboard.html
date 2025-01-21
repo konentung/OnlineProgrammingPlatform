@@ -1,104 +1,111 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}學生面板{% endblock %}
 {% block content %}
-<div class="container text-center mt-5 shadow-sm student-panel" style="background-color: #f8f9fa; padding: 20px; border-radius: 15px;">
+<div class="container mt-5" style="max-width: 1000px;">
 
+    <!-- 頁面標題 -->
+    <h2 class="text-center mb-5" style="font-family: 微軟正黑體; color: #343a40; font-weight: bold;">學生資訊</h2>
+
+    <!-- 學生資訊區塊 -->
     {% if student %}
-        <div class="student-info mt-3">
-            <h2 class="section-title">學生資訊</h2>
-            <table class="table table-hover table-bordered table-striped mt-4 student-info-table">
-                <tbody>
-                    <tr>
-                        <td>學生名稱</td>
-                        <td><strong>{{ student.name }}</strong></td>
-                    </tr>
-                    <tr>
-                        <td>學生學號</td>
-                        <td><strong>{{ student.student_id }}</strong></td>
-                    </tr>
-                    <tr>
-                        <td>學生出題數量</td>
-                        <td><strong>{{ user_questions_amount }}</strong></td>
-                    </tr>
-                    <tr>
-                        <td>學生作答數量</td>
-                        <td><strong>{{ user_answers_amount }}</strong></td>
-                    </tr>
-                    <tr>
-                        <td>學生總積分</td>
-                        <td><strong>{{ user_score }}</strong></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    {% endif %}
+    <div class="row mb-5">
+        <div class="col-md-12">
+            <div class="card shadow-sm" style="border-radius: 10px; padding: 20px;">
+                <div class="row text-center" style="font-family: 微軟正黑體;">
 
-    <div class="mt-5 question-list">
-        <h2 class="section-title">建立的題目</h2>
-        {% if user_questions %}
-            <div class="row">
-                {% for question in user_questions %}
-                    <div class="col-md-4 mb-4">
-                        <div class="card h-100 shadow-sm question-card">
-                            <a href="{% url 'QuestionDetail' question.id %}" class="btn">
-                                <div class="card-body">
-                                    <h5 class="card-title" style="font-family: 微軟正黑體;">{{ question.title }}</h5>
-                                    <p class="card-text question-description" style="font-family: 微軟正黑體; font-size: 12pt; color: gray; text-align: left; white-space: pre-wrap;" id="description-{{ question.id }}">{{ question.description }}</p>
-                                </div>
-                            </a>
+                    <!-- 第一列 -->
+                    <div class="col-md-6 mb-3">
+                        <div class="info-item">
+                            <h5 class="info-title" style="font-weight: bold; color: #495057;">學生名稱</h5>
+                            <p class="info-value" style="font-size: 18px; color: #6c757d;">{{ student.name }}</p>
                         </div>
                     </div>
-                {% endfor %}
+                    <div class="col-md-6 mb-3">
+                        <div class="info-item">
+                            <h5 class="info-title" style="font-weight: bold; color: #495057;">學生學號</h5>
+                            <p class="info-value" style="font-size: 18px; color: #6c757d;">{{ student.student_id }}</p>
+                        </div>
+                    </div>
+
+                    <!-- 第二列 -->
+                    <div class="col-md-4 mb-3">
+                        <div class="info-item">
+                            <h5 class="info-title" style="font-weight: bold; color: #495057;">出題數量</h5>
+                            <p class="info-value" style="font-size: 18px; color: #6c757d;">{{ user_questions_amount }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="info-item">
+                            <h5 class="info-title" style="font-weight: bold; color: #495057;">作答數量</h5>
+                            <p class="info-value" style="font-size: 18px; color: #6c757d;">{{ user_answers_amount }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="info-item">
+                            <h5 class="info-title" style="font-weight: bold; color: #495057;">總積分</h5>
+                            <p class="info-value" style="font-size: 18px; color: #6c757d;">{{ user_score }}</p>
+                        </div>
+                    </div>
+
+                </div>
             </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- 建立的題目 -->
+    <div class="mt-5 question-list">
+        <h2 class="section-title mb-4" style="font-family: 微軟正黑體; color: #343a40;">建立的題目</h2>
+        {% if user_questions %}
+        <div class="row">
+            {% for question in user_questions %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm question-card">
+                    <a href="{% url 'QuestionDetail' question.id %}" class="btn">
+                        <div class="card-body">
+                            <h5 class="card-title" style="font-family: 微軟正黑體;">{{ question.title }}</h5>
+                            <p class="card-text question-description" style="font-family: 微軟正黑體; font-size: 12pt; color: gray; text-align: left; white-space: pre-wrap;" id="description-{{ question.id }}">{{ question.description }}</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
         {% else %}
-            <p>您目前沒有創建任何題目。</p>
+        <p class="text-center" style="font-family: 微軟正黑體; color: gray;">您目前沒有創建任何題目。</p>
         {% endif %}
     </div>
 
+    <!-- 作答記錄 -->
     <div class="mt-5 answer-list">
-        <h2 class="section-title">您的作答記錄</h2>
+        <h2 class="section-title mb-4" style="font-family: 微軟正黑體; color: #343a40;">您的作答記錄</h2>
         {% if user_answers and user_answers.count > 0 %}
-            <ul class="list-group">
-                {% for answer in user_answers %}
-                    <li class="list-group-item menu-item mt-3 answer-list-item">題目：{{ answer.question.title }}</li>
-                {% endfor %}
-            </ul>
+        <ul class="list-group" style="font-family: 微軟正黑體;">
+            {% for answer in user_answers %}
+            <li class="list-group-item menu-item mt-3 answer-list-item">題目：{{ answer.question.title }}</li>
+            {% endfor %}
+        </ul>
         {% else %}
-            <p>您目前沒有任何作答記錄。</p>
+        <p class="text-center" style="font-family: 微軟正黑體; color: gray;">您目前沒有任何作答記錄。</p>
         {% endif %}
     </div>
 
+    <!-- 評分記錄 -->
     <div class="mt-5 review-list">
-        <h2 class="section-title">您的評分記錄</h2>
+        <h2 class="section-title mb-4" style="font-family: 微軟正黑體; color: #343a40;">您的評分記錄</h2>
         {% if user_reviews and user_reviews.count > 0 %}
-            <ul class="list-group">
-                {% for review in user_reviews %}
-                    <li class="list-group-item menu-item mt-3 review-list-item">題目：{{ review.reviewed_question.title }}</li>
-                {% endfor %}
-            </ul>
+        <ul class="list-group" style="font-family: 微軟正黑體;">
+            {% for review in user_reviews %}
+            <li class="list-group-item menu-item mt-3 review-list-item">題目：{{ review.reviewed_question.title }}</li>
+            {% endfor %}
+        </ul>
         {% else %}
-            <p>您目前沒有任何評分記錄。</p>
+        <p class="text-center" style="font-family: 微軟正黑體; color: gray;">您目前沒有任何評分記錄。</p>
         {% endif %}
     </div>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-      var descriptions = document.querySelectorAll('[id^="description-"]');
-      descriptions.forEach(function(descriptionElement) {
-        // 確保最少顯示 5 行且最多顯示 5 行
-        descriptionElement.style.display = '-webkit-box';
-        descriptionElement.style.webkitBoxOrient = 'vertical';
-        descriptionElement.style.webkitLineClamp = '5';
-        descriptionElement.style.overflow = 'hidden';
-  
-        // 如果內容不足 5 行，則添加換行符填充顯示空間
-        var lineHeight = parseFloat(window.getComputedStyle(descriptionElement).lineHeight);
-        var minHeight = lineHeight * 5;
-        while (descriptionElement.offsetHeight < minHeight) {
-          descriptionElement.innerText += '\n';
-        }
-      });
-    });
-</script>
+<script src="{% static 'js/question_card.js' %}"></script>
+
 {% endblock %}
