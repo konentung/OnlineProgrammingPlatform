@@ -4,7 +4,8 @@ from .models import (
     QuestionHistory,
     StudentAnswer,
     PeerReview,
-    TeachingMaterial
+    TeachingMaterial,
+    FunctionStatus
 )
 
 # 題目管理
@@ -15,15 +16,15 @@ class QuestionAdmin(admin.ModelAdmin):
 
 # 題目歷史管理
 class QuestionHistoryAdmin(admin.ModelAdmin):
-    list_display = ("question", "title", "editor", "edited_at")
-    search_fields = ("title", "editor__username")
-    list_filter = ("edited_at",)
+    list_display = ("question", "title", "creator", "created_at")
+    search_fields = ("title", "creator__username")
+    list_filter = ("created_at",)
 
 # 學生作答管理
 class StudentAnswerAdmin(admin.ModelAdmin):
-    list_display = ("student", "question", "answer", "submitted_at", "updated_at")
+    list_display = ("student", "question", "answer", "submitted_at")
     search_fields = ("student__username", "question__title")
-    list_filter = ("submitted_at", "updated_at")
+    list_filter = ("submitted_at",)
 
 # 作答歷史管理
 class AnswerHistoryAdmin(admin.ModelAdmin):
@@ -50,9 +51,15 @@ class QuestionAssignmentAdmin(admin.ModelAdmin):
     search_fields = ("question__title", "student__username")
     list_filter = ("assigned_at",)
 
+# 功能狀態管理
+class FunctionStatusAdmin(admin.ModelAdmin):
+    list_display = ("function", "status")
+    search_fields = ("function",)
+
 # 註冊模型到 Django Admin
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(QuestionHistory, QuestionHistoryAdmin)
 admin.site.register(StudentAnswer, StudentAnswerAdmin)
 admin.site.register(PeerReview, PeerReviewAdmin)
 admin.site.register(TeachingMaterial, TeachingMaterialAdmin)
+admin.site.register(FunctionStatus, FunctionStatusAdmin)

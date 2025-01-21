@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block title %}學生排行榜{% endblock %}
 
 {% block content %}
@@ -33,6 +33,7 @@
                     <tr>
                         <th scope="col">排名</th>
                         <th scope="col">學生名稱</th>
+                        <th scope="col">學號</th>
                         <th scope="col">數量</th>
                     </tr>
                 </thead>
@@ -80,6 +81,7 @@
                     <tr>
                         <th scope="col">排名</th>
                         <th scope="col">學生名稱</th>
+                        <th scope="col">學號</th>
                         <th scope="col">分數</th>
                     </tr>
                 </thead>
@@ -111,16 +113,6 @@
     </div>
 </div>
 
-<!-- JavaScript 用於切換選項卡 -->
-<script>
-    function showTab(tabId) {
-        // 隱藏所有選項卡
-        document.querySelectorAll('.ranking-tab').forEach(function(tab) {
-            tab.style.display = 'none';
-        });
+<script src="{% static "js/ranking.js" %}"></script>
 
-        // 顯示選中的選項卡
-        document.getElementById(tabId).style.display = 'block';
-    }
-</script>
 {% endblock %}
