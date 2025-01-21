@@ -4,46 +4,64 @@
 {% load static %}
 
 <div class="container mt-5">
-    <h1 class="mb-4" style="font-family:微軟正黑體; font-weight: bold;">我的題目歷史紀錄</h1>
+    <!-- 標題 -->
+    <h1 class="mb-4 text-center" style="font-family: '微軟正黑體'; font-weight: bold; color: #4A90E2;">
+        我的題目歷史紀錄
+    </h1>
     
-    <div class="row">
+    <div class="row justify-content-center">
         {% if user_questions %}
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th scope="col" style="font-family:微軟正黑體; text-align: center;">標題</th>
-                    <th scope="col" style="font-family:微軟正黑體; text-align: center;">歷史紀錄數量</th>
-                    <th scope="col" style="font-family:微軟正黑體; text-align: center;">最近編輯時間</th>
-                    <th scope="col" style="font-family:微軟正黑體; text-align: center;">操作</th>
+        <!-- 表格 -->
+        <table class="table table-bordered shadow-sm" style="background-color: #ffffff; table-layout: fixed; width: 100%;">
+            <!-- 表頭部分 -->
+            <thead style="background-color: #007BFF; color: white;">
+                <tr style="text-align: center; font-family: '微軟正黑體'; font-weight: bold;">
+                    <th style="width: 5%;">序號</th>
+                    <th style="width: 25%;">標題</th>
+                    <th style="width: 15%;">歷史紀錄數量</th>
+                    <th style="width: 15%;">最近編輯時間</th> <!-- 調整這裡的寬度 -->
+                    <th style="width: 40%;">操作</th>
                 </tr>
             </thead>
+            <!-- 表格內容 -->
             <tbody>
                 {% for question in user_questions %}
-                <tr>
-                    <td style="font-family:微軟正黑體;">{{ question.title }}</td>
-                    <td style="font-family:微軟正黑體; text-align: center;">{{ question.histories.count }}</td>
-                    <td style="font-family:微軟正黑體; text-align: center;">
+                <tr style="background-color: #f5f5f5; border-bottom: 1px solid #ddd;">
+                    <!-- 序號 -->
+                    <td style="text-align: center; font-family: '微軟正黑體'; vertical-align: middle;">
+                        {{ forloop.counter }}
+                    </td>
+                    <!-- 題目內容 -->
+                    <td style="font-family: '微軟正黑體'; vertical-align: middle; word-wrap: break-word;">{{ question.title }}</td>
+                    <td style="font-family: '微軟正黑體'; text-align: center; vertical-align: middle;">
+                        {{ question.histories.count }}
+                    </td>
+                    <td style="font-family: '微軟正黑體'; text-align: center; vertical-align: middle;"> 
                         {% if question.histories.last %}
                             {{ question.histories.last.created_at|date:"Y-m-d H:i" }}
                         {% else %}
-                            無歷史紀錄
+                            <span class="text-muted">無歷史紀錄</span>
                         {% endif %}
                     </td>
-                    <td style="font-family:微軟正黑體; text-align: center;">
-                        <a href="{% url 'QuestionUpdate' question.id %}" class="btn btn-primary">編輯</a>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <!-- 操作按鈕 -->
+                        <a href="{% url 'QuestionUpdate' question.id %}" class="btn btn-outline-primary btn-sm mx-1">編輯</a>
                         <form method="POST" action="{% url 'QuestionDelete' question.id %}" style="display:inline;">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-danger">刪除</button>
+                            <button type="submit" class="btn btn-outline-danger btn-sm mx-1">刪除</button>
                         </form>
-                        <a href="{% url 'QuestionReview' question.id %}" class="btn btn-primary">查看評論</a>
-                        <a href="{% url 'QuestionHistoryList' question.id %}" class="btn btn-primary">查看歷史紀錄</a>
+                        <a href="{% url 'QuestionReview' question.id %}" class="btn btn-outline-info btn-sm mx-1">查看評論</a>
+                        <a href="{% url 'QuestionHistoryList' question.id %}" class="btn btn-outline-success btn-sm mx-1">查看歷史紀錄</a>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
         {% else %}
-            <p style="font-family:微軟正黑體;">目前沒有建立的題目。</p>
+        <!-- 無題目提示 -->
+        <div class="alert alert-warning text-center" role="alert" style="font-family: '微軟正黑體';">
+            現在沒有建立的題目。
+        </div>
         {% endif %}
     </div>
 </div>

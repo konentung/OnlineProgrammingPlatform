@@ -4,36 +4,57 @@
 {% load static %}
 
 <div class="container mt-5">
-    <h1 class="mb-4" style="font-family:微軟正黑體; font-weight: bold;">題目歷史紀錄</h1>
+    <!-- 標題 -->
+    <h1 class="mb-4 text-center" style="font-family: '微軟正黑體'; font-weight: bold; color: #4A90E2;">
+        題目歷史紀錄
+    </h1>
     
-    <div class="row">
+    <div class="row justify-content-center">
         {% if history_records %}
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th scope="col" style="font-family:微軟正黑體; text-align: center;">標題</th>
-                    <th scope="col" style="font-family:微軟正黑體; text-align: center;">描述</th>
-                    <th scope="col" style="font-family:微軟正黑體; text-align: center;">編輯者</th>
-                    <th scope="col" style="font-family:微軟正黑體; text-align: center;">解答</th>
-                    <th scope="col" style="font-family:微軟正黑體; text-align: center;">編輯時間</th>
+        <!-- 表格 -->
+        <table class="table table-bordered shadow-sm" style="background-color: #ffffff; table-layout: fixed; width: 100%;">
+            <!-- 表頭部分 -->
+            <thead style="background-color: #007BFF; color: white;">
+                <tr style="text-align: center; font-family: '微軟正黑體'; font-weight: bold;">
+                    <th style="width: 5%;">序號</th>
+                    <th style="width: 15%;">標題</th>
+                    <th style="width: 25%;">描述</th>
+                    <th style="width: 10%;">編輯者</th>
+                    <th style="width: 35%;">解答</th>
+                    <th style="width: 10%;">編輯時間</th>
                 </tr>
             </thead>
+            <!-- 表格內容 -->
             <tbody>
                 {% for record in history_records %}
-                <tr>
-                    <td style="font-family:微軟正黑體;">{{ record.title }}</td>
-                    <td style="font-family:微軟正黑體; font-size:12pt; color:gray; text-align: left;">
+                <tr style="background-color: #f5f5f5; border-bottom: 1px solid #ddd;">
+                    <!-- 序號 -->
+                    <td style="text-align: center; font-family: '微軟正黑體'; vertical-align: middle;">
+                        {{ forloop.counter }}
+                    </td>
+                    <!-- 內容 -->
+                    <td style="font-family: '微軟正黑體'; vertical-align: middle; word-wrap: break-word;">{{ record.title }}</td>
+                    <td style="font-family: '微軟正黑體'; font-size: 12pt; color: gray; text-align: left; vertical-align: middle; word-wrap: break-word;">
                         {{ record.description|truncatewords:20 }}
                     </td>
-                    <td style="font-family:微軟正黑體;">{{ record.creator.username }}</td>
-                    <td style="font-family:微軟正黑體;">{{ record.answer }}</td>
-                    <td style="font-family:微軟正黑體;">{{ record.created_at|date:"Y-m-d H:i" }}</td>
+                    <td style="font-family: '微軟正黑體'; text-align: center; vertical-align: middle; word-wrap: break-word;">
+                        {{ record.creator.username }}
+                    </td>
+                    <td style="font-family: '微軟正黑體'; vertical-align: middle; word-wrap: break-word;">
+                        {{ record.answer }}
+                    </td>
+                    <td style="font-family: '微軟正黑體'; text-align: center; vertical-align: middle; word-wrap: break-word;">
+                        {{ record.created_at|date:"Y-m-d H:i" }}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
         {% else %}
-            <p style="font-family:微軟正黑體;">目前沒有歷史紀錄。</p>
+        <!-- 無歷史紀錄提示 -->
+        <div class="alert alert-warning text-center" role="alert" style="font-family: '微軟正黑體';">
+            目前沒有歷史紀錄。
+        </div>
         {% endif %}
     </div>
 </div>
