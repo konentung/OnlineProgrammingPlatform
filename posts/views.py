@@ -1,13 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.utils.html import strip_tags
 from django.http import JsonResponse
 from django.db.models import Count, Case, When, IntegerField, Sum, F, Window
 from accounts.models import Student
-from .models import Question, StudentAnswer, QuestionHistory, PeerReview, TeachingMaterial, FunctionStatus
-from .forms import QuestionForm, StudentAnswerForm, QuestionHistoryForm, PeerReviewForm, QuestionCommentForm
+from .models import Question, StudentAnswer, QuestionHistory, PeerReview, TeachingMaterial, FunctionStatus, GPTQuestion
+from .forms import QuestionForm, StudentAnswerForm, QuestionHistoryForm, PeerReviewForm, QuestionCommentForm, GPTQuestionForm
 from django.db.models import Q, Exists, OuterRef
 from django.db.models.functions import DenseRank
+from openai import OpenAI
+import os
 
 def get_function_status(function_name):
     status, created = FunctionStatus.objects.get_or_create(function=function_name, defaults={'status': False})
@@ -425,7 +428,7 @@ def student_ranking(request):
 
 def user_dashboard(request):
     if get_function_status('question_user_dashboard'):
-            return redirect('Close')
+        return redirect('Close')
 
     # 獲取當前用戶
     user = request.user
@@ -473,3 +476,53 @@ def maintenance_view(request):
 # 錯誤頁面
 def custom_404_view(request, exception=None):
     return render(request, '404.html', status=404)
+
+# 處理GPT API
+def ask_gpt(message):
+    client = OpenAI(api_key=os.getenv('GPT_API_KEY'))
+    # 呼叫 OpenAI API
+    try:
+        completion = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": (
+                    "你是一個台灣的教學機器人"
+                    "不論任何問題，只能回答跟python相關的解答，如果不相關須回答您沒有這方面的知識"
+                    "你的專業是引導學生在程式方面的問題，敘述只能用繁體中文，程式碼一律用英文回答"
+                )},
+                {"role": "user", "content": message}
+            ],
+            max_tokens=1000,
+            temperature=0.2
+        )
+        ai_reply = completion.choices[0].message.content
+    except Exception as e:
+        ai_reply = f"發生錯誤：{e}"
+    return ai_reply
+
+def chat_view(request):
+    chats = GPTQuestion.objects.filter(student=request.user)
+    if request.method == 'POST':
+        form = GPTQuestionForm(request.POST)
+        if form.is_valid():
+            user_question = form.cleaned_data.get('question')
+            ai_reply = ask_gpt(user_question)
+
+            # 去除 HTML 標籤
+            user_question = strip_tags(user_question)
+            ai_reply = strip_tags(ai_reply)
+
+            # 儲存對話到資料庫
+            new_chat = GPTQuestion(student=request.user, question=user_question, answer=ai_reply, created_at=timezone.now())
+            new_chat.save()
+
+            # 更新問答列表
+            chats = GPTQuestion.objects.filter(student=request.user)  # 更新問答
+
+            # 使用重定向避免表單重複提交
+            return redirect('Chat')
+        else:
+            print(form.errors)  # 打印表單錯誤
+            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+
+    return render(request, 'chat.html', {'chats': chats})

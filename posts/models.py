@@ -16,7 +16,7 @@ class Question(models.Model):
     output_format = models.TextField(blank=True, null=False)
     input_example = models.TextField(blank=True, null=False)
     output_example = models.TextField(blank=True, null=False)
-    answer = models.TextField(blank=True, null=False)
+    answer = models.TextField(blank=True, null=True)
     hint = models.TextField(blank=True, null=False)
     difficulty = models.CharField(max_length=10, choices=difficulty_choices, default='select')
     as_homework = models.BooleanField(default=False, blank=True, null=False)
@@ -135,6 +135,7 @@ class FunctionStatus(models.Model):
 class GPTQuestion(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="gpt_questions")
     question = models.TextField(blank=True, null=False)
+    answer = models.TextField(blank=True, null=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
