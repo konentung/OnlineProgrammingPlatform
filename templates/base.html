@@ -148,15 +148,35 @@
         }
 
         .yes-btn {
-            background-color: #28a745;
+            background-color: black;
             color: white;
         }
 
         .no-btn {
-            background-color: #dc3545;
-            color: white;
+            background-color: white;
+            color: black;
+        }
+        .modal-buttons button {
+            transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
         }
 
+        .modal-buttons button:hover {
+            transform: scale(1.1); /* 放大按鈕 */
+        }
+
+        .yes-btn:hover {
+            background-color: #555; /* 改變背景顏色 */
+            color: #fff; /* 改變文字顏色 */
+        }
+
+        .no-btn:hover {
+            background-color: #ccc; /* 改變背景顏色 */
+            color: #000; /* 改變文字顏色 */
+        }
+
+        .modal-buttons button:active {
+            transform: scale(0.9); /* 點擊時按鈕縮小 */
+        }
         .logout-btn {
             background-color: #fff;
             color: #000;
@@ -166,7 +186,29 @@
             font-size: 1rem;
             text-decoration: none;
         }
+    /* 返回頂端按鈕樣式 */
+    #back-to-top {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        background-color: #000;
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        opacity: 0.5;
+        font-size: 24px;
+        text-align: center;
+        line-height: 50px;
+        cursor: pointer;
+        display: none; /* 預設隱藏 */
+        z-index: 1000;
+    }
 
+    #back-to-top:hover {
+        opacity: 0.8;
+    }
         @media (max-width: 768px) {
             header {
                 flex-direction: column;
@@ -240,6 +282,30 @@
                 }
             });
         });
+        document.addEventListener('DOMContentLoaded', function () {
+        // 取得返回頂端按鈕元素
+        const backToTopButton = document.createElement('button');
+        backToTopButton.id = 'back-to-top';
+        backToTopButton.innerHTML = '↑';
+        document.body.appendChild(backToTopButton);
+
+        // 顯示或隱藏按鈕
+        window.addEventListener('scroll', function () {
+            if (window.scrollY > 100) {
+                backToTopButton.style.display = 'block';
+            } else {
+                backToTopButton.style.display = 'none';
+            }
+        });
+
+        // 點擊按鈕返回頂端
+        backToTopButton.addEventListener('click', function () {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    });
     </script>
 </head>
 
