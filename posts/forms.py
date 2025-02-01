@@ -1,5 +1,5 @@
 from django import forms
-from .models import Question, QuestionHistory, StudentAnswer, PeerReview, TeachingMaterial, QuestionComment
+from .models import Question, QuestionHistory, StudentAnswer, PeerReview, TeachingMaterial, QuestionComment, GPTQuestion
 from accounts.models import Student
 
 # 題目表單（學生出題）
@@ -226,4 +226,16 @@ class QuestionCommentForm(forms.ModelForm):
         }
         labels = {
             'content': '新增評論',
+        }
+
+# GPT問題表單
+class GPTQuestionForm(forms.ModelForm):
+    class Meta:
+        model = GPTQuestion
+        fields = ['question']
+        widgets = {
+            'question': forms.Textarea(attrs={'class': 'form-control', 'placeholder': '輸入您的問題...', 'rows': 3}),
+        }
+        labels = {
+            'question': '問題',
         }

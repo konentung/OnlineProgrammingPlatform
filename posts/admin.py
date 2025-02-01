@@ -5,7 +5,8 @@ from .models import (
     StudentAnswer,
     PeerReview,
     TeachingMaterial,
-    FunctionStatus
+    FunctionStatus,
+    GPTQuestion,
 )
 
 # 題目管理
@@ -56,6 +57,12 @@ class FunctionStatusAdmin(admin.ModelAdmin):
     list_display = ("function", "status")
     search_fields = ("function",)
 
+# GPT回答紀錄
+class GPTAdmin(admin.ModelAdmin):
+    list_display = ("question", "answer", "created_at")
+    search_fields = ("question__title", "answer")
+    list_filter = ("created_at",)
+
 # 註冊模型到 Django Admin
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(QuestionHistory, QuestionHistoryAdmin)
@@ -63,3 +70,4 @@ admin.site.register(StudentAnswer, StudentAnswerAdmin)
 admin.site.register(PeerReview, PeerReviewAdmin)
 admin.site.register(TeachingMaterial, TeachingMaterialAdmin)
 admin.site.register(FunctionStatus, FunctionStatusAdmin)
+admin.site.register(GPTQuestion, GPTAdmin)
