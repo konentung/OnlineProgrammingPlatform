@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="{% static 'css/notes.css' %}">
+
+<div class="container markdown-body my-4">
+    <h1 class="border-bottom pb-2">Python程式學習網站：第零單元「基礎概念」</h1>
+    
+    <h2>單元目標</h2>
+    <p>本單元將介紹Python的基礎概念，讓初學者能夠理解基本資料型態、變數、輸入輸出等基礎知識，以便進入正式的Python程式設計學習。</p>
+    
+    <ul>
+        <li><strong>變數與賦值</strong></li>
+        <li><strong>Python的基本資料型態</strong></li>
+        <li><strong>輸入與輸出</strong></li>
+        <li><strong>註解與程式碼可讀性</strong></li>
+        <li><strong>基礎練習題</strong></li>
+    </ul>
+    
+    <h2>1. 變數與賦值</h2>
+    <p>變數（Variable）是用來儲存數據的名稱，我們可以用 <code>=</code> 來賦值（assign value）。</p>
+    
+    <h3>範例</h3>
+    <pre class="language-python"><code>
+    x = 10  # 將數值 10 存入變數 x
+    name = "Python"  # 將字串 "Python" 存入變數 name
+    print(x)
+    print(name)
+    </code></pre>
+    
+    <h2>2. Python的基本資料型態</h2>
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>類型</th>
+                <th>說明</th>
+                <th>範例</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>整數 (<code>int</code>)</td><td>整數數值</td><td><code>10</code>, <code>-5</code></td></tr>
+            <tr><td>浮點數 (<code>float</code>)</td><td>小數數值</td><td><code>3.14</code>, <code>-0.5</code></td></tr>
+            <tr><td>布林值 (<code>bool</code>)</td><td>True / False</td><td><code>True</code>, <code>False</code></td></tr>
+            <tr><td>字串 (<code>str</code>)</td><td>文字資料</td><td><code>'Hello'</code>, <code>"Python"</code></td></tr>
+            <tr><td>列表 (<code>list</code>)</td><td>有序可變集合</td><td><code>[1, 2, 3]</code></td></tr>
+        </tbody>
+    </table>
+    
+    <h2>3. 輸入與輸出</h2>
+    <h3>輸出 <code>print()</code></h3>
+    <pre><code class="language-python">
+    print("Hello, world!")
+    print("變數 x 的值是：", x)
+    </code></pre>
+    
+    <h3>輸入 <code>input()</code></h3>
+    <pre><code class="language-python">
+    name = input("請輸入你的名字：")
+    print("你好,", name)
+    </code></pre>
+    
+    <h2>4. 註解與程式碼可讀性</h2>
+    <blockquote>
+        <p>註解（Comment）可以幫助我們理解程式，但不會影響程式執行。</p>
+    </blockquote>
+    <h3>單行註解</h3>
+    <pre><code class="language-python">
+    # 這是一個註解
+    x = 10  # 這也是註解
+    </code></pre>
+    
+    <h3>多行註解</h3>
+    <pre><code class="language-python">
+    """
+    這是一個多行註解
+    可以用來說明較長的程式邏輯
+    """
+    </code></pre>
+    
+    <h2>5. 基礎練習題</h2>
+    <h3>題目 1：變數與型別檢查</h3>
+    <pre><code class="language-python">
+    a = 10
+    b = 3.14
+    c = "Hello"
+    print("變數 a 的值是", a, "，型別是", type(a))
+    print("變數 b 的值是", b, "，型別是", type(b))
+    print("變數 c 的值是", c, "，型別是", type(c))
+    </code></pre>
+    
+    <h3>題目 2：輸入與運算</h3>
+    <pre><code class="language-python">
+    num1 = int(input("請輸入第一個數字："))
+    num2 = int(input("請輸入第二個數字："))
+    sum_result = num1 + num2
+    print("它們的總和是", sum_result)
+    </code></pre>
+    
+    <h2>結語</h2>
+    <p>本單元介紹了 Python 的基本概念，包括變數、資料型態、輸入與輸出，以及註解的使用方式。接下來的單元將進一步探討相等性 (<code>==</code>, <code>!=</code>, <code>is</code>)。</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/components/prism-python.min.js"></script>
+{% endblock %}

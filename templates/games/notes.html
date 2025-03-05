@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/notes.css' %}">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+<!--建立notes總頁面-->
+<div class="container">
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="col">
+            <a href="{% url 'NoteContent' unit_name='Unit0' %}" class="text-decoration-none">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Notes</h5>
+                        <p>Notes are a great way to keep track of your thoughts and ideas. You can use them to jot down reminders, make lists, or even write a journal entry. Notes are easy to create and edit, and you can organize them into folders to keep everything neat and tidy.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col">
+            <a href="{% url 'NoteContent' unit_name='Unit1' %}" class="text-decoration-none">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Notes</h5>
+                        <p>Notes are a great way to keep track of your thoughts and ideas. You can use them to jot down reminders, make lists, or even write a journal entry. Notes are easy to create and edit, and you can organize them into folders to keep everything neat and tidy.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col">
+            <a href="" class="text-decoration-none">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title black">Notes</h5>
+                        <p>Notes are a great way to keep track of your thoughts and ideas. You can use them to jot down reminders, make lists, or even write a journal entry. Notes are easy to create and edit, and you can organize them into folders to keep everything neat and tidy.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
