@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}遊戲{% endblock %}
+{% block content %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/game.css' %}">
+<div id="app">
+    <div>
+      <p class="note">Tap/Click around to move</p>
+
+      <div id="textbox-container" style="display: none">
+        <div id="textbox">
+          <p id="dialogue" class="ui-text"></p>
+          <div class="btn-container">
+            <button id="close" class="ui-close-btn">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <canvas id="gameCanvas"></canvas>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="module">
+    import kaboom from "https://unpkg.com/kaboom@latest/dist/kaboom.mjs";
+    window.k = kaboom({
+        global: false,
+        touchToMouse: true,
+        canvas: document.getElementById("gameCanvas"),
+        debug: false,
+    });
+</script>
+<script type="module" src="{% static 'js/kaboomCtx.js' %}"></script>
+<script type="module" src="{% static 'js/game.js' %}"></script>
+{% endblock %}
