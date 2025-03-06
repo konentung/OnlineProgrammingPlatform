@@ -90,23 +90,7 @@ k.scene("main", async () => {
   });
 
   k.onUpdate(() => {
-    let camX = player.worldPos().x;
-    let camY = player.worldPos().y;
-
-    const mapWidth = 720 * scaleFactor;
-    const mapHeight = 680 * scaleFactor;
-    const screenWidth = k.width();
-    const screenHeight = k.height();
-
-    const minX = screenWidth / 2;
-    const maxX = mapWidth - screenWidth / 2;
-    const minY = screenHeight / 2;
-    const maxY = mapHeight - screenHeight / 2;
-
-    camX = Math.max(minX, Math.min(camX, maxX));
-    camY = Math.max(minY, Math.min(camY, maxY));
-
-    k.camPos(camX, camY);
+    k.camPos(player.worldPos().x, player.worldPos().y - 100);
   });
 
   k.onMouseDown((mouseBtn) => {
