@@ -473,11 +473,14 @@ def get_min_not_cleared_chapter(request):
 def get_chapter_flow(request):
     chapter_id = request.GET.get('chapter_id')
     level_name = request.GET.get('level_name')
+    if chapter_id is None or level_name is None:
+        chapter_id = 0
+        level_name = 'None'
     speaker = request.GET.get('speaker')
     listener = request.GET.get('listener')
 
     if not chapter_id or not level_name or not speaker or not listener:
-        return JsonResponse({'error': 'chapter_id, level_name, speaker and listener are required'}, status=400)
+        return JsonResponse({'error': 'no_flow'}, status=200)
 
     user = request.user
     all_lines_cleared = all(r.cleared for r in UserLineRecord.objects.all() if r.account == user)
