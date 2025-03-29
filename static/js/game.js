@@ -17,6 +17,21 @@ k.loadSprite("spritesheet", "/static/images/spritesheet.png", {
 
 k.loadSprite("map", "/static/images/map.png");
 
+k.loadSprite("van", "/static/images/Van.png", {
+  sliceX: 10,
+  sliceY: 9,
+  anims: {
+    fly: { from: 65, to: 67, loop: true, speed: 3 },
+  },
+});
+
+k.loadSprite("king", "/static/images/King.png");
+k.loadSprite("nan", "/static/images/Nan.png");
+
+k.loadSprite("crack_blue", "/static/images/blue_crack.png");
+k.loadSprite("crack_red", "/static/images/red_crack.png");
+k.loadSprite("big_crack", "/static/images/big_crack.png");
+
 k.setBackground(k.Color.fromHex("#000000"));
 
 k.scene("main", async () => {
@@ -25,7 +40,9 @@ k.scene("main", async () => {
 
   const map = k.add([k.sprite("map"), k.pos(0), k.scale(scaleFactor)]);
 
-  let playerPos = k.vec2(0, 0); // 預設玩家位置
+  let playerPos = k.vec2(0, 0);
+  let kingPos = k.vec2(0, 0);
+  let nanPos = k.vec2(0, 0);
 
   for (const layer of layers) {
     if (layer.name === "spawnpoints") {
@@ -35,6 +52,63 @@ k.scene("main", async () => {
             (map.pos.x + entity.x) * scaleFactor,
             (map.pos.y + entity.y) * scaleFactor
           );
+        }
+        if (entity.name === "King") {
+          // 取得國王的 x 和 y 坐標，並根據 scaleFactor 計算位置
+          kingPos = k.vec2(
+            (map.pos.x + entity.x) * scaleFactor,
+            (map.pos.y + entity.y) * scaleFactor
+          );
+        }
+        if (entity.name === "Nan") {
+          // 取得國王的 x 和 y 坐標，並根據 scaleFactor 計算位置
+          nanPos = k.vec2(
+            (map.pos.x + entity.x) * scaleFactor,
+            (map.pos.y + entity.y) * scaleFactor
+          );
+        }
+      }
+    }
+    if (layer.name === "cracks"){
+      for (const entity of layer.objects) {
+        if (entity.name.startsWith("crack_blue_")) {
+          const crackNumber = parseInt(entity.name.split("_")[2]);
+          if (crackNumber >= 1 && crackNumber <= 4) {  
+            k.add([
+              k.sprite("crack_blue"),
+              k.pos(
+                (map.pos.x + entity.x) * scaleFactor,
+                (map.pos.y + entity.y) * scaleFactor
+              ),
+              k.scale(0.5),
+              k.anchor("center"),
+            ]);
+          }
+        }
+        if (entity.name.startsWith("crack_red_")) {
+          const crackNumber = parseInt(entity.name.split("_")[2]);
+          if (crackNumber >= 1 && crackNumber <= 4) {
+            k.add([
+              k.sprite("crack_red"),
+              k.pos(
+                (map.pos.x + entity.x) * scaleFactor,
+                (map.pos.y + entity.y) * scaleFactor
+              ),
+              k.scale(0.55),
+              k.anchor("center"),
+            ]);
+          }
+        }
+        if (entity.name === "big_crack") {
+          k.add([
+            k.sprite("big_crack"),
+            k.pos(
+              (map.pos.x + entity.x) * scaleFactor,
+              (map.pos.y + entity.y) * scaleFactor
+            ),
+            k.scale(0.8),
+            k.anchor("center"),
+          ]);
         }
       }
     }
@@ -56,6 +130,31 @@ k.scene("main", async () => {
       isInDialogue: false,
     },
     "player",
+  ]);
+
+  // 創建國王
+  const king = k.add([
+    k.sprite("king"),
+    k.pos(kingPos), // 使用從 map.json 取得的坐標
+    k.scale(0.6), // 調整國王圖片的大小
+    k.anchor("center"),
+    "king",
+  ]);
+
+  const nan = k.add([
+    k.sprite("nan"),
+    k.pos(nanPos), // 使用從 map.json 取得的坐標
+    k.scale(0.6), // 調整國王圖片的大小
+    k.anchor("center"),
+    "nan",
+  ]);
+
+  const van = k.add([
+    k.sprite("van", { anim: "fly" }),
+    k.pos(playerPos.add(50, 50)), // 設定在玩家右後方
+    k.scale(1),
+    k.anchor("center"),
+    "van",
   ]);
 
   for (const layer of layers) {
@@ -91,6 +190,19 @@ k.scene("main", async () => {
 
   k.onUpdate(() => {
     k.camPos(player.worldPos().x, player.worldPos().y - 100);
+
+    // 計算目標位置（玩家右後方30像素）
+    const targetPos = player.pos.add(-50, -50);
+
+    // 平滑移動到目標位置
+    const moveSpeed = 0.03;
+    van.pos = van.pos.lerp(targetPos, moveSpeed);
+
+    if (player.direction === "left") {
+      van.flipX = true;
+    } else if (player.direction === "right") {
+      van.flipX = false;
+    }
   });
 
   k.onMouseDown((mouseBtn) => {
