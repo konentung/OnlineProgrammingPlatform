@@ -28,6 +28,10 @@ k.loadSprite("van", "/static/images/Van.png", {
 k.loadSprite("king", "/static/images/King.png");
 k.loadSprite("nan", "/static/images/Nan.png");
 
+k.loadSprite("crack_blue", "/static/images/blue_crack.png");
+k.loadSprite("crack_red", "/static/images/red_crack.png");
+k.loadSprite("big_crack", "/static/images/big_crack.png");
+
 k.setBackground(k.Color.fromHex("#000000"));
 
 k.scene("main", async () => {
@@ -62,6 +66,49 @@ k.scene("main", async () => {
             (map.pos.x + entity.x) * scaleFactor,
             (map.pos.y + entity.y) * scaleFactor
           );
+        }
+      }
+    }
+    if (layer.name === "cracks"){
+      for (const entity of layer.objects) {
+        if (entity.name.startsWith("crack_blue_")) {
+          const crackNumber = parseInt(entity.name.split("_")[2]);
+          if (crackNumber >= 1 && crackNumber <= 4) {  
+            k.add([
+              k.sprite("crack_blue"),
+              k.pos(
+                (map.pos.x + entity.x) * scaleFactor,
+                (map.pos.y + entity.y) * scaleFactor
+              ),
+              k.scale(0.5),
+              k.anchor("center"),
+            ]);
+          }
+        }
+        if (entity.name.startsWith("crack_red_")) {
+          const crackNumber = parseInt(entity.name.split("_")[2]);
+          if (crackNumber >= 1 && crackNumber <= 4) {
+            k.add([
+              k.sprite("crack_red"),
+              k.pos(
+                (map.pos.x + entity.x) * scaleFactor,
+                (map.pos.y + entity.y) * scaleFactor
+              ),
+              k.scale(0.55),
+              k.anchor("center"),
+            ]);
+          }
+        }
+        if (entity.name === "big_crack") {
+          k.add([
+            k.sprite("big_crack"),
+            k.pos(
+              (map.pos.x + entity.x) * scaleFactor,
+              (map.pos.y + entity.y) * scaleFactor
+            ),
+            k.scale(0.8),
+            k.anchor("center"),
+          ]);
         }
       }
     }

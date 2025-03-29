@@ -21,4 +21,13 @@ export const dialogueData = {
   npc_3: `npc_3.`,
   npc_4: `npc_4.`,
   npc_5: `npc_5.`,
+  crack_blue_1: `crack_blue_1.`,
+  crack_red_1: `crack_red_2.`,
+  crack_blue_2: `crack_blue_2.`,
+  crack_red_2: `crack_red_2.`,
+  crack_blue_3: `crack_blue_3.`,
+  crack_red_3: `crack_red_3.`,
+  crack_blue_4: `crack_blue_4.`,
+  crack_red_4: `crack_red_4.`,
+  big_crack: `big_crack.`,
 };
