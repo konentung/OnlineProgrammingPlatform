@@ -5,6 +5,10 @@ import { displayDialogue, setCamScale, getChapter, getLevel, displayQuestion } f
 async function loadChapterFlow(speaker, listener, chapterId, levelName) {
   const res = await fetch(`/api/chapterflow/?speaker=${speaker}&listener=${listener}&chapter_id=${chapterId}&level_name=${levelName}`);
   const data = await res.json();
+  if (data.error === "no_flow") {
+    player.isInDialogue = false;
+    return [];
+  }
   if (data.error) {
     console.error("Error fetching flow:", data.error);
     return [];
