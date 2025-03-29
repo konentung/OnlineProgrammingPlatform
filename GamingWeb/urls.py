@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.urls import path
 import accounts.views as accounts_views
 import games.views as games_views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -32,7 +34,17 @@ urlpatterns = [
     path('game/', games_views.game, name='Game'),
     path('notes/', games_views.notes, name='Notes'),
     path('notes/<str:unit_name>', games_views.note_content, name='NoteContent'),
+    path('api/chapter/', games_views.get_min_not_cleared_chapter),
+    path('api/chapterflow/', games_views.get_chapter_flow, name='ChapterFlow'),
+    path('api/level/', games_views.get_min_not_cleared_level),
+    path('api/line/', games_views.get_min_not_cleared_line),
+    path('api/check/', games_views.check_answer),
+    
+    path('api/reset/', games_views.reset_game),
     
     # ai
     
 ]
+
+if not settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

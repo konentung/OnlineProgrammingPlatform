@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+
+<div class="container markdown-body my-4">
+  <h1 class="border-bottom pb-2">Python程式學習網站：第四單元「邏輯控制 (Control Flow)」</h1>
+
+  <h2>單元目標</h2>
+  <p>本單元將介紹 Python 中的邏輯控制（Control Flow），包含以下主題：</p>
+  <ol>
+    <li><strong>條件判斷 (<code>if</code>、<code>elif</code>、<code>else</code>)</strong></li>
+    <li><strong>巢狀條件判斷</strong></li>
+    <li><strong>三元運算子</strong></li>
+    <li><strong>邏輯運算 (<code>and</code>、<code>or</code>、<code>not</code>)</strong></li>
+    <li><strong>應用練習題</strong></li>
+  </ol>
+  <hr>
+
+  <h2>1. 條件判斷 (<code>if</code>、<code>elif</code>、<code>else</code>)</h2>
+  <p>條件判斷用於根據不同條件執行對應的程式碼。</p>
+  <h3>範例</h3>
+  <pre><code class="language-python">age = int(input("請輸入你的年齡："))
+if age < 18:
+    print("你是未成年人。")
+elif age < 65:
+    print("你是成年人。")
+else:
+    print("你是高齡者。")
+</code></pre>
+  <hr>
+
+  <h2>2. 巢狀條件判斷</h2>
+  <p>條件判斷可以互相嵌套，形成巢狀結構。</p>
+  <h3>範例</h3>
+  <pre><code class="language-python">score = int(input("請輸入你的成績："))
+if score >= 60:
+    if score >= 90:
+        print("優秀！")
+    else:
+        print("及格！")
+else:
+    print("不及格！")
+</code></pre>
+  <hr>
+
+  <h2>3. 三元運算子</h2>
+  <p>三元運算子可用來簡化條件判斷。</p>
+  <h3>範例</h3>
+  <pre><code class="language-python">num = int(input("請輸入一個數字："))
+result = "正數" if num > 0 else "非正數"
+print(result)
+</code></pre>
+  <hr>
+
+  <h2>4. 邏輯運算 (<code>and</code>、<code>or</code>、<code>not</code>)</h2>
+  <p>邏輯運算子用於組合多個條件。</p>
+  <h3>範例</h3>
+  <pre><code class="language-python">x = int(input("請輸入一個數字："))
+if x > 0 and x % 2 == 0:
+    print("正偶數")
+elif x > 0 and x % 2 != 0:
+    print("正奇數")
+else:
+    print("非正數")
+</code></pre>
+  <hr>
+
+  <h2>5. 應用練習題</h2>
+  <h3>題目 1：成績判斷</h3>
+  <p>讓使用者輸入成績，並根據分數顯示評價。</p>
+  <h4>範例輸出</h4>
+  <pre><code class="plaintext">輸入分數：85
+你的等級是 B
+</code></pre>
+  <h4>範例程式</h4>
+  <pre><code class="language-python">score = int(input("輸入分數："))
+if score >= 90:
+    grade = "A"
+elif score >= 80:
+    grade = "B"
+elif score >= 70:
+    grade = "C"
+elif score >= 60:
+    grade = "D"
+else:
+    grade = "F"
+print(f"你的等級是 {grade}")
+</code></pre>
+
+  <h3>題目 2：身分驗證</h3>
+  <p>請讓使用者輸入年齡與是否持有駕照，判斷是否可以開車。</p>
+  <h4>範例程式</h4>
+  <pre><code class="language-python">age = int(input("請輸入年齡："))
+has_license = input("是否有駕照？(y/n): ").lower() == 'y'
+if age >= 18 and has_license:
+    print("你可以開車。")
+else:
+    print("你不能開車。")
+</code></pre>
+  <hr>
+
+  <h2>結語</h2>
+  <p>本單元介紹了 Python 的條件判斷 (<code>if</code>、<code>elif</code>、<code>else</code>)、巢狀條件、三元運算子與邏輯運算，幫助學員掌握程式決策能力。下一單元將介紹 <strong>型別與變數（Data Types &amp; Variables）</strong>，讓學員更進一步理解 Python 的資料管理！</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/components/prism-python.min.js"></script>
+{% endblock %}
