@@ -1,12 +1,4 @@
-# Ignore Python bytecode files
-__pycache__/
-*.py[cod]
-
-# Ignore additional Python cache files
-*.pyo
-
 # Ignore SQLite database files
 db.sqlite3
-db_bak.sqlite3
 
 .env

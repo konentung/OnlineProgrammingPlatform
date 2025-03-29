@@ -1,295 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     {% load static %}
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
-        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"
         integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous">
     </script>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/search.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
     <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
-    <!-- 引入 CodeMirror 的 CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/codemirror.min.css">
-
-    <!-- 引入 CodeMirror 的語法Highlight、程式碼模式 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/theme/dracula.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/codemirror.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/mode/python/python.min.js"></script> <!-- 這裡是以 Python 為例 -->
-    <title>{% block title %}{% endblock %}</title>
-
-    <style>
-        body {
-            padding-top: 70px;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #fff;
-            color: #000;
-        }
-
-        header {
-            background-color: #000;  /* Changed to black */
-            padding: 10px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            transition: background-color 0.3s ease, opacity 0.3s ease;
-            opacity: 1;
-        }
-
-        header.scrolled {
-            opacity: 0.7;
-            background-color: #000;  /* Black when scrolled */
-        }
-
-        header h1 {
-            margin: 0;
-            font-size: 1.5rem;
-            margin-right: 20px;
-            color: white;  /* Changed to white */
-        }
-
-        nav {
-            flex: 1;
-        }
-
-        nav ul {
-            list-style: none;
-            display: flex;
-            margin: 0;
-            padding: 0;
-        }
-
-        nav ul li {
-            margin: 0 10px;
-        }
-
-        nav ul li a {
-            color: #fff;
-            text-decoration: none;
-            position: relative;
-        }
-
-        nav ul li a::before,
-        nav ul li a::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 3px;
-            background-color: #fff;
-            transition: width 0.3s ease;
-        }
-
-        nav ul li a::before {
-            top: -6px;
-            left: 0;
-        }
-
-        nav ul li a::after {
-            bottom: -6px;
-            left: 0;
-        }
-
-        nav ul li a:hover::before,
-        nav ul li a:hover::after {
-            width: 100%;
-        }
-
-        footer {
-            text-align: center;
-            background-color: #222;
-            padding: 10px 0;
-        }
-
-        .navbar-toggler {
-            border: none;
-            color: #fff;
-            background-color: transparent;
-            cursor: pointer;
-            font-size: 1.5rem;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(0, 0, 0, 0.8);
-            padding: 20px;
-            border-radius: 10px;
-            z-index: 1001;
-        }
-
-        .modal-content {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .modal-buttons button {
-            padding: 10px 20px;
-            margin: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .yes-btn {
-            background-color: #28a745;
-            color: white;
-        }
-
-        .no-btn {
-            background-color: #dc3545;
-            color: white;
-        }
-
-        .logout-btn {
-            background-color: #fff;
-            color: #000;
-            border: 1px solid #000;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 1rem;
-            text-decoration: none;
-        }
-
-        @media (max-width: 768px) {
-            header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            nav ul {
-                display: none;
-                flex-direction: column;
-                width: 100%;
-                padding: 10px 0;
-                background-color: #000;  /* Black background on mobile */
-            }
-
-            nav ul.active {
-                display: flex;
-            }
-
-            .navbar-toggler {
-                display: block;
-                margin-left: auto;
-            }
-        }
-    </style>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const header = document.querySelector('header');
-            const toggleButton = document.querySelector('.navbar-toggler');
-            const navMenu = document.querySelector('nav ul');
-
-            // 切換 navbar 的 active 狀態
-            toggleButton.addEventListener('click', function () {
-                navMenu.classList.toggle('active');
-            });
-
-            // 滾動時處理 header 的透明度
-            window.addEventListener('scroll', function () {
-                if (window.scrollY > 50) {
-                    header.classList.add('scrolled');
-                } else {
-                    header.classList.remove('scrolled');
-                }
-            });
-
-            // 登出按鈕觸發模態框
-            const logoutButton = document.querySelector('.logout-btn');
-            const modal = document.querySelector('.modal');
-            const closeModal = () => modal.style.display = 'none';
-
-            const yesButton = document.querySelector('.yes-btn');
-            const noButton = document.querySelector('.no-btn');
-
-            // 顯示登出確認的模態框
-            logoutButton.addEventListener('click', function (e) {
-                e.preventDefault(); // 防止表單提交
-                modal.style.display = 'block';
-            });
-
-            // 點擊 "是" 登出
-            yesButton.addEventListener('click', function () {
-                window.location.href = "{% url 'Logout' %}";
-            });
-
-            // 點擊 "否" 或關閉模態框
-            noButton.addEventListener('click', closeModal);
-
-            // 點擊模態框外部區域也可以關閉模態框
-            window.addEventListener('click', function (event) {
-                if (event.target === modal) {
-                    closeModal();
-                }
-            });
-        });
-    </script>
+    {% block head %}
+    {% endblock %}
 </head>
-
 <body>
-    <header>
-        <h1><a href="{% url 'Index' %}" style="text-decoration: none; color: inherit;">程式設計平台</a></h1>
-        <button class="navbar-toggler">☰</button>
-        <nav>
-            <ul>
-                <li><a href="{% url 'Index' %}">首頁</a></li>
-                <li><a href="{% url 'UserDashboard' %}">個人主頁</a></li>
-                <li><a href="{% url 'QuestionCreate' %}">出題區</a></li>
-                <li><a href="{% url 'QuestionAssignment' %}">作業區</a></li>
-                <li><a href="{% url 'UserQuestionHistoryList' %}">出題記錄</a></li>
-                <li><a href="{% url 'PeerAssessmentList' %}">題目互評</a></li>
-                <li><a href="{% url 'TeacherDashboard' %}">老師公告區</a></li>
-                <li><a href="{% url 'Ranking' %}">學生出題排行榜</a></li>
-            </ul>
-        </nav>
-        <div>
-            {% if user.is_authenticated %}
-                <a href="#" class="btn btn-warning logout-btn">Log Out</a>
-            {% else %}
-                <a href="{% url 'Index' %}" class="btn btn-outline-light me-2">Login</a>
-                <a href="#" class="btn btn-warning">Sign-up</a>
-            {% endif %}
+    <header class="bg-dark text-white">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-dark">
+                <div class="container-fluid">
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav me-auto">
+                            <li class="nav-item"><a class="nav-link" href="{% url 'Index' %}">Home</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{% url 'Game' %}">Games</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{% url 'Notes' %}">Notes</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{% url 'About' %}">About</a></li>
+                        </ul>
+                        <ul class="navbar-nav">
+                            {% if user.is_authenticated %}
+                                <li class="nav-item"><a class="nav-link" href="{% url 'Logout' %}">Logout</a></li>
+                            {% else %}
+                                <li class="nav-item"><a id="openLoginModal" class="nav-link" href="{% url 'Login' %}">Login</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{% url 'Register' %}">Signup</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </nav>
         </div>
     </header>
-
-    <main>
-        <section class="carousel">
-        </section>
-
+    <main class="container my-5">
         {% block content %}{% endblock %}
+        {% if request.resolver_match.url_name == 'NoteContent' %}
+            <a href="{% url 'Notes' %}" class=" note-btn btn position-fixed shadow-lg d-flex align-items-center justify-content-center" onmouseover="this.style.transform='scale(1.1)';" onmouseout="this.style.transform='scale(1)';">
+                &#8592;
+            </a>
+        {% endif %}
     </main>
-
-    <!-- 登出確認模態框 -->
-    <div class="modal">
-        <div class="modal-content">
-            <h3>是否確定登出?</h3>
-            <div class="modal-buttons">
-                <button class="yes-btn">是</button>
-                <button class="no-btn">否</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+    <script src="{% static 'js/base.js' %}"></script>
 </body>
-
 </html>

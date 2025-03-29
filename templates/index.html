@@ -1,42 +1,11 @@
 {% extends "base.html" %}
-{% block title %}首頁{% endblock %}
+{% block title %}Gaming Web{% endblock %}
 {% block content %}
-{% load static %}
-
-<div class="container mt-5">
-    <div class="row">
-      <h2 class="mb-4" style="font-family:微軟正黑體; font-weight: bold;">活動流程說明</h2>
-      <img src="{% static 'images/student_activities.jpg' %}" alt="學生活動說明圖">
-    </div>
-    <div class="row">
-      <h2 class="mb-4" style="font-family:微軟正黑體; font-weight: bold;">所有題目</h2>
-      <div class="mb-4 d-flex justify-content-center align-items-center flex-wrap" style="gap: 15px;">
-        <button class="difficulty-filter Difficulty-Select btn btn-outline-primary px-4 py-2 shadow-sm" data-difficulty="all" style="transition: transform 0.3s ease, box-shadow 0.3s ease;">全部</button>
-        <button class="difficulty-filter Difficulty-Select btn btn-outline-success px-4 py-2 shadow-sm" data-difficulty="easy" style="transition: transform 0.3s ease, box-shadow 0.3s ease;">簡單</button>
-        <button class="difficulty-filter Difficulty-Select btn btn-outline-warning px-4 py-2 shadow-sm" data-difficulty="medium" style="transition: transform 0.3s ease, box-shadow 0.3s ease;">中等</button>
-        <button class="difficulty-filter Difficulty-Select btn btn-outline-danger px-4 py-2 shadow-sm" data-difficulty="hard" style="transition: transform 0.3s ease, box-shadow 0.3s ease;">困難</button>
-      </div>
-      <div id="questions-container" class="row">
-        {% if questions %}
-        {% for question in questions %}
-          <div class="col-md-4 mb-4 question-item" data-difficulty="{{ question.difficulty }}">
-              <div class="card h-100 shadow-sm">
-                  <a href="{% url 'QuestionDetail' question.id %}" class="btn">
-                      <div class="card-body">
-                          <h5 class="card-title" style="font-family:微軟正黑體;">{{ question.title }}</h5>
-                          <p class="card-text" style="font-family:微軟正黑體; font-size:12pt; color:gray; text-align: left; white-space: pre-wrap;" id="description-{{ question.id }}">{{ question.description }}</p>
-                      </div>
-                  </a>
-              </div>
-          </div>
-        {% endfor %}
-        {% else %}
-            <p style="font-family:微軟正黑體;">目前題庫中沒有題目。</p>
-        {% endif %}
-      </div>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+<div class="row">
+    <div class="col-12">
+        <h1>Welcome to Gaming Web</h1>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.</p>
     </div>
 </div>
-
-<script src="{% static 'js/question_card.js' %}"></script>
-
 {% endblock %}

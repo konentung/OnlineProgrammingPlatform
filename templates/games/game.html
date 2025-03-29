@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}遊戲{% endblock %}
+{% block head %}
+<meta name="csrf-token" content="{{ csrf_token }}">
+{% endblock %}
+{% block content %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/game.css' %}">
+<div id="app">
+    <div>
+      <p class="note">Tap/Click around to move</p>
+
+      <div id="textbox-container" style="display: none">
+        <div id="textbox">
+          <p id="dialogue" class="ui-text"></p>
+      
+          <!-- 題目內容放這裡 -->
+          <div id="question-box" style="display: none">
+            <p id="question-text" class="ui-text"></p>
+      
+            <!-- 紅題 -->
+            <div id="red-choices" style="display: none;">
+              <button id="option1"></button>
+              <button id="option2"></button>
+              <button id="option3"></button>
+              <button id="option4"></button>
+            </div>
+      
+            <!-- 藍題 -->
+            <div id="blue-answer" style="display: none;">
+              <input type="text" id="blue-input" placeholder="請輸入答案" />
+              <button id="blue-submit">送出</button>
+            </div>
+      
+            <!-- 顯示答對/錯 -->
+            <p id="feedback" style="display:none;"></p>
+          </div>
+      
+          <div class="btn-container">
+            <button id="close" class="ui-close-btn">Close</button>
+          </div>
+        </div>
+      </div>      
+    </div>
+    <canvas id="gameCanvas"></canvas>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="module">
+    import kaboom from "https://unpkg.com/kaboom@latest/dist/kaboom.mjs";
+    window.k = kaboom({
+        global: false,
+        touchToMouse: true,
+        canvas: document.getElementById("gameCanvas"),
+        debug: false,
+    });
+</script>
+<script type="module" src="{% static 'js/kaboomCtx.js' %}"></script>
+<script type="module" src="{% static 'js/game.js' %}"></script>
+{% endblock %}
