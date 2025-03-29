@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+
+<div class="container markdown-body my-4">
+  <h1 class="border-bottom pb-2">Python程式學習網站：第二單元「運算子與運算元」</h1>
+
+  <h2>單元目標</h2>
+  <p>本單元將介紹 Python 中的運算子與運算元（Operators &amp; Operands），包含以下主題：</p>
+  <ol>
+    <li><strong>什麼是運算子與運算元</strong></li>
+    <li><strong>算術運算子</strong></li>
+    <li><strong>比較運算子</strong></li>
+    <li><strong>邏輯運算子</strong></li>
+    <li><strong>賦值運算子</strong></li>
+    <li><strong>練習題目：讓學習者撰寫 Python 程式</strong></li>
+  </ol>
+  <hr>
+
+  <h2>1. 什麼是運算子與運算元？</h2>
+  <ul>
+    <li><strong>運算子（Operators）</strong> 是指用來執行計算或比較的符號，例如：<code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>&gt;</code>, <code>&lt;</code>, <code>=</code> 等。</li>
+    <li><strong>運算元（Operands）</strong> 是指運算子操作的對象，可以是數字、變數或運算式。</li>
+  </ul>
+  <h3>範例</h3>
+  <pre><code class="language-python">x = 10 + 5  # 10 和 5 是運算元，+ 是運算子</code></pre>
+  <hr>
+
+  <h2>2. 算術運算子</h2>
+  <p>Python 中的基本算術運算子包括：</p>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>運算子</th>
+        <th>功能</th>
+        <th>範例</th>
+        <th>結果</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>+</code></td>
+        <td>加法</td>
+        <td><code>5 + 2</code></td>
+        <td><code>7</code></td>
+      </tr>
+      <tr>
+        <td><code>-</code></td>
+        <td>減法</td>
+        <td><code>5 - 2</code></td>
+        <td><code>3</code></td>
+      </tr>
+      <tr>
+        <td><code>*</code></td>
+        <td>乘法</td>
+        <td><code>5 * 2</code></td>
+        <td><code>10</code></td>
+      </tr>
+      <tr>
+        <td><code>/</code></td>
+        <td>除法</td>
+        <td><code>5 / 2</code></td>
+        <td><code>2.5</code></td>
+      </tr>
+      <tr>
+        <td><code>//</code></td>
+        <td>整數除法</td>
+        <td><code>5 // 2</code></td>
+        <td><code>2</code></td>
+      </tr>
+      <tr>
+        <td><code>%</code></td>
+        <td>餘數</td>
+        <td><code>5 % 2</code></td>
+        <td><code>1</code></td>
+      </tr>
+      <tr>
+        <td><code>**</code></td>
+        <td>次方</td>
+        <td><code>5 ** 2</code></td>
+        <td><code>25</code></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>範例</h3>
+  <pre><code class="language-python">a = 10
+b = 3
+print(a + b)   # 13
+print(a - b)   # 7
+print(a * b)   # 30
+print(a / b)   # 3.3333
+print(a // b)  # 3
+print(a % b)   # 1
+print(a ** b)  # 1000</code></pre>
+  <hr>
+
+  <h2>3. 比較運算子</h2>
+  <p>比較運算子用來比較兩個值，返回 <code>True</code> 或 <code>False</code>。</p>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>運算子</th>
+        <th>說明</th>
+        <th>範例</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>==</code></td>
+        <td>等於</td>
+        <td><code>5 == 5</code> (True)</td>
+      </tr>
+      <tr>
+        <td><code>!=</code></td>
+        <td>不等於</td>
+        <td><code>5 != 3</code> (True)</td>
+      </tr>
+      <tr>
+        <td><code>&gt;</code></td>
+        <td>大於</td>
+        <td><code>5 &gt; 3</code> (True)</td>
+      </tr>
+      <tr>
+        <td><code>&lt;</code></td>
+        <td>小於</td>
+        <td><code>5 &lt; 3</code> (False)</td>
+      </tr>
+      <tr>
+        <td><code>&gt;=</code></td>
+        <td>大於或等於</td>
+        <td><code>5 &gt;= 5</code> (True)</td>
+      </tr>
+      <tr>
+        <td><code>&lt;=</code></td>
+        <td>小於或等於</td>
+        <td><code>3 &lt;= 5</code> (True)</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>範例</h3>
+  <pre><code class="language-python">print(10 == 10)  # True
+print(10 != 5)   # True
+print(10 > 5)    # True</code></pre>
+  <hr>
+
+  <h2>4. 邏輯運算子</h2>
+  <p>邏輯運算子用來將多個條件進行組合，返回布林值。</p>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>運算子</th>
+        <th>功能</th>
+        <th>範例</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>and</code></td>
+        <td>且</td>
+        <td><code>(5 &gt; 3) and (5 &lt; 10)</code> (True)</td>
+      </tr>
+      <tr>
+        <td><code>or</code></td>
+        <td>或</td>
+        <td><code>(5 &gt; 10) or (5 &lt; 10)</code> (True)</td>
+      </tr>
+      <tr>
+        <td><code>not</code></td>
+        <td>非</td>
+        <td><code>not(5 &gt; 10)</code> (True)</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>範例</h3>
+  <pre><code class="language-python">print((5 > 3) and (5 < 10))  # True
+print((5 > 10) or (5 < 10))  # True
+print(not(5 > 10))           # True</code></pre>
+  <hr>
+
+  <h2>5. 賦值運算子</h2>
+  <p>用於將值賦予變數。</p>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>運算子</th>
+        <th>說明</th>
+        <th>範例</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>=</code></td>
+        <td>賦值</td>
+        <td><code>x = 5</code></td>
+      </tr>
+      <tr>
+        <td><code>+=</code></td>
+        <td>加後賦值</td>
+        <td><code>x += 3</code> 相當於 <code>x = x + 3</code></td>
+      </tr>
+      <tr>
+        <td><code>-=</code></td>
+        <td>減後賦值</td>
+        <td><code>x -= 3</code> 相當於 <code>x = x - 3</code></td>
+      </tr>
+      <tr>
+        <td><code>*=</code></td>
+        <td>乘後賦值</td>
+        <td><code>x *= 3</code> 相當於 <code>x = x * 3</code></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>範例</h3>
+  <pre><code class="language-python">x = 10
+x += 5  # x 現在是 15
+x *= 2  # x 現在是 30
+print(x)  # 30</code></pre>
+  <hr>
+
+  <h2>6. 練習題目</h2>
+  <h3>題目 1：計算 BMI</h3>
+  <p>讓使用者輸入身高（公尺）與體重（公斤），然後計算並顯示 BMI 值。</p>
+  <h4>範例</h4>
+  <pre><code class="plaintext">輸入身高 (m)：1.70
+輸入體重 (kg)：65
+你的BMI是 22.49</code></pre>
+  <h4>範例程式</h4>
+  <pre><code class="language-python">height = float(input("輸入身高 (m)："))
+weight = float(input("輸入體重 (kg)："))
+bmi = weight / height**2
+print(f"你的BMI是 {bmi:.2f}")</code></pre>
+  
+  <h3>題目 2：溫度轉換</h3>
+  <p>將攝氏溫度轉換成華氏溫度，公式：<code>華氏 = 攝氏 × 9/5 + 32</code></p>
+  <h4>範例程式</h4>
+  <pre><code class="language-python">celsius = float(input("請輸入攝氏溫度："))
+fahrenheit = celsius * 9/5 + 32
+print(f"華氏溫度為 {fahrenheit:.2f}")</code></pre>
+  <hr>
+
+  <h2>結語</h2>
+  <p>本單元介紹了 Python 的各種運算子及其用法，透過實際練習強化學員對運算的理解。下一單元將深入探討 <strong>迴圈（Loops）</strong>，讓學員學會更有效率的程式撰寫技巧！</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/components/prism-python.min.js"></script>
+{% endblock %}

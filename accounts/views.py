@@ -5,6 +5,7 @@ from accounts.models import Account
 from accounts.forms import RegisterForm, LoginForm
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
+from games.models import UserChapterRecord, UserLevelRecord, UserQuestionRecord, Chapter, Level, QuestionRed, QuestionBlue
 
 # 首頁
 def index(request):
@@ -80,6 +81,22 @@ def register(request):
                 form.save()
             except IntegrityError:
                 return JsonResponse({'success': False, 'message': '帳號已存在!'})
+            
+            # 建立空的使用者紀錄
+            user = Account.objects.get(username=form.cleaned_data['username'])
+            chapters = Chapter.objects.all()
+            levels = Level.objects.all()
+            for chapter in chapters:
+                UserChapterRecord.objects.create(account=user, chapter=chapter)
+            for level in levels:
+                UserLevelRecord.objects.create(account=user, level=level)
+            questions_red = QuestionRed.objects.all()
+            questions_blue = QuestionBlue.objects.all()
+            for question_red in questions_red:
+                UserQuestionRecord.objects.create(account=user, question_red=question_red)
+            for question_blue in questions_blue:
+                UserQuestionRecord.objects.create(account=user, question_blue=question_blue)
+            
             # 註冊成功時回傳 success true
             return JsonResponse({'success': True})
         else:
