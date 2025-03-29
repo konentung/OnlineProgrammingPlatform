@@ -28,7 +28,7 @@ class QuestionBlueAdmin(admin.ModelAdmin):
 
 # LineAdmin
 class LineAdmin(admin.ModelAdmin):
-    list_display = ('line_id', 'content', 'speaker', 'listener', 'chapter')
+    list_display = ('content', 'speaker', 'listener', 'chapter')
 
 # ChapterFlowAdmin
 class ChapterFlowAdmin(admin.ModelAdmin):
