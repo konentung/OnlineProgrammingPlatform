@@ -12,8 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
-from dotenv import load_dotenv
-load_dotenv()
+import dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,9 +20,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
+dotenv_path = os.path.join(BASE_DIR, '.env')
+if os.path.isfile(dotenv_path):
+    dotenv.load_dotenv(dotenv_path)
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -90,11 +92,12 @@ WSGI_APPLICATION = 'GamingWeb.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',  #PostgreSQL
-        'NAME': os.getenv('DATABASE_NAME'),  #資料庫名稱
-        'USER': os.getenv('DATABASE_USER'),  #資料庫帳號
-        'PASSWORD': os.getenv('DATABASE_PASSWORD'),  #資料庫密碼
-        'HOST': os.getenv('DATABASE_HOST'),  #Server(伺服器)位址
+        'ENGINE': os.environ['DATABASE_ENGINE'],  #PostgreSQL
+        'NAME': os.environ['DATABASE_NAME'],  #資料庫名稱
+        'USER': os.environ['DATABASE_USER'],  #資料庫帳號
+        'PASSWORD': os.environ['DATABASE_PASSWORD'],  #資料庫密碼
+        'HOST': os.environ['DATABASE_HOST'],  #Server(伺服器)位址
+        'PORT': os.environ['DATABASE_PORT'],  #Port(埠號)
     }
 }
 
