@@ -427,7 +427,7 @@ def get_min_not_cleared_level(request):
     # 查詢尚未完成的關卡
     remaining = UserLevelRecord.objects.filter(account=user, cleared=False).order_by('level__id')
     if remaining.exists():
-        return JsonResponse({'level_name': remaining.first().level.level_name})
+        return JsonResponse({'level_name': remaining.first().level.level_name if remaining else 'None'})
 
     # 全部完成：重置所有紀錄
     UserLevelRecord.objects.filter(account=user).update(cleared=False)
@@ -437,7 +437,7 @@ def get_min_not_cleared_level(request):
 
     # 回傳最小關卡
     first = UserLevelRecord.objects.filter(account=user).order_by('level__id').first()
-    return JsonResponse({'level_name': first.level.level_name})
+    return JsonResponse({'level_name': first.level.level_name if first else 'None'})
 
 # ✅ 取得最小尚未通關的章節（依 Chapter.chapter_id）
 def get_min_not_cleared_chapter(request):
@@ -458,7 +458,7 @@ def get_min_not_cleared_chapter(request):
 
     remaining = UserChapterRecord.objects.filter(account=user, cleared=False).order_by('chapter__chapter_id')
     if remaining.exists():
-        return JsonResponse({'chapter_id': remaining.first().chapter.chapter_id})
+        return JsonResponse({'chapter_id': remaining.first().chapter.chapter_id if remaining else 0})
 
     # 全部完成：重置所有紀錄
     UserLevelRecord.objects.filter(account=user).update(cleared=False)
@@ -467,7 +467,7 @@ def get_min_not_cleared_chapter(request):
     UserLineRecord.objects.filter(account=user).update(cleared=False)
 
     first = UserChapterRecord.objects.filter(account=user).order_by('chapter__chapter_id').first()
-    return JsonResponse({'chapter_id': first.chapter.chapter_id})
+    return JsonResponse({'chapter_id': first.chapter.chapter_id if first else 0})
 
 # 取得章節 + 關卡下的流程，依使用者紀錄過濾
 def get_chapter_flow(request):
