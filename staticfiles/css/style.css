@@ -26,10 +26,6 @@ body {
     border: none;
 }
 
-.card-title, .card-text {
-    color: #f8f9fa;
-}
-
 .btn-primary {
     background-color: #ffc107;
     border-color: #ffc107;
