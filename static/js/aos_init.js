@@ -3,4 +3,3 @@ AOS.init({
     once: true,
     offset: 100
   });
-  
