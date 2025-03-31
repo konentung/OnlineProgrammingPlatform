@@ -13524,7 +13524,7 @@
                 {
                  "height":30,
                  "id":2245,
-                 "name":"King",
+                 "name":"king",
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -13864,7 +13864,7 @@
                 {
                  "height":0,
                  "id":2243,
-                 "name":"King",
+                 "name":"king",
                  "point":true,
                  "rotation":0,
                  "type":"",
@@ -14108,7 +14108,7 @@
         {
          "columns":5,
          "firstgid":11552,
-         "image":"..\/..\/..\/Downloads\/Free King Sprite\/King_Sprite.png",
+         "image":"..\/..\/..\/Downloads\/Free King Sprite\/king_Sprite.png",
          "imageheight":128,
          "imagewidth":96,
          "margin":0,
