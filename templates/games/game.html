@@ -46,13 +46,13 @@
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="module">
-    import kaboom from "https://unpkg.com/kaboom@latest/dist/kaboom.mjs";
-    window.k = kaboom({
-        global: false,
-        touchToMouse: true,
-        canvas: document.getElementById("gameCanvas"),
-        debug: false,
-    });
+  import kaboom from "https://unpkg.com/kaboom@3000.1.17/dist/kaboom.mjs";
+  window.k = kaboom({
+      global: false,
+      touchToMouse: true,
+      canvas: document.getElementById("gameCanvas"),
+      debug: false,
+  });
 </script>
 <script type="module" src="{% static 'js/kaboomCtx.js' %}"></script>
 <script type="module" src="{% static 'js/game.js' %}"></script>
