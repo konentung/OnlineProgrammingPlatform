@@ -9,7 +9,15 @@ from games.models import UserChapterRecord, UserLevelRecord, UserQuestionRecord,
 
 # 首頁
 def index(request):
-    return render(request, 'index.html')
+    cards = [
+        ('第零單元：Python 基礎', '涵蓋變數、資料型別、輸入輸出、註解等 Python 初學內容。', 'https://hackmd.io/@KeLeChiang/r113-HhKJg'),
+        ('第一單元：「相等性」', '介紹 Python 中的相等運算子（==、!=、is）及其用法差異。', 'https://hackmd.io/@KeLeChiang/SJptkSnKJe'),
+        ('第二單元：「運算子與運算」', '介紹 Python 中的基本運算子與運算優先順序。', 'https://hackmd.io/@KeLeChiang/HyXdw-99ke'),
+        ('第三單元：「迴圈」', '教學 for loop、while loop 的語法與應用範例。', 'https://hackmd.io/@KeLeChiang/BkTyLi5cyg'),
+        ('第四單元：「邏輯控制」', '介紹 if、elif、else 條件語句，與邏輯運算子的運用。', 'https://hackmd.io/@KeLeChiang/ryZw8s99ye'),
+        ('第五單元：「函式 Function」', '學會定義與使用函式，掌握參數、回傳值與錯誤除錯技巧。', 'https://hackmd.io/@KeLeChiang/r1YTeKUpkl')
+    ]
+    return render(request, 'index.html', {'cards': cards})
 
 # 登入
 def sign_in(request):
