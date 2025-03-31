@@ -78,7 +78,7 @@ k.loadSprite("van", "/static/images/Van.png", {
   },
 });
 
-k.loadSprite("king", "/static/images/King.png");
+k.loadSprite("king", "/static/images/king.png");
 k.loadSprite("nan", "/static/images/Nan.png");
 
 k.loadSprite("crack_blue", "/static/images/blue_crack.png");
@@ -108,7 +108,7 @@ k.scene("main", async () => {
             (map.pos.y + entity.y) * scaleFactor
           );
         }
-        if (entity.name === "King") {
+        if (entity.name === "king") {
           // 取得國王的 x 和 y 坐標，並根據 scaleFactor 計算位置
           kingPos = k.vec2(
             (map.pos.x + entity.x) * scaleFactor,
@@ -383,6 +383,30 @@ k.scene("main", async () => {
       player.move(0, player.speed);
     }
   });
+
+  // ✅ 地圖、角色、相機全部就緒後才開始開場對話流程
+  async function startOpeningFlow() {
+    player.isInDialogue = true;
+
+    const { chapter_id } = await getChapter();
+    const { level_name } = await getLevel();
+
+    // speaker設定成"opening"，listener設定成"player"
+    // 這樣就可以撈取到開場對話的flow了
+    const flow = await loadChapterFlow("opening", "player", chapter_id, level_name);
+
+    if (flow.length > 0) {
+      startFlow(flow, () => {
+        player.isInDialogue = false;
+      });
+    } else {
+      console.log("❗無開場對話 flow，跳過對話流程");
+      player.isInDialogue = false;
+    }
+  }    
+
+  // ✅ 所有內容載入完才呼叫
+  startOpeningFlow();
 });
 
 k.go("main");
