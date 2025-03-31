@@ -78,7 +78,7 @@ k.loadSprite("van", "/static/images/Van.png", {
   },
 });
 
-k.loadSprite("king", "/static/images/King.png");
+k.loadSprite("king", "/static/images/king.png");
 k.loadSprite("nan", "/static/images/Nan.png");
 
 k.loadSprite("crack_blue", "/static/images/blue_crack.png");
@@ -108,7 +108,7 @@ k.scene("main", async () => {
             (map.pos.y + entity.y) * scaleFactor
           );
         }
-        if (entity.name === "King") {
+        if (entity.name === "king") {
           // 取得國王的 x 和 y 坐標，並根據 scaleFactor 計算位置
           kingPos = k.vec2(
             (map.pos.x + entity.x) * scaleFactor,
