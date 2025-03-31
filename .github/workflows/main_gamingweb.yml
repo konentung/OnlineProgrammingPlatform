@@ -64,6 +64,8 @@ jobs:
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
+      - name: Set DJANGO_SETTINGS_MODULE
+        run: echo "DJANGO_SETTINGS_MODULE=GamingWeb.production" >> $GITHUB_ENV
       
       - name: Login to Azure
         uses: azure/login@v2
