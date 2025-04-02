@@ -1,0 +1,78 @@
+/* about.css */
+
+.container {
+    text-align: center;
+    padding: 50px 0;
+}
+
+h1 {
+    margin-bottom: 30px;
+    font-size: 2rem;
+    color: #333;
+}
+
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 每行 3 個 */
+    grid-template-rows: repeat(2, auto);  /* 總共 2 行 */
+    gap: 20px;
+    padding: 20px;
+    max-width: 900px; /* 增加最大寬度，確保內容夠寬 */
+    margin: auto; /* 讓整個區塊置中 */
+    justify-items: center;
+}
+
+.team-member {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.5s ease-in-out;
+    width: 100%;
+    max-width: 250px; /* 控制每個區塊最大寬度 */
+    
+    min-height: 250px; /* 確保統一高度 */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    
+    /* 初始動畫效果 */
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 1s ease-out forwards;
+}
+
+.team-photo {
+    width: 100%; /* 確保不會超出格子 */
+    max-width: 150px; /* 限制圖片最大寬度 */
+    height: auto;
+    border-radius: 10px;
+}
+
+.team-info {
+    margin-top: 15px;
+}
+
+.team-info h5 {
+    font-size: 1.2rem;
+    color: #007bff;
+    margin-bottom: 10px;
+}
+
+.team-info p {
+    font-size: 1rem;
+    color: #555;
+}
+
+/* 定義動畫 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1.25);
+    }
+}
