@@ -1,15 +1,16 @@
-canvas {
+html, body {
     width: 100%;
     height: 100%;
-    display: block;
-    margin: 0 auto;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
 }
-
+  
 #app {
-    width: 100%;
-    height: 600px;
+    width: 100vw;
+    height: 100vh;
     position: relative;
-}
+}  
 
 #textbox {
     position: absolute;

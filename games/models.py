@@ -79,7 +79,6 @@ class QuestionRed(models.Model):
     question_type = models.ForeignKey(QuestionType, on_delete=models.CASCADE)
     listener = models.ForeignKey('Character', on_delete=models.CASCADE, null=True, blank=True)
 
-
     def __str__(self):
         return self.question
 
@@ -100,6 +99,7 @@ class Line(models.Model):
     content = models.CharField(max_length=300)
     speaker = models.ForeignKey('Character', on_delete=models.CASCADE, related_name='speaker')
     listener = models.ForeignKey('Character', on_delete=models.CASCADE, related_name='listener')
+    level = models.ForeignKey('Level', on_delete=models.CASCADE)
     chapter = models.ForeignKey('Chapter', on_delete=models.CASCADE)
     
     def __str__(self):
@@ -113,11 +113,8 @@ class ChapterFlow(models.Model):
     先出哪幾句對話、再出哪一個題目，以此類推。
     """
     chapter = models.ForeignKey('Chapter', on_delete=models.CASCADE)
-    level = models.ForeignKey('Level', on_delete=models.CASCADE, null=True, blank=True)
-    
-    # 指定此內容在該章節 / 關卡裡的播放 or 出現順序
+    level = models.ForeignKey('Level', on_delete=models.CASCADE)
     order = models.PositiveIntegerField()
-
     line = models.ForeignKey('Line', on_delete=models.CASCADE, null=True, blank=True)
     question_red = models.ForeignKey('QuestionRed', on_delete=models.CASCADE, null=True, blank=True)
     question_blue = models.ForeignKey('QuestionBlue', on_delete=models.CASCADE, null=True, blank=True)
