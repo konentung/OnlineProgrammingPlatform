@@ -41,7 +41,6 @@ class Chapter(models.Model):
 
 # 台詞
 class Line(models.Model):
-    line_id = models.IntegerField()
     content = models.CharField(max_length=300)
     speaker = models.ForeignKey(Character, on_delete=models.CASCADE, related_name='speaker')
     listener = models.ForeignKey(Character, on_delete=models.CASCADE, related_name='listener')
@@ -98,7 +97,6 @@ class QuestionBlue(models.Model):
         return self.question
 
 class Line(models.Model):
-    line_id = models.IntegerField()
     content = models.CharField(max_length=300)
     speaker = models.ForeignKey('Character', on_delete=models.CASCADE, related_name='speaker')
     listener = models.ForeignKey('Character', on_delete=models.CASCADE, related_name='listener')

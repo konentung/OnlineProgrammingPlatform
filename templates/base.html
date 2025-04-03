@@ -11,6 +11,8 @@
     </script>
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
     <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    <!-- AOS CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     {% block head %}
     {% endblock %}
 </head>
@@ -51,5 +53,8 @@
         {% endif %}
     </main>
     <script src="{% static 'js/base.js' %}"></script>
+    <!-- AOS JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="{% static 'js/aos_init.js' %}"></script>
 </body>
 </html>
