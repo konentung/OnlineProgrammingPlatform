@@ -1,10 +1,60 @@
 {% extends "base.html" %}
-{% block title %}About{% endblock %}
+{% load static %}
+{% block title %}About Us{% endblock %}
 {% block content %}
-<div class="row">
-    <div class="col-12">
-        <h1>About</h1>
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.</p>
+<link rel="stylesheet" href="{% static 'css/about.css' %}">
+
+<div class="container">
+    <h1>About Our Team</h1>
+    <div class="team-grid">
+        <div class="team-member">
+            <!-- <img src="static/images/jack.jpg" alt="Jack" class="team-photo"> -->
+            <div class="team-info">
+                <h5>董佳和</h5>
+                <h6>國立台北教育大學 數資系</h6>
+                <p>網頁主要開發，前端統整</p>
+            </div>
+        </div>
+        <div class="team-member">
+            <!-- <img src="static/images/edwin.jpg" alt="Edwin" class="team-photo"> -->
+            <div class="team-info">
+                <h5>蔣哿樂</h5>
+                <h6>國立台北教育大學 數資系</h6>
+                <p>遊戲內部題目設計</p>
+            </div>
+        </div>
+        <div class="team-member">
+            <!-- <img src="static/images/patrick.jpg" alt="Patrick" class="team-photo"> -->
+            <div class="team-info">
+                <h5>潘俊廷</h5>
+                <h6>國立台北教育大學 數資系</h6>
+                <p>遊戲內部教材設計</p>
+            </div>
+        </div>
+        <div class="team-member">
+            <!-- <img src="static/images/george.jpg" alt="George" class="team-photo"> -->
+            <div class="team-info">
+                <h5>梁軒齊</h5>
+                <h6>國立台北教育大學 數資系</h6>
+                <p>劇情撰寫，台詞設計</p>
+            </div>
+        </div>
+        <div class="team-member">
+            <!-- <img src="static/images/azuna.jpg" alt="Azuna" class="team-photo"> -->
+            <div class="team-info">
+                <h5>黃永丞</h5>
+                <h6>國立台北教育大學 數資系</h6>
+                <p>繪製遊戲內部地圖、人物</p>
+            </div>
+        </div>
+        <div class="team-member">
+            <!-- <img src="static/images/lily.jpg" alt="Lily" class="team-photo"> -->
+            <div class="team-info">
+                <h5>蔡尚廷</h5>
+                <h6>國立台北教育大學 數資系</h6>
+                <p>蒐集遊戲內部素材，遊戲推進構想</p>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

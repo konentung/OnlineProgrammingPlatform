@@ -2,7 +2,7 @@
 
 .container {
     text-align: center;
-    padding: 50px 0;
+    padding: 25px 0;
 }
 
 h1 {
@@ -17,7 +17,7 @@ h1 {
     grid-template-rows: repeat(2, auto);  /* 總共 2 行 */
     gap: 20px;
     padding: 20px;
-    max-width: 900px; /* 增加最大寬度，確保內容夠寬 */
+    max-width: 1200px; /* 增加最大寬度，確保內容夠寬 */
     margin: auto; /* 讓整個區塊置中 */
     justify-items: center;
 }
@@ -30,17 +30,22 @@ h1 {
     text-align: center;
     transition: transform 0.5s ease-in-out;
     width: 100%;
-    max-width: 250px; /* 控制每個區塊最大寬度 */
+    max-width: 330px; /* 控制每個區塊最大寬度 */
     
-    min-height: 250px; /* 確保統一高度 */
+    min-height: 150px; /* 確保統一高度 */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     
     /* 初始動畫效果 */
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInUp 1s ease-out forwards;
+    animation: fadeInUp 0.75s ease-out forwards;
+
+    transition: transform 0.3s ease-in-out !important;
+}
+
+.team-member:hover {
+    transform: scale(1.05) !important;
+    transition: transform 0.3s ease-in-out !important;
 }
 
 .team-photo {
@@ -55,14 +60,21 @@ h1 {
 }
 
 .team-info h5 {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     color: #007bff;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
+}
+
+.team-info h6 {
+    font-size: 1.2rem;
+    color: #555;
+    margin-bottom: 15px;
 }
 
 .team-info p {
+    display: block !important;
     font-size: 1rem;
-    color: #555;
+    color: #111;
 }
 
 /* 定義動畫 */
@@ -73,6 +85,6 @@ h1 {
     }
     to {
         opacity: 1;
-        transform: scale(1.25);
+        transform: translateY(0);
     }
 }
