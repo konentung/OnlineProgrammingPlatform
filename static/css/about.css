@@ -77,6 +77,31 @@ h1 {
     color: #111;
 }
 
+.text-center {
+    text-align: center;
+}
+
+.teacher {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+    padding: 20px;
+    text-align: center;
+    width: 100%;
+    max-width: 330px;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    animation: fadeInUp 0.75s ease-out forwards;
+    margin: 40px auto; /* 增加上下間距並置中 */
+    transition: transform 0.3s ease-in-out;
+}
+
+.teacher:hover {
+    transform: scale(1.05) !important;
+}
+
 /* 定義動畫 */
 @keyframes fadeInUp {
     from {
