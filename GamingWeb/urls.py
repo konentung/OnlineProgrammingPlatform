@@ -37,7 +37,6 @@ urlpatterns = [
     path('api/chapter/', games_views.get_min_not_cleared_chapter),
     path('api/chapterflow/', games_views.get_chapter_flow, name='ChapterFlow'),
     path('api/level/', games_views.get_min_not_cleared_level),
-    path('api/line/', games_views.get_min_not_cleared_line),
     path('api/check/', games_views.check_answer),
     
     path('api/reset/', games_views.reset_game),

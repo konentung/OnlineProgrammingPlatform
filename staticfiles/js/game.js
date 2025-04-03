@@ -1,6 +1,6 @@
 import { scaleFactor } from "/static/js/constants.js";
 import { k } from "/static/js/kaboomCtx.js";
-import { displayDialogue, setCamScale, getChapter, getLevel, displayQuestion } from "/static/js/utils.js";
+import { displayDialogue, setCamScale, getChapter, getLevel, displayQuestion, displayGameOver } from "/static/js/utils.js";
 
 async function loadChapterFlow(speaker, listener, chapterId, levelName) {
   const res = await fetch(`/api/chapterflow/?speaker=${speaker}&listener=${listener}&chapter_id=${chapterId}&level_name=${levelName}`);
@@ -28,23 +28,24 @@ function startFlow(flowArray, onFinish) {
     currentIndex++;
 
     if (item.type === "line") {
-      // 「講話者對聆聽者說：內容」
       const lineText = `${item.speaker}：${item.content}`;
-
-      // 你原本的 displayDialogue(文字, callback, isLast)
       const isLast = (currentIndex === flowArray.length);
       displayDialogue(lineText, () => {
         processNext();
       }, isLast);
-
     } else if (item.type === "red_crack" || item.type === "blue_crack") {
-      // 顯示題目UI (略)
-      displayQuestion(item, () => {
-        processNext();
-      });
-
+      // 顯示題目，並透過 callback 接收後端回傳的 game_over 旗標
+      displayQuestion(item, (game_over) => {
+        // 當使用者關閉題目對話後，就根據 game_over 判斷
+        if (game_over) {
+          processNext();
+          // 顯示遊戲結束畫面
+          displayGameOver();
+        } else {
+          processNext();
+        }
+      });      
     } else {
-      // 其他 / unknown
       processNext();
     }
   }
@@ -387,23 +388,30 @@ k.scene("main", async () => {
   // ✅ 地圖、角色、相機全部就緒後才開始開場對話流程
   async function startOpeningFlow() {
     player.isInDialogue = true;
-
+  
     const { chapter_id } = await getChapter();
     const { level_name } = await getLevel();
-
-    // speaker設定成"opening"，listener設定成"player"
-    // 這樣就可以撈取到開場對話的flow了
+  
+    // 撈取開場 flow，speaker 為 "opening"，listener 為 "player"
     const flow = await loadChapterFlow("opening", "player", chapter_id, level_name);
-
-    if (flow.length > 0) {
-      startFlow(flow, () => {
+  
+    // 過濾掉內容為 "沒有對話內容" 的對話項目
+    const filteredFlow = flow.filter(item => {
+      if (item.type === "line" && item.content.trim() === "沒有對話內容。") {
+        return false;
+      }
+      return true;
+    });
+  
+    if (filteredFlow.length > 0) {
+      startFlow(filteredFlow, () => {
         player.isInDialogue = false;
       });
     } else {
       console.log("❗無開場對話 flow，跳過對話流程");
       player.isInDialogue = false;
     }
-  }    
+  }  
 
   // ✅ 所有內容載入完才呼叫
   startOpeningFlow();
