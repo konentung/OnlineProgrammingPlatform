@@ -32,6 +32,8 @@ SECRET_KEY = os.environ['SECRET_KEY']
 DEBUG = False
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'onlineprogrammingplatform.onrender.com']
+# settings.py
+LOGIN_URL = '/login/'
 
 AUTH_USER_MODEL = 'accounts.Account'
 

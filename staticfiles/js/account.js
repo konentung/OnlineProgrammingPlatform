@@ -51,7 +51,7 @@ $(document).ready(function(){
             success: function(response) {
                 if (response.success) {
                     alert("註冊成功！");
-                    window.location.href = '/accounts/login/';  // 根據需求跳轉到登入頁或其他頁面
+                    window.location.href = '/login/';  // 根據需求跳轉到登入頁或其他頁面
                 } else if (response.message) {
                     alert(response.message);
                 }
@@ -76,6 +76,8 @@ $(document).ready(function(){
             success: function(response) {
                 if (response.message) {
                     alert(response.message);
+                } else if (response.redirect_url) {
+                    window.location.href = response.redirect_url;
                 } else {
                     window.location.href = '/';
                 }
