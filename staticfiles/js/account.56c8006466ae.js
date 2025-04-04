@@ -51,7 +51,7 @@ $(document).ready(function(){
             success: function(response) {
                 if (response.success) {
                     alert("註冊成功！");
-                    window.location.href = '/login/';  // 根據需求跳轉到登入頁或其他頁面
+                    window.location.href = '/accounts/login/';  // 根據需求跳轉到登入頁或其他頁面
                 } else if (response.message) {
                     alert(response.message);
                 }
