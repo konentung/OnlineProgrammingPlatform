@@ -76,6 +76,8 @@ $(document).ready(function(){
             success: function(response) {
                 if (response.message) {
                     alert(response.message);
+                } else if (response.redirect_url) {
+                    window.location.href = response.redirect_url;
                 } else {
                     window.location.href = '/';
                 }

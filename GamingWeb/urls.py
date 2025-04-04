@@ -25,9 +25,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # accounts
     path('', accounts_views.index, name='Index'),
-    path('accounts/login/', accounts_views.sign_in, name='Login'),
-    path('accounts/logout/', accounts_views.log_out, name='Logout'),
-    path('accounts/register/', accounts_views.register, name='Register'),
+    path('login/', accounts_views.sign_in, name='Login'),
+    path('logout/', accounts_views.log_out, name='Logout'),
+    path('register/', accounts_views.register, name='Register'),
     
     # games
     path('about/', games_views.about, name='About'),
