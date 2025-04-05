@@ -5,7 +5,7 @@ from accounts.models import Account
 from accounts.forms import RegisterForm, LoginForm
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from games.models import UserChapterRecord, UserLevelRecord, UserQuestionRecord, Chapter, Level, QuestionRed, QuestionBlue
+from games.models import UserChapterRecord, UserLevelRecord, UserLineRecord, UserQuestionRecord, Chapter, Level, Line, QuestionRed, QuestionBlue
 
 # 首頁
 def index(request):
@@ -21,11 +21,12 @@ def index(request):
 
 # 登入
 def sign_in(request):
+    next_url = request.GET.get('next') or request.POST.get('next') or reverse('Index')
     if request.user.is_authenticated:
         # 非 AJAX 請求直接重定向；AJAX 請求回傳 JSON 包含 redirect URL
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({'success': True, 'redirect_url': reverse('Index')})
-        return redirect(reverse('Index'))
+            return JsonResponse({'success': True, 'redirect_url': next_url})
+        return redirect(next_url)  # 這裡使用 next_url 而不是 reverse('Index')
     
     if request.method == "POST":
         form = LoginForm(request.POST) 
@@ -45,9 +46,9 @@ def sign_in(request):
                     request.session.set_expiry(0)
                 # 如果是 AJAX 請求，回傳 JSON 包含成功與 redirect URL
                 if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                    return JsonResponse({'success': True, 'redirect_url': reverse('Index')})
+                    return JsonResponse({'success': True, 'redirect_url': next_url})
                 else:
-                    return redirect(reverse('Index'))
+                    return redirect(next_url)  # 這裡改成使用 next_url
             else:
                 # 當 user 為 None 時，回傳錯誤訊息
                 message = '使用者名稱或密碼錯誤!'
@@ -58,7 +59,7 @@ def sign_in(request):
     else:
         form = LoginForm()
 
-    return render(request, 'accounts/login.html', {'form': form})
+    return render(request, 'accounts/login.html', {'form': form, 'next': next_url})
 
 # 登出
 def log_out(request):
@@ -94,10 +95,13 @@ def register(request):
             user = Account.objects.get(username=form.cleaned_data['username'])
             chapters = Chapter.objects.all()
             levels = Level.objects.all()
+            lines = Line.objects.all()
             for chapter in chapters:
                 UserChapterRecord.objects.create(account=user, chapter=chapter)
             for level in levels:
                 UserLevelRecord.objects.create(account=user, level=level)
+            for line in lines:
+                UserLineRecord.objects.create(account=user, line=line)
             questions_red = QuestionRed.objects.all()
             questions_blue = QuestionBlue.objects.all()
             for question_red in questions_red:

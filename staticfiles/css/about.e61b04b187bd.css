@@ -1,0 +1,115 @@
+/* about.css */
+
+.container {
+    text-align: center;
+    padding: 25px 0;
+}
+
+h1 {
+    margin-bottom: 30px;
+    font-size: 2rem;
+    color: #333;
+}
+
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 每行 3 個 */
+    grid-template-rows: repeat(2, auto);  /* 總共 2 行 */
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px; /* 增加最大寬度，確保內容夠寬 */
+    margin: auto; /* 讓整個區塊置中 */
+    justify-items: center;
+}
+
+.team-member {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.5s ease-in-out;
+    width: 100%;
+    max-width: 330px; /* 控制每個區塊最大寬度 */
+    
+    min-height: 150px; /* 確保統一高度 */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    
+    /* 初始動畫效果 */
+    animation: fadeInUp 0.75s ease-out forwards;
+
+    transition: transform 0.3s ease-in-out !important;
+}
+
+.team-member:hover {
+    transform: scale(1.05) !important;
+    transition: transform 0.3s ease-in-out !important;
+}
+
+.team-photo {
+    width: 100%; /* 確保不會超出格子 */
+    max-width: 150px; /* 限制圖片最大寬度 */
+    height: auto;
+    border-radius: 10px;
+}
+
+.team-info {
+    margin-top: 15px;
+}
+
+.team-info h5 {
+    font-size: 1.5rem;
+    color: #007bff;
+    margin-bottom: 5px;
+}
+
+.team-info h6 {
+    font-size: 1.2rem;
+    color: #555;
+    margin-bottom: 15px;
+}
+
+.team-info p {
+    display: block !important;
+    font-size: 1rem;
+    color: #111;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.teacher {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+    padding: 20px;
+    text-align: center;
+    width: 100%;
+    max-width: 330px;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    animation: fadeInUp 0.75s ease-out forwards;
+    margin: 40px auto; /* 增加上下間距並置中 */
+    transition: transform 0.3s ease-in-out;
+}
+
+.teacher:hover {
+    transform: scale(1.05) !important;
+}
+
+/* 定義動畫 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

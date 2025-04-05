@@ -1,7 +1,59 @@
-import { dialogueData, scaleFactor } from "/static/js/constants.js";
+import { scaleFactor } from "/static/js/constants.js";
 import { k } from "/static/js/kaboomCtx.js";
-import { displayDialogue, setCamScale } from "/static/js/utils.js";
+import { displayDialogue, setCamScale, getChapter, getLevel, displayQuestion, displayGameOver } from "/static/js/utils.js";
 
+async function loadChapterFlow(speaker, listener, chapterId, levelName) {
+  const res = await fetch(`/api/chapterflow/?speaker=${speaker}&listener=${listener}&chapter_id=${chapterId}&level_name=${levelName}`);
+  const data = await res.json();
+  if (data.error === "no_flow") {
+    player.isInDialogue = false;
+    return [];
+  }
+  if (data.error) {
+    console.error("Error fetching flow:", data.error);
+    return [];
+  }
+  return data.flow || [];
+}
+
+function startFlow(flowArray, onFinish) {
+  let currentIndex = 0;
+
+  function processNext() {
+    if (currentIndex >= flowArray.length) {
+      if (onFinish) onFinish();
+      return;
+    }
+    const item = flowArray[currentIndex];
+    currentIndex++;
+
+    if (item.type === "line") {
+      const lineText = `${item.speaker}：${item.content}`;
+      const isLast = (currentIndex === flowArray.length);
+      displayDialogue(lineText, () => {
+        processNext();
+      }, isLast);
+    } else if (item.type === "red_crack" || item.type === "blue_crack") {
+      // 顯示題目，並透過 callback 接收後端回傳的 game_over 旗標
+      displayQuestion(item, (game_over) => {
+        // 當使用者關閉題目對話後，就根據 game_over 判斷
+        if (game_over) {
+          processNext();
+          // 顯示遊戲結束畫面
+          displayGameOver();
+        } else {
+          processNext();
+        }
+      });      
+    } else {
+      processNext();
+    }
+  }
+
+  processNext();
+}
+
+// 建立spritesheet
 k.loadSprite("spritesheet", "/static/images/spritesheet.png", {
   sliceX: 39,
   sliceY: 31,
@@ -15,8 +67,10 @@ k.loadSprite("spritesheet", "/static/images/spritesheet.png", {
   },
 });
 
+// 載入地圖
 k.loadSprite("map", "/static/images/map.png");
 
+// 設定sprites
 k.loadSprite("van", "/static/images/Van.png", {
   sliceX: 10,
   sliceY: 9,
@@ -25,15 +79,17 @@ k.loadSprite("van", "/static/images/Van.png", {
   },
 });
 
-k.loadSprite("king", "/static/images/King.png");
+k.loadSprite("king", "/static/images/king.png");
 k.loadSprite("nan", "/static/images/Nan.png");
 
 k.loadSprite("crack_blue", "/static/images/blue_crack.png");
 k.loadSprite("crack_red", "/static/images/red_crack.png");
 k.loadSprite("big_crack", "/static/images/big_crack.png");
 
+// 設定背景顏色
 k.setBackground(k.Color.fromHex("#000000"));
 
+// 設定視窗大小以及地圖的縮放比例
 k.scene("main", async () => {
   const mapData = await (await fetch("/static/json/map.json")).json();
   const layers = mapData.layers;
@@ -53,7 +109,7 @@ k.scene("main", async () => {
             (map.pos.y + entity.y) * scaleFactor
           );
         }
-        if (entity.name === "King") {
+        if (entity.name === "king") {
           // 取得國王的 x 和 y 坐標，並根據 scaleFactor 計算位置
           kingPos = k.vec2(
             (map.pos.x + entity.x) * scaleFactor,
@@ -168,14 +224,29 @@ k.scene("main", async () => {
           k.pos(boundary.x, boundary.y),
           boundary.name,
         ]);
-
         if (boundary.name) {
           player.onCollide(boundary.name, () => {
-            player.isInDialogue = true;
-            displayDialogue(
-              dialogueData[boundary.name],
-              () => (player.isInDialogue = false)
-            );
+            (async () => {
+              player.isInDialogue = true;
+
+              // 1) 取得章節
+              const { chapter_id } = await getChapter();
+              const { level_name } = await getLevel();
+
+              // 2) 撈取新的 flow
+              const flowData = await loadChapterFlow("player", boundary.name, chapter_id, level_name);
+
+              // 3) 播放流程
+              if (flowData.length > 0) {
+                startFlow(flowData, () => {
+                  player.isInDialogue = false;
+                });
+              } else {
+                // 如果 flowData 為空，fallback 到舊的對話?
+                // or 直接關閉對話
+                player.isInDialogue = false;
+              }
+            })();
           });
         }
       }
@@ -313,6 +384,37 @@ k.scene("main", async () => {
       player.move(0, player.speed);
     }
   });
+
+  // ✅ 地圖、角色、相機全部就緒後才開始開場對話流程
+  async function startOpeningFlow() {
+    player.isInDialogue = true;
+  
+    const { chapter_id } = await getChapter();
+    const { level_name } = await getLevel();
+  
+    // 撈取開場 flow，speaker 為 "opening"，listener 為 "player"
+    const flow = await loadChapterFlow("opening", "player", chapter_id, level_name);
+  
+    // 過濾掉內容為 "沒有對話內容" 的對話項目
+    const filteredFlow = flow.filter(item => {
+      if (item.type === "line" && item.content.trim() === "沒有對話內容。") {
+        return false;
+      }
+      return true;
+    });
+  
+    if (filteredFlow.length > 0) {
+      startFlow(filteredFlow, () => {
+        player.isInDialogue = false;
+      });
+    } else {
+      console.log("❗無開場對話 flow，跳過對話流程");
+      player.isInDialogue = false;
+    }
+  }  
+
+  // ✅ 所有內容載入完才呼叫
+  startOpeningFlow();
 });
 
 k.go("main");

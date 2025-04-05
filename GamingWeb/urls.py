@@ -25,9 +25,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # accounts
     path('', accounts_views.index, name='Index'),
-    path('accounts/login/', accounts_views.sign_in, name='Login'),
-    path('accounts/logout/', accounts_views.log_out, name='Logout'),
-    path('accounts/register/', accounts_views.register, name='Register'),
+    path('login/', accounts_views.sign_in, name='Login'),
+    path('logout/', accounts_views.log_out, name='Logout'),
+    path('register/', accounts_views.register, name='Register'),
     
     # games
     path('about/', games_views.about, name='About'),
@@ -37,7 +37,6 @@ urlpatterns = [
     path('api/chapter/', games_views.get_min_not_cleared_chapter),
     path('api/chapterflow/', games_views.get_chapter_flow, name='ChapterFlow'),
     path('api/level/', games_views.get_min_not_cleared_level),
-    path('api/line/', games_views.get_min_not_cleared_line),
     path('api/check/', games_views.check_answer),
     
     path('api/reset/', games_views.reset_game),

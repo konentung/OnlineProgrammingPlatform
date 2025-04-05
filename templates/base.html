@@ -17,34 +17,9 @@
     {% endblock %}
 </head>
 <body>
-    <header class="bg-dark text-white">
-        <div class="container">
-            <nav class="navbar navbar-expand-lg navbar-dark">
-                <div class="container-fluid">
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav me-auto">
-                            <li class="nav-item"><a class="nav-link" href="{% url 'Index' %}">Home</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{% url 'Game' %}">Games</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{% url 'Notes' %}">Notes</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{% url 'About' %}">About</a></li>
-                        </ul>
-                        <ul class="navbar-nav">
-                            {% if user.is_authenticated %}
-                                <li class="nav-item"><a class="nav-link" href="{% url 'Logout' %}">Logout</a></li>
-                            {% else %}
-                                <li class="nav-item"><a id="openLoginModal" class="nav-link" href="{% url 'Login' %}">Login</a></li>
-                                <li class="nav-item"><a class="nav-link" href="{% url 'Register' %}">Signup</a></li>
-                            {% endif %}
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-        </div>
+    <header>
     </header>
-    <main class="container my-5">
+    <main class="{% if request.resolver_match.url_name == 'Game' %}game-full{% else %}container my-5{% endif %}">
         {% block content %}{% endblock %}
         {% if request.resolver_match.url_name == 'NoteContent' %}
             <a href="{% url 'Notes' %}" class=" note-btn btn position-fixed shadow-lg d-flex align-items-center justify-content-center" onmouseover="this.style.transform='scale(1.1)';" onmouseout="this.style.transform='scale(1)';">
@@ -52,6 +27,30 @@
             </a>
         {% endif %}
     </main>
+    <div id="floating-settings">
+        <div class="settings-toggle">
+        <img src="{% static 'images/setting.png' %}" alt="設定" class="rotate-btn">
+        </div>
+        <div class="settings-menu">
+        <div class="settings-auth">
+            {% if user.is_authenticated %}
+            <a href="{% url 'Logout' %}"><img src="{% static 'images/logout.gif' %}" alt="登出"></a>
+            {% else %}
+            <a href="{% url 'Login' %}"><img src="{% static 'images/login.gif' %}" alt="登入"></a>
+            <a href="{% url 'Register' %}"><img src="{% static 'images/register.gif' %}" alt="註冊"></a>
+            {% endif %}
+        </div>
+        <div>
+            <span>--------</span>
+        </div>
+        <div class="settings-nav">
+            <a href="{% url 'Index' %}"><img src="{% static 'images/home.gif' %}" alt="首頁"></a>
+            <a href="{% url 'Game' %}"><img src="{% static 'images/game.gif' %}" alt="遊戲"></a>
+            <a href="{% url 'Notes' %}"><img src="{% static 'images/pdf.gif' %}" alt="筆記"></a>
+            <a href="{% url 'About' %}"><img src="{% static 'images/about.gif' %}" alt="關於"></a>
+        </div>
+        </div>
+    </div>
     <script src="{% static 'js/base.js' %}"></script>
     <!-- AOS JS -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>

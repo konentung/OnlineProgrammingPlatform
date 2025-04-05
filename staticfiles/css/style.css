@@ -9,31 +9,20 @@ body {
     text-align: center;
 }
 
-.navbar {
-    background-color: #343a40;
-}
-
-.navbar-brand, .navbar-nav .nav-link {
-    color: #f8f9fa;
-}
-
-.navbar-brand:hover, .navbar-nav .nav-link:hover {
-    color: #ffc107 !important;
-}
+.game-full {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}  
 
 .card {
     background-color: #2a2a2a;
     border: none;
 }
 
-.btn-primary {
-    background-color: #ffc107;
-    border-color: #ffc107;
-}
-
-.btn-primary:hover {
-    background-color: #e0a800;
-    border-color: #d39e00;
+.card-title, .card-text {
+    color: #f8f9fa;
 }
 
 .footer {
@@ -67,4 +56,56 @@ body {
     height: 60px;
     font-size: 24px;
     transition: all 0.3s ease-in-out;
+}
+
+#floating-settings {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.settings-toggle {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 5px;
+    border-radius: 50%;
+    background: #00cfd6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease-in-out;
+}
+.settings-toggle img {
+    width: 30px;
+    transition: transform 0.5s ease-in-out;
+}
+.settings-toggle.open img {
+    transform: rotate(-180deg);
+}
+.settings-menu {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 10px;
+}
+.settings-menu a img {
+    width: 50px;
+    height: 50px;
+    transition: transform 0.3s;
+}
+.settings-menu a img:hover {
+    transform: scale(1.1);
+}
+.settings-auth,
+.settings-nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
 }
