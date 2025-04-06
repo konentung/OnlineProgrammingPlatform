@@ -219,18 +219,33 @@ export function displayGameOver() {
     btnContainer.append(restartBtn, homeBtn, aboutBtn);
     
     // 使用者點擊按鈕後先隱藏對話框，然後直接重新載入頁面
-    restartBtn.click(() => {
+    restartBtn.click(async () => {
       $("#textbox-container").hide(); // 隱藏對話框
-      window.location.reload(); // 直接重新載入當前頁面
-    });
+      try {
+        await fetch("/api/reset");
+      } catch (e) {
+        console.warn("重置失敗：", e);
+      }
+      window.location.reload(); // 重新載入頁面
+    });    
     
-    homeBtn.click(() => {
+    homeBtn.click(async() => {
       $("#textbox-container").hide();
+      try {
+        await fetch("/api/reset");
+      } catch (e) {
+        console.warn("重置失敗：", e);
+      }
       window.location.href = "/";
     });
     
-    aboutBtn.click(() => {
+    aboutBtn.click(async() => {
       $("#textbox-container").hide();
+      try {
+        await fetch("/api/reset");
+      } catch (e) {
+        console.warn("重置失敗：", e);
+      }
       window.location.href = "/about";
     });
     
