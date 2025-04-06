@@ -91,6 +91,10 @@ k.setBackground(k.Color.fromHex("#000000"));
 
 // 設定視窗大小以及地圖的縮放比例
 k.scene("main", async () => {
+  const crackRes = await fetch("/api/user_completed_cracks/");
+  const crackData = await crackRes.json();
+  const completedCracks = crackData.completed_cracks || [];
+
   const mapData = await (await fetch("/static/json/map.json")).json();
   const layers = mapData.layers;
 
@@ -125,11 +129,14 @@ k.scene("main", async () => {
         }
       }
     }
-    if (layer.name === "cracks"){
+    if (layer.name === "cracks") {
       for (const entity of layer.objects) {
         if (entity.name.startsWith("crack_blue_")) {
-          const crackNumber = parseInt(entity.name.split("_")[2]);
-          if (crackNumber >= 1 && crackNumber <= 4) {  
+          const crackName = entity.name;
+          // ✅ 如果已經完成，就跳過不顯示
+          if (completedCracks.includes(crackName)) continue;
+          const crackNumber = parseInt(crackName.split("_")[2]);
+          if (crackNumber >= 1 && crackNumber <= 4) {
             k.add([
               k.sprite("crack_blue"),
               k.pos(
@@ -141,8 +148,12 @@ k.scene("main", async () => {
             ]);
           }
         }
+    
         if (entity.name.startsWith("crack_red_")) {
-          const crackNumber = parseInt(entity.name.split("_")[2]);
+          const crackName = entity.name;
+          // ✅ 如果已經完成，就跳過不顯示
+          if (completedCracks.includes(crackName)) continue;
+          const crackNumber = parseInt(crackName.split("_")[2]);
           if (crackNumber >= 1 && crackNumber <= 4) {
             k.add([
               k.sprite("crack_red"),
@@ -155,7 +166,11 @@ k.scene("main", async () => {
             ]);
           }
         }
-        if (entity.name === "big_crack") {
+    
+        if (entity.name === "big_crack" && entity.visible === true) {
+          const crackName = entity.name; // Define crackName here for "big_crack"
+          // ✅ 如果已經完成，就跳過不顯示
+          if (completedCracks.includes(crackName)) continue;
           k.add([
             k.sprite("big_crack"),
             k.pos(
@@ -169,6 +184,7 @@ k.scene("main", async () => {
       }
     }
   }
+
 
   // 只執行一次 k.add()，並且使用 spawnpoints 設定的位置
   const player = k.add([
@@ -216,42 +232,50 @@ k.scene("main", async () => {
   for (const layer of layers) {
     if (layer.name === "boundaries") {
       for (const boundary of layer.objects) {
-        map.add([
-          k.area({
-            shape: new k.Rect(k.vec2(0), boundary.width, boundary.height),
-          }),
-          k.body({ isStatic: true }),
-          k.pos(boundary.x, boundary.y),
-          boundary.name,
-        ]);
-        if (boundary.name) {
-          player.onCollide(boundary.name, () => {
-            (async () => {
-              player.isInDialogue = true;
-
-              // 1) 取得章節
-              const { chapter_id } = await getChapter();
-              const { level_name } = await getLevel();
-
-              // 2) 撈取新的 flow
-              const flowData = await loadChapterFlow("player", boundary.name, chapter_id, level_name);
-
-              // 3) 播放流程
-              if (flowData.length > 0) {
-                startFlow(flowData, () => {
+        if (boundary.visible === true) {
+          map.add([
+            k.area({
+              shape: new k.Rect(k.vec2(0), boundary.width, boundary.height),
+            }),
+            k.body({ isStatic: true }),
+            k.pos(boundary.x, boundary.y),
+            boundary.name,
+          ]);
+          
+          // 判斷是否對應到裂縫，如果是，就隱藏該邊界物件
+          if (completedCracks.includes(boundary.name)) {
+            // 隱藏該物件
+            boundary.visible = false;
+          }
+  
+          if (boundary.name) {
+            player.onCollide(boundary.name, () => {
+              (async () => {
+                player.isInDialogue = true;
+  
+                // 1) 取得章節
+                const { chapter_id } = await getChapter();
+                const { level_name } = await getLevel();
+  
+                // 2) 撈取新的 flow
+                const flowData = await loadChapterFlow("player", boundary.name, chapter_id, level_name);
+  
+                // 3) 播放流程
+                if (flowData.length > 0) {
+                  startFlow(flowData, () => {
+                    player.isInDialogue = false;
+                  });
+                } else {
                   player.isInDialogue = false;
-                });
-              } else {
-                // 如果 flowData 為空，fallback 到舊的對話?
-                // or 直接關閉對話
-                player.isInDialogue = false;
-              }
-            })();
-          });
+                }
+              })();
+            });
+          }
         }
       }
     }
   }
+  
 
   setCamScale(k);
 
@@ -418,3 +442,5 @@ k.scene("main", async () => {
 });
 
 k.go("main");
+
+
