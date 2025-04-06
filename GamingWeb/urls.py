@@ -38,8 +38,10 @@ urlpatterns = [
     path('api/chapterflow/', games_views.get_chapter_flow, name='ChapterFlow'),
     path('api/level/', games_views.get_min_not_cleared_level),
     path('api/check/', games_views.check_answer),
+    path('api/get_cutscene_info/', games_views.get_cutscene_info),
     
     path('api/reset/', games_views.reset_game),
+    path('api/reset_all/', games_views.reset_user_all_game_data),
     
     # ai
     

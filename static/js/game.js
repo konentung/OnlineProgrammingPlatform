@@ -7,49 +7,66 @@ async function loadChapterFlow(speaker, listener, chapterId, levelName) {
   const data = await res.json();
   if (data.error === "no_flow") {
     player.isInDialogue = false;
-    return [];
+    return { flow: [], firstTime: false };
   }
   if (data.error) {
     console.error("Error fetching flow:", data.error);
-    return [];
+    return { flow: [], firstTime: false };
   }
-  return data.flow || [];
+  return {
+    flow: data.flow || [],
+    firstTime: data.first_time,  // ✅ 加上這個欄位
+  };
 }
 
 function startFlow(flowArray, onFinish) {
   let currentIndex = 0;
+  let gameOverHappened = false;
 
-  function processNext() {
+  async function processNext() {
     if (currentIndex >= flowArray.length) {
+      if (!gameOverHappened) {
+        console.log("✅ flow 全部完成，撈取下一關開頭動畫");
+        await startNextChapterOpening();
+      }
       if (onFinish) onFinish();
       return;
     }
     const item = flowArray[currentIndex];
     currentIndex++;
-
+  
     if (item.type === "line") {
       const lineText = `${item.speaker}：${item.content}`;
-      const isLast = (currentIndex === flowArray.length);
       displayDialogue(lineText, () => {
         processNext();
-      }, isLast);
+      }, currentIndex === flowArray.length);
     } else if (item.type === "red_crack" || item.type === "blue_crack") {
-      // 顯示題目，並透過 callback 接收後端回傳的 game_over 旗標
       displayQuestion(item, (game_over) => {
-        // 當使用者關閉題目對話後，就根據 game_over 判斷
         if (game_over) {
-          processNext();
-          // 顯示遊戲結束畫面
+          gameOverHappened = true;
           displayGameOver();
-        } else {
-          processNext();
         }
-      });      
+        processNext();
+      });
     } else {
       processNext();
     }
-  }
+  }  
   processNext();
+}
+
+async function startNextChapterOpening() {
+  const res1 = await fetch("/api/chapter/");
+  const res2 = await fetch("/api/level/");
+  const { chapter_id } = await res1.json();
+  const { level_name } = await res2.json();
+
+  const videoRes = await fetch(`/api/get_cutscene_info/?chapter_id=${chapter_id}&level_name=${level_name}`);
+  const videoData = await videoRes.json();
+
+  if (videoData.play_video) {
+    await playOpeningCutsceneFromUrl(videoData.video_url);
+  }
 }
 
 // 建立spritesheet
@@ -65,6 +82,40 @@ k.loadSprite("spritesheet", "/static/images/spritesheet.png", {
     "walk-up": { from: 1014, to: 1017, loop: true, speed: 8 },
   },
 });
+
+async function playOpeningCutsceneFromUrl(videoUrl) {
+  return new Promise((resolve) => {
+    const container = document.getElementById("cutscene-container");
+    const video = document.getElementById("cutscene-video");
+
+    if (!container || !video) return resolve();
+
+    video.src = videoUrl;
+    video.load();
+    container.style.display = "block";
+    console.log("🎬 撥放影片 URL：", videoUrl);
+
+    video.onplay = () => console.log("✅ 影片開始播放");
+    video.onended = () => {
+      console.log("✅ 影片播放結束");
+      container.style.display = "none";
+      resolve();
+    };
+    video.onerror = () => {
+      console.warn("❌ 影片播放失敗");
+      container.style.display = "none";
+      resolve();
+    };
+
+    video.onloadeddata = () => {
+      video.play().catch((err) => {
+        console.warn("影片播放失敗：", err);
+        container.style.display = "none";
+        resolve();
+      });
+    };
+  });
+}
 
 // 載入地圖
 k.loadSprite("map", "/static/images/map.png");
@@ -240,15 +291,12 @@ k.scene("main", async () => {
                 });
                 return;
               }
-        
               // 沒有對應資料才去 call API
               const { chapter_id } = await getChapter();
               const { level_name } = await getLevel();
-        
-              const flowData = await loadChapterFlow("player", boundary.name, chapter_id, level_name);
-        
-              if (flowData.length > 0) {
-                startFlow(flowData, () => {
+              const { flow } = await loadChapterFlow("player", boundary.name, chapter_id, level_name);
+              if (flow.length > 0) {
+                startFlow(flow, () => {
                   player.isInDialogue = false;
                 });
               } else {
@@ -256,7 +304,7 @@ k.scene("main", async () => {
               }
             })();
           });
-        }        
+        }
       }
     }
   }
@@ -394,35 +442,23 @@ k.scene("main", async () => {
   });
 
   // ✅ 地圖、角色、相機全部就緒後才開始開場對話流程
-  async function startOpeningFlow() {
+  async function startAnimation() {
     player.isInDialogue = true;
-  
+
     const { chapter_id } = await getChapter();
     const { level_name } = await getLevel();
-  
-    // 撈取開場 flow，speaker 為 "opening"，listener 為 "player"
-    const flow = await loadChapterFlow("opening", "player", chapter_id, level_name);
-  
-    // 過濾掉內容為 "沒有對話內容" 的對話項目
-    const filteredFlow = flow.filter(item => {
-      if (item.type === "line" && item.content.trim() === "沒有對話內容。") {
-        return false;
-      }
-      return true;
-    });
-  
-    if (filteredFlow.length > 0) {
-      startFlow(filteredFlow, () => {
-        player.isInDialogue = false;
-      });
-    } else {
-      console.log("❗無開場對話 flow，跳過對話流程");
-      player.isInDialogue = false;
+    const res = await fetch(`/api/get_cutscene_info/?chapter_id=${chapter_id}&level_name=${level_name}`);
+    const data = await res.json();
+
+    if (data.play_video) {
+      await playOpeningCutsceneFromUrl(data.video_url);
     }
-  }  
+
+    player.isInDialogue = false;
+  }
 
   // ✅ 所有內容載入完才呼叫
-  startOpeningFlow();
+  await startAnimation();
 });
 
 k.go("main");
