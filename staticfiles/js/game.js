@@ -1,4 +1,4 @@
-import { scaleFactor } from "/static/js/constants.js";
+import { scaleFactor, dialogueData } from "/static/js/constants.js";
 import { k } from "/static/js/kaboomCtx.js";
 import { displayDialogue, setCamScale, getChapter, getLevel, displayQuestion, displayGameOver } from "/static/js/utils.js";
 
@@ -49,7 +49,6 @@ function startFlow(flowArray, onFinish) {
       processNext();
     }
   }
-
   processNext();
 }
 
@@ -226,29 +225,38 @@ k.scene("main", async () => {
         ]);
         if (boundary.name) {
           player.onCollide(boundary.name, () => {
+            if (player.isInDialogue) return;
+        
             (async () => {
               player.isInDialogue = true;
-
-              // 1) 取得章節
+        
+              // 如果 dialogueData 中有對應資料就直接顯示
+              if (dialogueData[boundary.name]) {
+                console.log(`✅ 使用 dialogueData["${boundary.name}"]`);
+                const flowData = dialogueData[boundary.name];
+        
+                startFlow(flowData, () => {
+                  player.isInDialogue = false;
+                });
+                return;
+              }
+        
+              // 沒有對應資料才去 call API
               const { chapter_id } = await getChapter();
               const { level_name } = await getLevel();
-
-              // 2) 撈取新的 flow
+        
               const flowData = await loadChapterFlow("player", boundary.name, chapter_id, level_name);
-
-              // 3) 播放流程
+        
               if (flowData.length > 0) {
                 startFlow(flowData, () => {
                   player.isInDialogue = false;
                 });
               } else {
-                // 如果 flowData 為空，fallback 到舊的對話?
-                // or 直接關閉對話
                 player.isInDialogue = false;
               }
             })();
           });
-        }
+        }        
       }
     }
   }

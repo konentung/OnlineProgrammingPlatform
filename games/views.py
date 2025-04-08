@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.http import JsonResponse
-from .models import Line, QuestionRed, QuestionBlue, Chapter, Level, ChapterFlow, UserChapterRecord, UserLevelRecord, UserLineRecord, UserQuestionRecord
+from .models import Character, Line, QuestionRed, QuestionBlue, Chapter, Level, ChapterFlow, UserChapterRecord, UserLevelRecord, UserLineRecord, UserQuestionRecord
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -250,6 +250,44 @@ def get_min_not_cleared_chapter(request):
     first = UserChapterRecord.objects.filter(
         account=user).order_by('chapter__chapter_id').first()
     return JsonResponse({'chapter_id': first.chapter.chapter_id if first else 1})
+
+def get_cutscene_info(request):
+    user = request.user
+    try:
+        chapter_id = int(request.GET.get("chapter_id"))
+        level_name = request.GET.get("level_name")
+    except (TypeError, ValueError):
+        return JsonResponse({"error": "Invalid parameters"}, status=400)
+
+    try:
+        chapter = Chapter.objects.get(chapter_id=chapter_id)
+        level = Level.objects.get(level_name=level_name)
+    except (Chapter.DoesNotExist, Level.DoesNotExist):
+        return JsonResponse({"error": "Chapter or Level not found"}, status=404)
+
+    try:
+        speaker = Character.objects.get(name="player")
+        listener = Character.objects.get(name="video")
+    except Character.DoesNotExist:
+        return JsonResponse({"error": "Characters 'player' or 'video' not defined."}, status=404)
+
+    # 找出是否有對應的 line 且尚未 cleared
+    cutscene_lines = Line.objects.filter(
+        speaker=speaker,
+        listener=listener,
+        chapter=chapter,
+        level=level
+    )
+
+    for line in cutscene_lines:
+        record, created = UserLineRecord.objects.get_or_create(account=user, line=line)
+        if not record.cleared:
+            record.cleared = True
+            record.save()
+            filename = f"chapter{chapter.chapter_id}_{level.level_name}.mp4"
+            return JsonResponse({"play_video": True, "video_url": f"/static/video/{filename}"})
+
+    return JsonResponse({"play_video": False})
 
 # 取得章節 + 關卡下的流程，依使用者紀錄過濾
 

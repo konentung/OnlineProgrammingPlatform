@@ -42,6 +42,10 @@
         </div>
       </div>      
     </div>
+    <!-- 過場影片（一開始隱藏） -->
+    <div id="cutscene-container" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; background: black;">
+      <video id="cutscene-video" autoplay muted playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
+    </div>    
     <canvas id="gameCanvas"></canvas>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
