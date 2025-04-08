@@ -22,7 +22,7 @@ export function displayDialogue(text, onDisplayEnd, isLast = false) {
       return;
     }
     clearInterval(intervalRef);
-  }, 1);
+  }, 55);
 
   function onCloseBtnClick() {
     onDisplayEnd();

@@ -113,7 +113,7 @@ k.scene("main", async () => {
             (map.pos.y + entity.y) * scaleFactor
           );
         }
-        if (entity.name === "king") {
+        if (entity.name === "King") {
           // 取得國王的 x 和 y 坐標，並根據 scaleFactor 計算位置
           kingPos = k.vec2(
             (map.pos.x + entity.x) * scaleFactor,
@@ -177,7 +177,7 @@ k.scene("main", async () => {
               (map.pos.x + entity.x) * scaleFactor,
               (map.pos.y + entity.y) * scaleFactor
             ),
-            k.scale(0.8),
+            k.scale(0.6),
             k.anchor("center"),
           ]);
         }
