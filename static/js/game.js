@@ -141,6 +141,10 @@ k.setBackground(k.Color.fromHex("#000000"));
 
 // 設定視窗大小以及地圖的縮放比例
 k.scene("main", async () => {
+  const crackRes = await fetch("/api/user_completed_cracks/");
+  const crackData = await crackRes.json();
+  const completedCracks = crackData.completed_cracks || [];
+
   const mapData = await (await fetch("/static/json/map.json")).json();
   const layers = mapData.layers;
 
@@ -159,7 +163,7 @@ k.scene("main", async () => {
             (map.pos.y + entity.y) * scaleFactor
           );
         }
-        if (entity.name === "king") {
+        if (entity.name === "King") {
           // 取得國王的 x 和 y 坐標，並根據 scaleFactor 計算位置
           kingPos = k.vec2(
             (map.pos.x + entity.x) * scaleFactor,
@@ -175,11 +179,14 @@ k.scene("main", async () => {
         }
       }
     }
-    if (layer.name === "cracks"){
+    if (layer.name === "cracks") {
       for (const entity of layer.objects) {
         if (entity.name.startsWith("crack_blue_")) {
-          const crackNumber = parseInt(entity.name.split("_")[2]);
-          if (crackNumber >= 1 && crackNumber <= 4) {  
+          const crackName = entity.name;
+          // ✅ 如果已經完成，就跳過不顯示
+          if (completedCracks.includes(crackName)) continue;
+          const crackNumber = parseInt(crackName.split("_")[2]);
+          if (crackNumber >= 1 && crackNumber <= 4) {
             k.add([
               k.sprite("crack_blue"),
               k.pos(
@@ -191,8 +198,12 @@ k.scene("main", async () => {
             ]);
           }
         }
+    
         if (entity.name.startsWith("crack_red_")) {
-          const crackNumber = parseInt(entity.name.split("_")[2]);
+          const crackName = entity.name;
+          // ✅ 如果已經完成，就跳過不顯示
+          if (completedCracks.includes(crackName)) continue;
+          const crackNumber = parseInt(crackName.split("_")[2]);
           if (crackNumber >= 1 && crackNumber <= 4) {
             k.add([
               k.sprite("crack_red"),
@@ -205,20 +216,25 @@ k.scene("main", async () => {
             ]);
           }
         }
-        if (entity.name === "big_crack") {
+    
+        if (entity.name === "big_crack" && entity.visible === true) {
+          const crackName = entity.name; // Define crackName here for "big_crack"
+          // ✅ 如果已經完成，就跳過不顯示
+          if (completedCracks.includes(crackName)) continue;
           k.add([
             k.sprite("big_crack"),
             k.pos(
               (map.pos.x + entity.x) * scaleFactor,
               (map.pos.y + entity.y) * scaleFactor
             ),
-            k.scale(0.8),
+            k.scale(0.6),
             k.anchor("center"),
           ]);
         }
       }
     }
   }
+
 
   // 只執行一次 k.add()，並且使用 spawnpoints 設定的位置
   const player = k.add([
@@ -241,16 +257,16 @@ k.scene("main", async () => {
   // 創建國王
   const king = k.add([
     k.sprite("king"),
-    k.pos(kingPos), // 使用從 map.json 取得的坐標
-    k.scale(0.6), // 調整國王圖片的大小
+    k.pos(kingPos),
+    k.scale(0.06),
     k.anchor("center"),
     "king",
   ]);
 
   const nan = k.add([
     k.sprite("nan"),
-    k.pos(nanPos), // 使用從 map.json 取得的坐標
-    k.scale(0.6), // 調整國王圖片的大小
+    k.pos(nanPos),
+    k.scale(0.1), 
     k.anchor("center"),
     "nan",
   ]);
@@ -266,6 +282,9 @@ k.scene("main", async () => {
   for (const layer of layers) {
     if (layer.name === "boundaries") {
       for (const boundary of layer.objects) {
+        // 若物件不可見則跳過處理
+        if (boundary.visible === false) continue;
+
         map.add([
           k.area({
             shape: new k.Rect(k.vec2(0), boundary.width, boundary.height),
@@ -274,29 +293,43 @@ k.scene("main", async () => {
           k.pos(boundary.x, boundary.y),
           boundary.name,
         ]);
+
+        // 判斷是否已完成對應裂縫，若是則隱藏該邊界物件
+        if (completedCracks.includes(boundary.name)) {
+          boundary.visible = false;
+          continue;
+        }
+
         if (boundary.name) {
           player.onCollide(boundary.name, () => {
             if (player.isInDialogue) return;
-        
+
             (async () => {
               player.isInDialogue = true;
-        
-              // 如果 dialogueData 中有對應資料就直接顯示
-              if (dialogueData[boundary.name]) {
+
+              // 優先使用本地 dialogueData
+              if (dialogueData && dialogueData[boundary.name]) {
                 console.log(`✅ 使用 dialogueData["${boundary.name}"]`);
                 const flowData = dialogueData[boundary.name];
-        
                 startFlow(flowData, () => {
                   player.isInDialogue = false;
                 });
                 return;
               }
-              // 沒有對應資料才去 call API
+
+              // 若本地無資料，則從 API 獲取
               const { chapter_id } = await getChapter();
               const { level_name } = await getLevel();
-              const { flow } = await loadChapterFlow("player", boundary.name, chapter_id, level_name);
-              if (flow.length > 0) {
-                startFlow(flow, () => {
+
+              const flowData = await loadChapterFlow(
+                "player",
+                boundary.name,
+                chapter_id,
+                level_name
+              );
+
+              if (flowData.length > 0) {
+                startFlow(flowData, () => {
                   player.isInDialogue = false;
                 });
               } else {
