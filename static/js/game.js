@@ -207,16 +207,16 @@ k.scene("main", async () => {
   // 創建國王
   const king = k.add([
     k.sprite("king"),
-    k.pos(kingPos), // 使用從 map.json 取得的坐標
-    k.scale(0.6), // 調整國王圖片的大小
+    k.pos(kingPos),
+    k.scale(0.06),
     k.anchor("center"),
     "king",
   ]);
 
   const nan = k.add([
     k.sprite("nan"),
-    k.pos(nanPos), // 使用從 map.json 取得的坐標
-    k.scale(0.6), // 調整國王圖片的大小
+    k.pos(nanPos),
+    k.scale(0.1), 
     k.anchor("center"),
     "nan",
   ]);
