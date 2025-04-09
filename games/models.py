@@ -2,8 +2,6 @@ from django.db import models
 from accounts.models import Account
 
 # 角色
-
-
 class Character(models.Model):
     name = models.CharField(max_length=100)
     Cname = models.CharField(max_length=100)
@@ -16,8 +14,6 @@ class Character(models.Model):
         return self.name
 
 # 關卡
-
-
 class Level(models.Model):
     level_name = models.CharField(max_length=100)
     description = models.CharField(max_length=300)
@@ -27,8 +23,6 @@ class Level(models.Model):
         return self.level_name
 
 # 劇情
-
-
 class Chapter(models.Model):
     chapter_id = models.IntegerField()
     chapter_name = models.CharField(max_length=100)
@@ -39,15 +33,19 @@ class Chapter(models.Model):
         return self.chapter_name
 
 # 道具
-# class Item(models.Model):
-#     name = models.CharField(max_length=100)
-#     description = models.CharField(max_length=300)
-#     character = models.ForeignKey(Character, on_delete=models.CASCADE)
-#     used = models.BooleanField(default=False)
+class Item(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=300)
+    character = models.ForeignKey(Character, on_delete=models.CASCADE)
+    used = models.BooleanField(default=False)
+
+# 提示詞
+class Hint(models.Model):
+    hint_content = models.CharField(max_length=500)
+    chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE)
+    level = models.ForeignKey(Level, on_delete=models.CASCADE)
 
 # 台詞
-
-
 class Line(models.Model):
     content = models.CharField(max_length=300)
     speaker = models.ForeignKey(
@@ -59,11 +57,11 @@ class Line(models.Model):
     def __str__(self):
         return self.content
 
-
 class QuestionType(models.Model):
     TYPE_CHOICES = [
         ('red_crack', '紅色裂縫'),
-        ('blue_crack', '藍色裂縫')
+        ('blue_crack', '藍色裂縫'),
+        ('big_crack', '大裂縫'),
     ]
     question_type = models.CharField(max_length=20, choices=TYPE_CHOICES)
 
@@ -71,8 +69,6 @@ class QuestionType(models.Model):
         return self.question_type
 
 # 紅色裂縫選擇題
-
-
 class QuestionRed(models.Model):
     question = models.TextField()
     option1 = models.TextField()
@@ -90,8 +86,7 @@ class QuestionRed(models.Model):
     level = models.ForeignKey('Level', on_delete=models.CASCADE)
     chapter = models.ForeignKey('Chapter', on_delete=models.CASCADE)
     question_type = models.ForeignKey(QuestionType, on_delete=models.CASCADE)
-    listener = models.ForeignKey(
-        'Character', on_delete=models.CASCADE, null=True, blank=True)
+    listener = models.ForeignKey('Character', on_delete=models.CASCADE, null=True, blank=True)
 
     # 新增的欄位來記錄裂縫名稱
     map_object_name = models.CharField(max_length=100, null=True, blank=True)
@@ -100,8 +95,6 @@ class QuestionRed(models.Model):
         return self.question
 
 # 藍色裂縫問答題
-
-
 class QuestionBlue(models.Model):
     question = models.TextField()
     answer = models.TextField()
@@ -109,8 +102,7 @@ class QuestionBlue(models.Model):
     level = models.ForeignKey('Level', on_delete=models.CASCADE)
     chapter = models.ForeignKey('Chapter', on_delete=models.CASCADE)
     question_type = models.ForeignKey(QuestionType, on_delete=models.CASCADE)
-    listener = models.ForeignKey(
-        'Character', on_delete=models.CASCADE, null=True, blank=True)
+    listener = models.ForeignKey('Character', on_delete=models.CASCADE, null=True, blank=True)
 
     # 新增的欄位來記錄裂縫名稱
     map_object_name = models.CharField(max_length=100, null=True, blank=True)
@@ -118,13 +110,36 @@ class QuestionBlue(models.Model):
     def __str__(self):
         return self.question
 
+# 大裂縫選擇題
+class QuestionBig(models.Model):
+    question = models.TextField()
+    option1 = models.TextField()
+    option2 = models.TextField()
+    option3 = models.TextField()
+    option4 = models.TextField()
+    OPTION_CHOICES = [
+        ('option1', 'option1'),
+        ('option2', 'option2'),
+        ('option3', 'option3'),
+        ('option4', 'option4')
+    ]
+    answer = models.CharField(max_length=20, choices=OPTION_CHOICES)
+    correct = models.BooleanField(default=False)
+    level = models.ForeignKey('Level', on_delete=models.CASCADE)
+    chapter = models.ForeignKey('Chapter', on_delete=models.CASCADE)
+    question_type = models.ForeignKey(QuestionType, on_delete=models.CASCADE)
+    listener = models.ForeignKey('Character', on_delete=models.CASCADE, null=True, blank=True)
+
+    # 新增的欄位來記錄裂縫名稱
+    map_object_name = models.CharField(max_length=100, null=True, blank=True)
+
+    def __str__(self):
+        return self.question
 
 class Line(models.Model):
     content = models.CharField(max_length=300)
-    speaker = models.ForeignKey(
-        'Character', on_delete=models.CASCADE, related_name='speaker')
-    listener = models.ForeignKey(
-        'Character', on_delete=models.CASCADE, related_name='listener')
+    speaker = models.ForeignKey('Character', on_delete=models.CASCADE, related_name='speaker')
+    listener = models.ForeignKey('Character', on_delete=models.CASCADE, related_name='listener')
     level = models.ForeignKey('Level', on_delete=models.CASCADE)
     chapter = models.ForeignKey('Chapter', on_delete=models.CASCADE)
 
@@ -132,8 +147,6 @@ class Line(models.Model):
         return self.content
 
 # 所有對話流程
-
-
 class ChapterFlow(models.Model):
     """
     這張表用來將「對話」或「題目(紅/藍)」都串接到同一個流程裡。
@@ -143,12 +156,10 @@ class ChapterFlow(models.Model):
     chapter = models.ForeignKey('Chapter', on_delete=models.CASCADE)
     level = models.ForeignKey('Level', on_delete=models.CASCADE)
     order = models.PositiveIntegerField()
-    line = models.ForeignKey(
-        'Line', on_delete=models.CASCADE, null=True, blank=True)
-    question_red = models.ForeignKey(
-        'QuestionRed', on_delete=models.CASCADE, null=True, blank=True)
-    question_blue = models.ForeignKey(
-        'QuestionBlue', on_delete=models.CASCADE, null=True, blank=True)
+    line = models.ForeignKey('Line', on_delete=models.CASCADE, null=True, blank=True)
+    question_red = models.ForeignKey('QuestionRed', on_delete=models.CASCADE, null=True, blank=True)
+    question_blue = models.ForeignKey('QuestionBlue', on_delete=models.CASCADE, null=True, blank=True)
+    question_big = models.ForeignKey('QuestionBig', on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
         ordering = ['order']
@@ -157,8 +168,6 @@ class ChapterFlow(models.Model):
         return f"ChapterFlow (chapter={self.chapter.id}, level={self.level}, order={self.order})"
 
 # 根據使用者記錄他們個別的資料
-
-
 class UserChapterRecord(models.Model):
     """紀錄使用者是否每個章節通關"""
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
@@ -167,7 +176,6 @@ class UserChapterRecord(models.Model):
 
     def __str__(self):
         return f"{self.account.username} - {self.chapter.chapter_name}"
-
 
 class UserLevelRecord(models.Model):
     """紀錄使用者是否每個關卡通關"""
@@ -178,7 +186,6 @@ class UserLevelRecord(models.Model):
     def __str__(self):
         return f"{self.account.username} - {self.level.level_name}"
 
-
 class UserLineRecord(models.Model):
     """紀錄使用者觀看過的對話"""
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
@@ -188,17 +195,25 @@ class UserLineRecord(models.Model):
     def __str__(self):
         return f"{self.account.username} - {self.line}"
 
-
 class UserQuestionRecord(models.Model):
     """紀錄使用者答題狀況"""
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
-    question_red = models.ForeignKey(
-        QuestionRed, on_delete=models.CASCADE, null=True, blank=True)
-    question_blue = models.ForeignKey(
-        QuestionBlue, on_delete=models.CASCADE, null=True, blank=True)
+    question_red = models.ForeignKey(QuestionRed, on_delete=models.CASCADE, null=True, blank=True)
+    question_blue = models.ForeignKey(QuestionBlue, on_delete=models.CASCADE, null=True, blank=True)
+    question_big = models.ForeignKey(QuestionBig, on_delete=models.CASCADE, null=True, blank=True)
     answered_count = models.PositiveIntegerField(default=0)
     correct_count = models.PositiveIntegerField(default=0)
     cleared = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.account.username} - {self.question_red or self.question_blue}"
+
+class UserItemRecord(models.Model):
+    """紀錄使用者擁有的道具"""
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    obtained = models.BooleanField(default=False)
+    used = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.account.username} - {self.item.name}"

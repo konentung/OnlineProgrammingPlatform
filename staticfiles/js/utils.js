@@ -22,7 +22,7 @@ export function displayDialogue(text, onDisplayEnd, isLast = false) {
       return;
     }
     clearInterval(intervalRef);
-  }, 1);
+  }, 10);
 
   function onCloseBtnClick() {
     onDisplayEnd();
@@ -175,7 +175,7 @@ export function displayGameOver() {
   displayDialogue(gameOverText, () => {
     // 對話播完後顯示選項
     const btnContainer = $(".btn-container");
-    btnContainer.empty();
+    btnContainer.empty(); // 清空按鈕容器
     
     // 設定按鈕容器的位置（絕對定位到對話框的左上角）
     btnContainer.css({
@@ -219,18 +219,33 @@ export function displayGameOver() {
     btnContainer.append(restartBtn, homeBtn, aboutBtn);
     
     // 使用者點擊按鈕後先隱藏對話框，然後直接重新載入頁面
-    restartBtn.click(() => {
+    restartBtn.click(async () => {
       $("#textbox-container").hide(); // 隱藏對話框
-      window.location.reload(); // 直接重新載入當前頁面
-    });
+      try {
+        await fetch("/api/reset");
+      } catch (e) {
+        console.warn("重置失敗：", e);
+      }
+      window.location.reload(); // 重新載入頁面
+    });    
     
-    homeBtn.click(() => {
+    homeBtn.click(async() => {
       $("#textbox-container").hide();
+      try {
+        await fetch("/api/reset");
+      } catch (e) {
+        console.warn("重置失敗：", e);
+      }
       window.location.href = "/";
     });
     
-    aboutBtn.click(() => {
+    aboutBtn.click(async() => {
       $("#textbox-container").hide();
+      try {
+        await fetch("/api/reset");
+      } catch (e) {
+        console.warn("重置失敗：", e);
+      }
       window.location.href = "/about";
     });
     

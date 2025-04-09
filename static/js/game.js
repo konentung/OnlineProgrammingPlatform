@@ -7,15 +7,14 @@ async function loadChapterFlow(speaker, listener, chapterId, levelName) {
   const data = await res.json();
   if (data.error === "no_flow") {
     player.isInDialogue = false;
-    return { flow: [], firstTime: false };
+    return { flow: [] };
   }
   if (data.error) {
     console.error("Error fetching flow:", data.error);
-    return { flow: [], firstTime: false };
+    return { flow: []};
   }
   return {
     flow: data.flow || [],
-    firstTime: data.first_time,  // ✅ 加上這個欄位
   };
 }
 
@@ -141,10 +140,6 @@ k.setBackground(k.Color.fromHex("#000000"));
 
 // 設定視窗大小以及地圖的縮放比例
 k.scene("main", async () => {
-  const crackRes = await fetch("/api/user_completed_cracks/");
-  const crackData = await crackRes.json();
-  const completedCracks = crackData.completed_cracks || [];
-
   const mapData = await (await fetch("/static/json/map.json")).json();
   const layers = mapData.layers;
 
@@ -179,48 +174,36 @@ k.scene("main", async () => {
         }
       }
     }
-    if (layer.name === "cracks") {
+    if (layer.name === "cracks"){
       for (const entity of layer.objects) {
         if (entity.name.startsWith("crack_blue_")) {
           const crackName = entity.name;
-          // ✅ 如果已經完成，就跳過不顯示
-          if (completedCracks.includes(crackName)) continue;
-          const crackNumber = parseInt(crackName.split("_")[2]);
-          if (crackNumber >= 1 && crackNumber <= 4) {
-            k.add([
-              k.sprite("crack_blue"),
-              k.pos(
-                (map.pos.x + entity.x) * scaleFactor,
-                (map.pos.y + entity.y) * scaleFactor
-              ),
-              k.scale(0.5),
-              k.anchor("center"),
-            ]);
-          }
+          k.add([
+            k.sprite("crack_blue"),
+            k.pos(
+              (map.pos.x + entity.x) * scaleFactor,
+              (map.pos.y + entity.y) * scaleFactor
+            ),
+            k.scale(0.5),
+            k.anchor("center"),
+          ]);
         }
     
         if (entity.name.startsWith("crack_red_")) {
           const crackName = entity.name;
-          // ✅ 如果已經完成，就跳過不顯示
-          if (completedCracks.includes(crackName)) continue;
-          const crackNumber = parseInt(crackName.split("_")[2]);
-          if (crackNumber >= 1 && crackNumber <= 4) {
-            k.add([
-              k.sprite("crack_red"),
-              k.pos(
-                (map.pos.x + entity.x) * scaleFactor,
-                (map.pos.y + entity.y) * scaleFactor
-              ),
-              k.scale(0.55),
-              k.anchor("center"),
-            ]);
-          }
+          k.add([
+            k.sprite("crack_red"),
+            k.pos(
+              (map.pos.x + entity.x) * scaleFactor,
+              (map.pos.y + entity.y) * scaleFactor
+            ),
+            k.scale(0.55),
+            k.anchor("center"),
+          ]);
         }
     
-        if (entity.name === "big_crack" && entity.visible === true) {
-          const crackName = entity.name; // Define crackName here for "big_crack"
-          // ✅ 如果已經完成，就跳過不顯示
-          if (completedCracks.includes(crackName)) continue;
+        if (entity.name === "big_crack_") {
+          const crackName = entity.name
           k.add([
             k.sprite("big_crack"),
             k.pos(
@@ -282,9 +265,6 @@ k.scene("main", async () => {
   for (const layer of layers) {
     if (layer.name === "boundaries") {
       for (const boundary of layer.objects) {
-        // 若物件不可見則跳過處理
-        if (boundary.visible === false) continue;
-
         map.add([
           k.area({
             shape: new k.Rect(k.vec2(0), boundary.width, boundary.height),
@@ -294,16 +274,9 @@ k.scene("main", async () => {
           boundary.name,
         ]);
 
-        // 判斷是否已完成對應裂縫，若是則隱藏該邊界物件
-        if (completedCracks.includes(boundary.name)) {
-          boundary.visible = false;
-          continue;
-        }
-
         if (boundary.name) {
           player.onCollide(boundary.name, () => {
             if (player.isInDialogue) return;
-
             (async () => {
               player.isInDialogue = true;
 
@@ -328,13 +301,13 @@ k.scene("main", async () => {
                 level_name
               );
 
-              if (flowData.length > 0) {
-                startFlow(flowData, () => {
+              if (flowData.flow.length > 0) {
+                startFlow(flowData.flow, () => {
                   player.isInDialogue = false;
                 });
               } else {
                 player.isInDialogue = false;
-              }
+              }              
             })();
           });
         }

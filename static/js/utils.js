@@ -22,7 +22,7 @@ export function displayDialogue(text, onDisplayEnd, isLast = false) {
       return;
     }
     clearInterval(intervalRef);
-  }, 55);
+  }, 10);
 
   function onCloseBtnClick() {
     onDisplayEnd();
@@ -175,7 +175,7 @@ export function displayGameOver() {
   displayDialogue(gameOverText, () => {
     // 對話播完後顯示選項
     const btnContainer = $(".btn-container");
-    btnContainer.empty();
+    btnContainer.empty(); // 清空按鈕容器
     
     // 設定按鈕容器的位置（絕對定位到對話框的左上角）
     btnContainer.css({
