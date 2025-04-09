@@ -33,8 +33,6 @@ urlpatterns = [
     # games
     path('about/', games_views.about, name='About'),
     path('game/', games_views.game, name='Game'),
-    path('notes/', games_views.notes, name='Notes'),
-    path('notes/<str:unit_name>', games_views.note_content, name='NoteContent'),
     path('api/chapter/', games_views.get_min_not_cleared_chapter),
     path('api/chapterflow/', games_views.get_chapter_flow, name='ChapterFlow'),
     path('api/level/', games_views.get_min_not_cleared_level),

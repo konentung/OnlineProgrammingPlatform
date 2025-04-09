@@ -25,40 +25,46 @@ export const dialogueData = {
     // Desert: [
     //   { type: "line", speaker: "Desert", content: "Desert." }
     // ],
-  
-    bulletin1: [
+    bulletin_0: [
         {
             type: "line",
-            speaker: "bulletin1",
+            speaker: "bulletin_0",
             content: `<a href="/static/pdf/基礎概念.pdf" target="_blank" style="text-decoration: none">基礎概念</a>`,
         }
     ],
-    bulletin2: [
+    bulletin_1: [
         {
             type: "line",
-            speaker: "bulletin2",
+            speaker: "bulletin_1",
             content: `<a href="/static/pdf/第一單元「相等性」.pdf" target="_blank" style="text-decoration: none">第一單元「相等性」</a>`,
         }
     ],
-    bulletin3: [
+    bulletin_2: [
         {
             type: "line",
-            speaker: "bulletin3",
+            speaker: "bulletin_2",
             content: `<a href="/static/pdf/第二單元「運算元與運算子」.pdf" target="_blank" style="text-decoration: none">第二單元「運算元與運算子」</a>`,
         }
     ],
-    bulletin4: [
+    bulletin_3: [
         {
             type: "line",
-            speaker: "bulletin4",
+            speaker: "bulletin_3",
             content: `<a href="/static/pdf/第三單元「迴圈」.pdf" target="_blank" style="text-decoration: none">第三單元「迴圈」</a>`,
         }
     ],
-    bulletin5: [
+    bulletin_4: [
         {
             type: "line",
-            speaker: "bulletin5",
+            speaker: "bulletin_4",
             content: `<a href="/static/pdf/第四單元「邏輯控制」.pdf" target="_blank" style="text-decoration: none">第四單元「邏輯控制」</a>`,
+        }
+    ],
+    bulletin_5: [
+        {
+            type: "line",
+            speaker: "bulletin_5",
+            content: `<a href="/static/pdf/第五單元「函式」.pdf" target="_blank" style="text-decoration: none">第五單元「函式」</a>`,
         }
     ],
   
