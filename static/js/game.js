@@ -39,7 +39,7 @@ function startFlow(flowArray, onFinish) {
       displayDialogue(lineText, () => {
         processNext();
       }, currentIndex === flowArray.length);
-    } else if (item.type === "red_crack" || item.type === "blue_crack") {
+    } else if (item.type === "red_crack" || item.type === "blue_crack" || item.type === "big_crack") {
       displayQuestion(item, (game_over) => {
         if (game_over) {
           gameOverHappened = true;

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.http import JsonResponse
-from .models import Character, Line, QuestionRed, QuestionBlue, Chapter, Level, ChapterFlow, UserChapterRecord, UserLevelRecord, UserLineRecord, UserQuestionRecord
+from .models import Character, Line, QuestionRed, QuestionBlue, QuestionBig, Chapter, Level, ChapterFlow, UserChapterRecord, UserLevelRecord, UserLineRecord, UserQuestionRecord
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -67,10 +67,10 @@ def check_answer(request):
 
     elif question_type == "big_crack":
         try:
-            question = QuestionRed.objects.get(id=question_id)
-            record = UserQuestionRecord.objects.get(account=user, question_red=question)
-        except (QuestionRed.DoesNotExist, UserQuestionRecord.DoesNotExist):
-            return JsonResponse({"error": "Big crack question not found"}, status=404)
+            question = QuestionBig.objects.get(id=question_id)
+            record = UserQuestionRecord.objects.get(account=user, question_big=question)
+        except (QuestionBig.DoesNotExist, UserQuestionRecord.DoesNotExist):
+            return JsonResponse({"error": "Big question not found"}, status=404)
 
         # 檢查是否作答正確
         is_correct = (user_answer == question.answer)
@@ -102,10 +102,11 @@ def check_all_cleared(user):
     all_lines_cleared = all(r.cleared for r in UserLineRecord.objects.all() if r.account == user)
     all_red_cleared = all(r.cleared for r in UserQuestionRecord.objects.all() if r.account == user and r.question_red)
     all_blue_cleared = all(r.cleared for r in UserQuestionRecord.objects.all() if r.account == user and r.question_blue)
+    all_big_cleared = all(r.cleared for r in UserQuestionRecord.objects.all() if r.account == user and r.question_big)
     all_chapters_cleared = all(r.cleared for r in UserChapterRecord.objects.all() if r.account == user)
     all_levels_cleared = all(r.cleared for r in UserLevelRecord.objects.all() if r.account == user)
 
-    return all([all_lines_cleared, all_red_cleared, all_blue_cleared, all_chapters_cleared, all_levels_cleared])
+    return all([all_lines_cleared, all_red_cleared, all_blue_cleared, all_big_cleared, all_chapters_cleared, all_levels_cleared])
 
 # 設定章節通
 def set_chapter_cleared(user, chapter):
@@ -120,8 +121,9 @@ def set_chapter_cleared(user, chapter):
     # 檢查章節內紅藍題是否完成
     user_red_questions = UserQuestionRecord.objects.filter(cleared=False, account=user, question_red__chapter=chapter)
     user_blue_questions = UserQuestionRecord.objects.filter(cleared=False, account=user, question_blue__chapter=chapter)
+    user_big_questions = UserQuestionRecord.objects.filter(cleared=False, account=user, question_big__chapter=chapter)
 
-    if user_red_questions.exists() or user_blue_questions.exists():
+    if user_red_questions.exists() or user_blue_questions.exists() or user_big_questions.exists():
         return False
 
     UserChapterRecord.objects.update_or_create(
@@ -142,9 +144,10 @@ def set_level_cleared(user, level):
     # 2) 查詢所有尚未完成的紅/藍題（屬於此 level 的）
     user_red_questions = UserQuestionRecord.objects.filter(cleared=False, account=user, question_red__level=level)
     user_blue_questions = UserQuestionRecord.objects.filter(cleared=False, account=user, question_blue__level=level)
+    user_big_questions = UserQuestionRecord.objects.filter(cleared=False, account=user, question_big__level=level)
 
     # 如果還有未完成的題目，就不標記通關
-    if user_red_questions.exists() or user_blue_questions.exists():
+    if user_red_questions.exists() or user_blue_questions.exists() or user_big_questions.exists():
         return False
 
     # 3) 若真的都完成，標記此關卡為通關
@@ -239,6 +242,7 @@ def get_chapter_flow(request):
     all_lines_cleared = all(r.cleared for r in UserLineRecord.objects.all() if r.account == user)
     all_red_cleared = all(r.cleared for r in UserQuestionRecord.objects.all() if r.account == user and r.question_red)
     all_blue_cleared = all(r.cleared for r in UserQuestionRecord.objects.all() if r.account == user and r.question_blue)
+    all_big_cleared = all(r.cleared for r in UserQuestionRecord.objects.all() if r.account == user and r.question_big)
     all_chapters_cleared = all(r.cleared for r in UserChapterRecord.objects.all() if r.account == user)
     all_levels_cleared = all(r.cleared for r in UserLevelRecord.objects.all() if r.account == user)
 
@@ -262,6 +266,7 @@ def get_chapter_flow(request):
     cleared_lines = [r.line.id for r in UserLineRecord.objects.filter(account=request.user, cleared=True, line__isnull=False)]
     cleared_red = [r.question_red.id for r in UserQuestionRecord.objects.filter(account=request.user, cleared=True, question_red__isnull=False)]
     cleared_blue = [r.question_blue.id for r in UserQuestionRecord.objects.filter(account=request.user, cleared=True, question_blue__isnull=False)]
+    cleared_big = [r.question_big.id for r in UserQuestionRecord.objects.filter(account=request.user, cleared=True, question_big__isnull=False)]
 
     flow_list = []
 
@@ -277,8 +282,7 @@ def get_chapter_flow(request):
                     "listener": lst,
                     "content": flow.line.content,
                 })
-                UserLineRecord.objects.update_or_create(
-                    account=request.user, line=flow.line, defaults={'cleared': True})
+                UserLineRecord.objects.update_or_create(account=request.user, line=flow.line, defaults={'cleared': True})
 
         elif flow.question_red and flow.question_red.id not in cleared_red:
             if flow.question_red.listener and flow.question_red.listener.name == listener:
@@ -305,6 +309,21 @@ def get_chapter_flow(request):
                     "correct": flow.question_blue.correct,
                 })
                 # UserQuestionRecord.objects.update_or_create(account=request.user, question_blue=flow.question_blue, defaults={'cleared': True})
+        
+        elif flow.question_big and flow.question_big.id not in cleared_big:
+            if flow.question_big.listener and flow.question_big.listener.name == listener:
+                flow_list.append({
+                    "type": "big_crack",
+                    "id": flow.question_big.id,
+                    "question": flow.question_big.question,
+                    "option1": flow.question_big.option1,
+                    "option2": flow.question_big.option2,
+                    "option3": flow.question_big.option3,
+                    "option4": flow.question_big.option4,
+                    "answer": flow.question_big.answer,
+                    "correct": flow.question_big.correct,
+                })
+                # UserQuestionRecord.objects.update_or_create(account=request.user, question_big=flow.question_big, defaults={'cleared': True})
 
     if not flow_list:
         flow_list.append({"type": "line", "content": "沒有對話內容。"})

@@ -66,7 +66,6 @@ export async function getLevel() {
   return levelData;
 }
 
-
 // 顯示問題
 export function displayQuestion(questionData, onFinish) {
   const dialogueUI = document.getElementById("textbox-container");
@@ -75,12 +74,21 @@ export function displayQuestion(questionData, onFinish) {
   const questionText = document.getElementById("question-text");
   const redChoices = document.getElementById("red-choices");
   const blueAnswer = document.getElementById("blue-answer");
+  const bigChoices = document.getElementById("big-choices");
   const feedback = document.getElementById("feedback");
 
-  const option1Btn = document.getElementById("option1");
-  const option2Btn = document.getElementById("option2");
-  const option3Btn = document.getElementById("option3");
-  const option4Btn = document.getElementById("option4");
+  const redOptionBtns = [
+    document.getElementById("red-option1"),
+    document.getElementById("red-option2"),
+    document.getElementById("red-option3"),
+    document.getElementById("red-option4"),
+  ];
+  const bigOptionBtns = [
+    document.getElementById("big-option1"),
+    document.getElementById("big-option2"),
+    document.getElementById("big-option3"),
+    document.getElementById("big-option4"),
+  ];
   const blueInput = document.getElementById("blue-input");
   const blueSubmit = document.getElementById("blue-submit");
   const closeBtn = document.getElementById("close");
@@ -91,16 +99,16 @@ export function displayQuestion(questionData, onFinish) {
   questionBox.style.display = "block";
   redChoices.style.display = "none";
   blueAnswer.style.display = "none";
+  bigChoices.style.display = "none";
   feedback.style.display = "none";
   questionText.innerText = questionData.question || "沒有題目";
   closeBtn.disabled = true;
 
-  // 移除先前的 click handler
-  [option1Btn, option2Btn, option3Btn, option4Btn].forEach(btn => btn.onclick = null);
+  // 移除舊的 click handler
+  [...redOptionBtns, ...bigOptionBtns].forEach(btn => btn.onclick = null);
   blueSubmit.onclick = null;
   closeBtn.onclick = null;
 
-  // 用來儲存後端回傳的 game_over 旗標
   let gameOverFlag = false;
 
   async function checkAnswer(userAnswer) {
@@ -120,7 +128,6 @@ export function displayQuestion(questionData, onFinish) {
 
       const result = await res.json();
       const isCorrect = result.is_correct;
-      // 儲存後端的 game_over 旗標
       gameOverFlag = result.game_over || false;
       feedback.innerText = isCorrect ? "✅ 答對了！" : "❌ 答錯了！";
       feedback.style.display = "block";
@@ -138,27 +145,26 @@ export function displayQuestion(questionData, onFinish) {
 
   if (questionData.type === "red_crack") {
     redChoices.style.display = "block";
-    option1Btn.innerText = questionData.option1;
-    option2Btn.innerText = questionData.option2;
-    option3Btn.innerText = questionData.option3;
-    option4Btn.innerText = questionData.option4;
-
-    option1Btn.onclick = () => checkAnswer("option1");
-    option2Btn.onclick = () => checkAnswer("option2");
-    option3Btn.onclick = () => checkAnswer("option3");
-    option4Btn.onclick = () => checkAnswer("option4");
+    redOptionBtns.forEach((btn, index) => {
+      btn.innerText = questionData[`option${index + 1}`];
+      btn.onclick = () => checkAnswer(`option${index + 1}`);
+    });
   } else if (questionData.type === "blue_crack") {
     blueAnswer.style.display = "block";
     blueInput.value = "";
-
     blueSubmit.onclick = () => {
       const userAns = blueInput.value.trim();
       if (!userAns) return;
       checkAnswer(userAns);
     };
+  } else if (questionData.type === "big_crack") {
+    bigChoices.style.display = "block";
+    bigOptionBtns.forEach((btn, index) => {
+      btn.innerText = questionData[`option${index + 1}`];
+      btn.onclick = () => checkAnswer(`option${index + 1}`);
+    });
   }
 
-  // 當使用者點擊 close 按鈕時，隱藏介面並把 gameOverFlag 傳入 onFinish callback
   closeBtn.onclick = () => {
     dialogueUI.style.display = "none";
     questionBox.style.display = "none";
