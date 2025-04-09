@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericStackedInline
-from .models import Character, Level, Chapter, QuestionType, QuestionRed, QuestionBlue, Line, ChapterFlow, UserChapterRecord, UserLevelRecord, UserLineRecord, UserQuestionRecord
+from .models import Character, Level, Chapter, QuestionType, QuestionRed, QuestionBlue, QuestionBig, Line, ChapterFlow, UserChapterRecord, UserLevelRecord, UserLineRecord, UserQuestionRecord
 
 # CharacterAdmin
 class CharacterAdmin(admin.ModelAdmin):
@@ -25,6 +25,10 @@ class QuestionRedAdmin(admin.ModelAdmin):
 # QuestionBlueAdmin
 class QuestionBlueAdmin(admin.ModelAdmin):
     list_display = ('question', 'answer', 'correct', 'level', 'chapter', 'question_type')
+
+# QuestionBigAdmin
+class QuestionBigAdmin(admin.ModelAdmin):
+    list_display = ('question', 'option1', 'option2', 'option3', 'option4', 'answer', 'correct', 'level', 'chapter', 'question_type')
 
 # LineAdmin
 class LineAdmin(admin.ModelAdmin):
@@ -56,6 +60,7 @@ admin.site.register(Chapter, ChapterAdmin)
 admin.site.register(QuestionType, QuestionTypeAdmin)
 admin.site.register(QuestionRed, QuestionRedAdmin)
 admin.site.register(QuestionBlue, QuestionBlueAdmin)
+admin.site.register(QuestionBig, QuestionBigAdmin)
 admin.site.register(Line, LineAdmin)
 admin.site.register(ChapterFlow, ChapterFlowAdmin)
 admin.site.register(UserChapterRecord, UserChapterRecordAdmin)
