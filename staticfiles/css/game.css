@@ -33,7 +33,7 @@ html, body {
 .note {
     position: absolute;
     left: 5%;
-    top: 1vh;
+    top: 6vh;
     display: flex;
     flex-direction: column;
     color: rgb(238, 238, 238);
@@ -231,4 +231,23 @@ html, body {
 
 #blue-submit:active {
     transform: scale(0.95);
+}
+
+.hint {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    color: rgb(238, 238, 238);
+    left: auto;
+    right: 5%;
+    top: 6vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 10px 14px;
+    border-radius: 10px;
+    max-width: 260px;
+    text-align: right;
+    font-size: 14px;
+    line-height: 1.5;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+    z-index: 10;
 }

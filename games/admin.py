@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericStackedInline
-from .models import Character, Level, Chapter, QuestionType, QuestionRed, QuestionBlue, QuestionBig, Line, ChapterFlow, UserChapterRecord, UserLevelRecord, UserLineRecord, UserQuestionRecord
+from .models import Character, Level, Hint, Chapter, QuestionType, QuestionRed, QuestionBlue, QuestionBig, Line, ChapterFlow, UserChapterRecord, UserLevelRecord, UserLineRecord, UserQuestionRecord, UserHintRecord
 
 # CharacterAdmin
 class CharacterAdmin(admin.ModelAdmin):
@@ -34,6 +34,10 @@ class QuestionBigAdmin(admin.ModelAdmin):
 class LineAdmin(admin.ModelAdmin):
     list_display = ('content', 'speaker', 'listener', 'chapter')
 
+# HintAdmin
+class HintAdmin(admin.ModelAdmin):
+    list_display = ('hint_content', 'chapter', 'level', 'speaker', 'listener')
+
 # ChapterFlowAdmin
 class ChapterFlowAdmin(admin.ModelAdmin):
     list_display = ('chapter', 'level', 'order', 'line', 'question_red', 'question_blue')
@@ -54,6 +58,10 @@ class UserLineRecordAdmin(admin.ModelAdmin):
 class UserQuestionRecordAdmin(admin.ModelAdmin):
     list_display = ('account', 'answered_count', 'correct_count', 'cleared')
 
+# UserHintRecordAdmin
+class UserHintRecordAdmin(admin.ModelAdmin):
+    list_display = ('account', 'hint', 'cleared')
+
 admin.site.register(Character, CharacterAdmin)
 admin.site.register(Level, LevelAdmin)
 admin.site.register(Chapter, ChapterAdmin)
@@ -62,8 +70,10 @@ admin.site.register(QuestionRed, QuestionRedAdmin)
 admin.site.register(QuestionBlue, QuestionBlueAdmin)
 admin.site.register(QuestionBig, QuestionBigAdmin)
 admin.site.register(Line, LineAdmin)
+admin.site.register(Hint, HintAdmin)
 admin.site.register(ChapterFlow, ChapterFlowAdmin)
 admin.site.register(UserChapterRecord, UserChapterRecordAdmin)
 admin.site.register(UserLevelRecord, UserLevelRecordAdmin)
 admin.site.register(UserLineRecord, UserLineRecordAdmin)
 admin.site.register(UserQuestionRecord, UserQuestionRecordAdmin)
+admin.site.register(UserHintRecord, UserHintRecordAdmin)

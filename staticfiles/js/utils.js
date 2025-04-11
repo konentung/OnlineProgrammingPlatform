@@ -110,6 +110,7 @@ export function displayQuestion(questionData, onFinish) {
   closeBtn.onclick = null;
 
   let gameOverFlag = false;
+  let isCorrect = false;  // ✅ 新增：記錄是否答對
 
   async function checkAnswer(userAnswer) {
     try {
@@ -127,7 +128,7 @@ export function displayQuestion(questionData, onFinish) {
       });
 
       const result = await res.json();
-      const isCorrect = result.is_correct;
+      isCorrect = result.is_correct;
       gameOverFlag = result.game_over || false;
       feedback.innerText = isCorrect ? "✅ 答對了！" : "❌ 答錯了！";
       feedback.style.display = "block";
@@ -170,7 +171,7 @@ export function displayQuestion(questionData, onFinish) {
     questionBox.style.display = "none";
     feedback.style.display = "none";
     closeBtn.disabled = true;
-    if (onFinish) onFinish(gameOverFlag);
+    if (onFinish) onFinish(gameOverFlag, isCorrect); // ✅ 新增 isCorrect 傳入
   };
 }
 
@@ -256,4 +257,40 @@ export function displayGameOver() {
     });
     
   }, false); // isLast 設為 false，避免自動隱藏對話框
+}
+
+// 抓取提示詞
+export async function getHint(chapter_id, level_name, speaker, listener) {
+  try {
+    const res = await fetch(`/api/get_hint/?chapter_id=${chapter_id}&level_name=${level_name}&speaker=${speaker}&listener=${listener}`);
+    const data = await res.json();
+    const hintBox = document.getElementById("game-hint");
+
+    if (data.hint) {
+      hintBox.style.opacity = 0; // 先透明
+      setTimeout(() => {
+        hintBox.textContent = `💡提示：${data.hint}`;
+        hintBox.style.transition = "opacity 0.5s ease-in-out";
+        hintBox.style.opacity = 1;
+      }, 100);
+    }
+  } catch (err) {
+    console.error("❌ 取得提示失敗", err);
+  }
+}
+
+export async function loadChapterFlow(speaker, listener, chapterId, levelName) {
+  const res = await fetch(`/api/chapterflow/?speaker=${speaker}&listener=${listener}&chapter_id=${chapterId}&level_name=${levelName}`);
+  const data = await res.json();
+  if (data.error === "no_flow") {
+    player.isInDialogue = false;
+    return { flow: [] };
+  }
+  if (data.error) {
+    console.error("Error fetching flow:", data.error);
+    return { flow: []};
+  }
+  return {
+    flow: data.flow || [],
+  };
 }
