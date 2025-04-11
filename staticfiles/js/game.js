@@ -1,58 +1,62 @@
 import { scaleFactor, dialogueData } from "/static/js/constants.js";
 import { k } from "/static/js/kaboomCtx.js";
-import { displayDialogue, setCamScale, getChapter, getLevel, displayQuestion, displayGameOver } from "/static/js/utils.js";
-
-async function loadChapterFlow(speaker, listener, chapterId, levelName) {
-  const res = await fetch(`/api/chapterflow/?speaker=${speaker}&listener=${listener}&chapter_id=${chapterId}&level_name=${levelName}`);
-  const data = await res.json();
-  if (data.error === "no_flow") {
-    player.isInDialogue = false;
-    return { flow: [] };
-  }
-  if (data.error) {
-    console.error("Error fetching flow:", data.error);
-    return { flow: []};
-  }
-  return {
-    flow: data.flow || [],
-  };
-}
+import { displayDialogue, setCamScale, getChapter, getLevel, displayQuestion, displayGameOver, getHint, loadChapterFlow } from "/static/js/utils.js";
 
 function startFlow(flowArray, onFinish) {
   let currentIndex = 0;
   let gameOverHappened = false;
+  let allCorrect = true; // ✅ 加入追蹤是否全對
 
-  async function processNext() {
+  async function processNext(isPreviousCorrect = true) {
+    // ✅ 若上一個沒答對，標記為不全對
+    if (!isPreviousCorrect) {
+      allCorrect = false;
+    }
+
+    // ✅ 全部結束時
     if (currentIndex >= flowArray.length) {
       if (!gameOverHappened) {
         console.log("✅ flow 全部完成，撈取下一關開頭動畫");
+        const { chapter_id } = await getChapter();
+        const { level_name } = await getLevel();
+        await getHint(chapter_id, level_name, "player", "video");
         await startNextChapterOpening();
       }
-      if (onFinish) onFinish();
+      if (onFinish) onFinish(allCorrect); // ✅ 回傳結果
       return;
     }
+
     const item = flowArray[currentIndex];
     currentIndex++;
-  
+
     if (item.type === "line") {
       const lineText = `${item.speaker}：${item.content}`;
-      displayDialogue(lineText, () => {
-        processNext();
-      }, currentIndex === flowArray.length);
-    } else if (item.type === "red_crack" || item.type === "blue_crack" || item.type === "big_crack") {
-      displayQuestion(item, (game_over) => {
+      displayDialogue(
+        lineText,
+        () => {
+          processNext(true); // ✅ 台詞永遠正確
+        },
+        currentIndex === flowArray.length
+      );
+    } else if (
+      item.type === "red_crack" ||
+      item.type === "blue_crack" ||
+      item.type === "big_crack"
+    ) {
+      displayQuestion(item, (game_over, isCorrect) => {
         if (game_over) {
           gameOverHappened = true;
           displayGameOver();
         }
-        processNext();
+        processNext(isCorrect); // ✅ 題目是否正確傳入
       });
     } else {
-      processNext();
+      processNext(true); // 其他類型當作正確繼續
     }
-  }  
+  }
   processNext();
 }
+
 
 async function startNextChapterOpening() {
   const res1 = await fetch("/api/chapter/");
@@ -277,39 +281,49 @@ k.scene("main", async () => {
         if (boundary.name) {
           player.onCollide(boundary.name, () => {
             if (player.isInDialogue) return;
+          
             (async () => {
               player.isInDialogue = true;
-
-              // 優先使用本地 dialogueData
+          
+              // ✅ 優先使用本地 dialogueData
               if (dialogueData && dialogueData[boundary.name]) {
                 console.log(`✅ 使用 dialogueData["${boundary.name}"]`);
                 const flowData = dialogueData[boundary.name];
-                startFlow(flowData, () => {
+                startFlow(flowData, async (allCorrect) => {
                   player.isInDialogue = false;
+          
+                  if (allCorrect) {
+                    const { chapter_id } = await getChapter();
+                    const { level_name } = await getLevel();
+                    await getHint(chapter_id, level_name, "player", boundary.name);
+                  }
                 });
                 return;
               }
-
-              // 若本地無資料，則從 API 獲取
+          
+              // ✅ 從 API 載入流程資料
               const { chapter_id } = await getChapter();
               const { level_name } = await getLevel();
-
               const flowData = await loadChapterFlow(
                 "player",
                 boundary.name,
                 chapter_id,
                 level_name
               );
-
+          
               if (flowData.flow.length > 0) {
-                startFlow(flowData.flow, () => {
+                startFlow(flowData.flow, async (allCorrect) => {
                   player.isInDialogue = false;
+          
+                  if (allCorrect) {
+                    await getHint(chapter_id, level_name, "player", boundary.name);
+                  }
                 });
               } else {
                 player.isInDialogue = false;
-              }              
+              }
             })();
-          });
+          });          
         }
       }
     }
@@ -464,6 +478,9 @@ k.scene("main", async () => {
   }
 
   // ✅ 所有內容載入完才呼叫
+  const { chapter_id } = await getChapter();
+  const { level_name } = await getLevel();
+  await getHint(chapter_id, level_name, "player", "video");
   await startAnimation();
 });
 

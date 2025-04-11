@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.http import JsonResponse
-from .models import Character, Line, QuestionRed, QuestionBlue, QuestionBig, Chapter, Level, ChapterFlow, UserChapterRecord, UserLevelRecord, UserLineRecord, UserQuestionRecord
+from .models import Character, Line, Hint, QuestionRed, QuestionBlue, QuestionBig, Chapter, Level, ChapterFlow, UserChapterRecord, UserLevelRecord, UserLineRecord, UserQuestionRecord, UserHintRecord
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -20,6 +20,7 @@ def reset_game(request):
     UserLevelRecord.objects.filter(account=request.user).update(cleared=False)
     UserLineRecord.objects.filter(account=request.user).update(cleared=False)
     UserQuestionRecord.objects.filter(account=request.user).update(cleared=False)
+    UserHintRecord.objects.filter(account=request.user).update(cleared=False)
     return JsonResponse({'message': 'Game reset successfully.'})
 
 def reset_user_all_game_data(request):
@@ -27,6 +28,7 @@ def reset_user_all_game_data(request):
     UserLevelRecord.objects.filter(account=request.user).update(cleared=False)
     UserLineRecord.objects.filter(account=request.user).update(cleared=False)
     UserQuestionRecord.objects.filter(account=request.user).update(correct_count=0, answered_count=0, cleared=False)
+    UserHintRecord.objects.filter(account=request.user).update(cleared=False)
     return JsonResponse({'message': 'Game reset successfully.'})
 
 @require_POST
@@ -224,6 +226,42 @@ def get_cutscene_info(request):
             return JsonResponse({"play_video": True, "video_url": f"/static/video/{filename}"})
 
     return JsonResponse({"play_video": False})
+
+@login_required
+def get_hint_content(request):
+    user = request.user
+    chapter_id = request.GET.get('chapter_id')
+    level_name = request.GET.get('level_name')
+    speaker = request.GET.get('speaker')
+    listener = request.GET.get('listener')
+
+    if not chapter_id or not level_name or not speaker or not listener:
+        return JsonResponse({'hint': '目前無提示'}, status=200)
+
+    try:
+        chapter = Chapter.objects.get(chapter_id=chapter_id)
+        level = Level.objects.get(level_name=level_name)
+        speaker_obj = Character.objects.get(name=speaker)
+        listener_obj = Character.objects.get(name=listener)
+    except (Chapter.DoesNotExist, Level.DoesNotExist, Character.DoesNotExist):
+        return JsonResponse({'hint': '資料錯誤'}, status=404)
+
+    hint = Hint.objects.filter(
+        chapter=chapter,
+        level=level,
+        speaker=speaker_obj,
+        listener=listener_obj
+    ).first()
+
+    if hint:
+        UserHintRecord.objects.update_or_create(
+            account=user,
+            hint=hint,
+            defaults={"cleared": True}
+        )
+        return JsonResponse({'hint': hint.hint_content})
+
+    return JsonResponse({'hint': '目前無提示'})
 
 # 取得章節 + 關卡下的流程，依使用者紀錄過濾
 def get_chapter_flow(request):
