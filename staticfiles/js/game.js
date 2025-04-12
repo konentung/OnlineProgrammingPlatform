@@ -1,28 +1,25 @@
 import { scaleFactor, dialogueData } from "/static/js/constants.js";
 import { k } from "/static/js/kaboomCtx.js";
-import { displayDialogue, setCamScale, getChapter, getLevel, displayQuestion, displayGameOver, getHint, loadChapterFlow } from "/static/js/utils.js";
+import { displayDialogue, setCamScale, getChapter, getLevel, displayQuestion, displayGameOver, getHint, loadChapterFlow, updateRemainingCracksUI, updateRemainingQuestionsUI } from "/static/js/utils.js";
 
-function startFlow(flowArray, onFinish) {
+function startFlow(flowArray, onFinish, crackName = null) {
   let currentIndex = 0;
   let gameOverHappened = false;
-  let allCorrect = true; // ✅ 加入追蹤是否全對
+  let allCorrect = true;
 
   async function processNext(isPreviousCorrect = true) {
-    // ✅ 若上一個沒答對，標記為不全對
     if (!isPreviousCorrect) {
       allCorrect = false;
     }
 
-    // ✅ 全部結束時
     if (currentIndex >= flowArray.length) {
       if (!gameOverHappened) {
-        console.log("✅ flow 全部完成，撈取下一關開頭動畫");
         const { chapter_id } = await getChapter();
         const { level_name } = await getLevel();
         await getHint(chapter_id, level_name, "player", "video");
         await startNextChapterOpening();
       }
-      if (onFinish) onFinish(allCorrect); // ✅ 回傳結果
+      if (onFinish) onFinish(allCorrect);
       return;
     }
 
@@ -30,12 +27,9 @@ function startFlow(flowArray, onFinish) {
     currentIndex++;
 
     if (item.type === "line") {
-      const lineText = `${item.speaker}：${item.content}`;
       displayDialogue(
-        lineText,
-        () => {
-          processNext(true); // ✅ 台詞永遠正確
-        },
+        `${item.speaker}：${item.content}`,
+        () => processNext(true),
         currentIndex === flowArray.length
       );
     } else if (
@@ -43,20 +37,20 @@ function startFlow(flowArray, onFinish) {
       item.type === "blue_crack" ||
       item.type === "big_crack"
     ) {
-      displayQuestion(item, (game_over, isCorrect) => {
-        if (game_over) {
+      // 傳 crackName 給 displayQuestion
+      displayQuestion({ ...item, crackName }, (gameOver, isCorrect) => {
+        if (gameOver) {
           gameOverHappened = true;
           displayGameOver();
         }
-        processNext(isCorrect); // ✅ 題目是否正確傳入
+        processNext(isCorrect);
       });
     } else {
-      processNext(true); // 其他類型當作正確繼續
+      processNext(true);
     }
   }
   processNext();
 }
-
 
 async function startNextChapterOpening() {
   const res1 = await fetch("/api/chapter/");
@@ -284,7 +278,7 @@ k.scene("main", async () => {
           
             (async () => {
               player.isInDialogue = true;
-          
+
               // ✅ 優先使用本地 dialogueData
               if (dialogueData && dialogueData[boundary.name]) {
                 console.log(`✅ 使用 dialogueData["${boundary.name}"]`);
@@ -297,7 +291,7 @@ k.scene("main", async () => {
                     const { level_name } = await getLevel();
                     await getHint(chapter_id, level_name, "player", boundary.name);
                   }
-                });
+                }, boundary.name);
                 return;
               }
           
@@ -312,18 +306,19 @@ k.scene("main", async () => {
               );
           
               if (flowData.flow.length > 0) {
+                await updateRemainingQuestionsUI(boundary.name);
                 startFlow(flowData.flow, async (allCorrect) => {
                   player.isInDialogue = false;
           
                   if (allCorrect) {
                     await getHint(chapter_id, level_name, "player", boundary.name);
                   }
-                });
+                }, boundary.name);
               } else {
                 player.isInDialogue = false;
               }
             })();
-          });          
+          });
         }
       }
     }

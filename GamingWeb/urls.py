@@ -38,6 +38,8 @@ urlpatterns = [
     path('api/level/', games_views.get_min_not_cleared_level),
     path('api/check/', games_views.check_answer),
     path('api/get_cutscene_info/', games_views.get_cutscene_info),
+    path('api/get_remaining_cracks/', games_views.get_remaining_cracks),
+    path('api/get_remaining_questions/', games_views.get_remaining_questions),
     path('api/get_hint/', games_views.get_hint_content),
     path('api/reset/', games_views.reset_game),
     path('api/reset_all/', games_views.reset_user_all_game_data),

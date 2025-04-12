@@ -67,7 +67,15 @@ export async function getLevel() {
 }
 
 // 顯示問題
-export function displayQuestion(questionData, onFinish) {
+export async function displayQuestion(questionData, onFinish) {
+  const p = document.getElementById("remaining-questions");
+  p.style.display = "none"; // 預設先隱藏
+
+  // 顯示剩餘題目數（只在 map_object_name 存在時）
+  if (questionData.map_object_name) {
+    await updateRemainingQuestionsUI(questionData.map_object_name);
+  }
+
   const dialogueUI = document.getElementById("textbox-container");
   const dialogue = document.getElementById("dialogue");
   const questionBox = document.getElementById("question-box");
@@ -104,13 +112,17 @@ export function displayQuestion(questionData, onFinish) {
   questionText.innerText = questionData.question || "沒有題目";
   closeBtn.disabled = true;
 
-  // 移除舊的 click handler
+  if (questionData.crackName) {
+    await updateRemainingQuestionsUI(questionData.crackName);
+  }
+
+  // 清空舊事件
   [...redOptionBtns, ...bigOptionBtns].forEach(btn => btn.onclick = null);
   blueSubmit.onclick = null;
   closeBtn.onclick = null;
 
   let gameOverFlag = false;
-  let isCorrect = false;  // ✅ 新增：記錄是否答對
+  let isCorrect = false;
 
   async function checkAnswer(userAnswer) {
     try {
@@ -133,6 +145,11 @@ export function displayQuestion(questionData, onFinish) {
       feedback.innerText = isCorrect ? "✅ 答對了！" : "❌ 答錯了！";
       feedback.style.display = "block";
       closeBtn.disabled = false;
+
+      if (questionData.crackName) {
+        await updateRemainingQuestionsUI(questionData.crackName);
+      }
+      
     } catch (err) {
       feedback.innerText = "⚠️ 回傳答案失敗";
       feedback.style.display = "block";
@@ -170,8 +187,9 @@ export function displayQuestion(questionData, onFinish) {
     dialogueUI.style.display = "none";
     questionBox.style.display = "none";
     feedback.style.display = "none";
+    p.style.display = "none";  // ✅ 關閉時也順便隱藏右上角提示
     closeBtn.disabled = true;
-    if (onFinish) onFinish(gameOverFlag, isCorrect); // ✅ 新增 isCorrect 傳入
+    if (onFinish) onFinish(gameOverFlag, isCorrect);
   };
 }
 
@@ -293,4 +311,40 @@ export async function loadChapterFlow(speaker, listener, chapterId, levelName) {
   return {
     flow: data.flow || [],
   };
+}
+
+// 取得剩餘裂縫數
+export async function updateRemainingCracksUI() {
+  try {
+    const res = await fetch("/api/get_remaining_cracks/");
+    const data = await res.json();
+    const div = document.getElementById("remaining-cracks");
+    div.innerText = `剩餘裂縫數：${data.remaining_cracks}`;
+  } catch (e) {
+    console.error("⚠️ 無法更新剩餘裂縫數", e);
+  }
+}
+
+export async function updateRemainingQuestionsUI(crackName) {
+  try {
+    const res = await fetch(`/api/get_remaining_questions/?crack_name=${crackName}`);
+    const data = await res.json();
+    const p = document.getElementById("remaining-questions");
+
+    if (!p) {
+      console.error("找不到 id 為 'remaining-questions' 的元素");
+      return;
+    }
+
+    if (data.total > 0) {
+      const cleared = data.cleared;
+      console.log("🧪 顯示剩餘題目資訊", crackName, `剩餘：${data.cleared} / ${data.total}`);
+      p.innerText = `剩餘題目：${cleared} / ${data.total}`;
+      p.style.display = "block";
+    } else {
+      p.style.display = "none";  // 沒有題目就隱藏
+    }
+  } catch (e) {
+    console.error("⚠️ 無法更新剩餘題目數量", e);
+  }
 }

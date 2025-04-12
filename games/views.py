@@ -227,6 +227,58 @@ def get_cutscene_info(request):
 
     return JsonResponse({"play_video": False})
 
+def get_remaining_questions(request):
+    user = request.user
+    crack_name = request.GET.get("crack_name")
+
+    if not crack_name:
+        return JsonResponse({"error": "缺少裂縫名稱"}, status=400)
+
+    # Y：這個裂縫總共有幾題（全體）
+    red_total = QuestionRed.objects.filter(map_object_name=crack_name).count()
+    blue_total = QuestionBlue.objects.filter(map_object_name=crack_name).count()
+    big_total = QuestionBig.objects.filter(map_object_name=crack_name).count()
+    total = red_total + blue_total + big_total
+
+    # X：這個使用者已經 cleared=True 的數量
+    red_cleared = UserQuestionRecord.objects.filter(
+        account=user, question_red__map_object_name=crack_name, cleared=True
+    ).count()
+    blue_cleared = UserQuestionRecord.objects.filter(
+        account=user, question_blue__map_object_name=crack_name, cleared=True
+    ).count()
+    big_cleared = UserQuestionRecord.objects.filter(
+        account=user, question_big__map_object_name=crack_name, cleared=True
+    ).count()
+
+    cleared = red_cleared + blue_cleared + big_cleared
+    remaining = total - cleared
+
+    return JsonResponse({
+        "total": total,      # Y
+        "cleared": cleared,  # Y - X
+        "remaining": remaining  # X
+    })
+
+def get_remaining_cracks(request):
+    user = request.user
+
+    # 取得所有未完成的題目記錄（紅、藍、或大裂縫）
+    uncleared_records = UserQuestionRecord.objects.filter(account=user)
+
+    # 收集尚未完成的 map_object_name
+    uncleared_cracks = set()
+
+    for record in uncleared_records:
+        if record.question_red and record.question_red.map_object_name:
+            uncleared_cracks.add(record.question_red.map_object_name)
+        elif record.question_blue and record.question_blue.map_object_name:
+            uncleared_cracks.add(record.question_blue.map_object_name)
+        elif record.question_big and record.question_big.map_object_name:
+            uncleared_cracks.add(record.question_big.map_object_name)
+
+    return JsonResponse({"remaining_cracks": len(uncleared_cracks)})
+
 @login_required
 def get_hint_content(request):
     user = request.user
