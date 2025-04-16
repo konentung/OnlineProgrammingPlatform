@@ -476,7 +476,7 @@ k.scene("main", async () => {
   const { chapter_id } = await getChapter();
   const { level_name } = await getLevel();
   await getHint(chapter_id, level_name, "player", "video");
-  await startAnimation();
+  // await startAnimation();
 });
 
 k.go("main");
