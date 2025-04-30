@@ -209,6 +209,27 @@ def get_cutscene_info(request):
     except Character.DoesNotExist:
         return JsonResponse({"error": "Characters 'player' or 'video' not defined."}, status=404)
 
+    # 若題目尚未完成，不給動畫
+    questions_pending = UserQuestionRecord.objects.filter(
+        account=user,
+        cleared=False,
+        question_red__chapter=chapter,
+        question_red__level=level,
+    ) | UserQuestionRecord.objects.filter(
+        account=user,
+        cleared=False,
+        question_blue__chapter=chapter,
+        question_blue__level=level,
+    ) | UserQuestionRecord.objects.filter(
+        account=user,
+        cleared=False,
+        question_big__chapter=chapter,
+        question_big__level=level,
+    )
+
+    if questions_pending.exists():
+        return JsonResponse({"play_video": False})
+
     # 找出是否有對應的 line 且尚未 cleared
     cutscene_lines = Line.objects.filter(
         speaker=speaker,

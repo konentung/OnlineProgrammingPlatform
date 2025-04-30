@@ -307,6 +307,7 @@ k.scene("main", async () => {
           
               if (flowData.flow.length > 0) {
                 await updateRemainingQuestionsUI(boundary.name);
+                await updateRemainingCracksUI();
                 startFlow(flowData.flow, async (allCorrect) => {
                   player.isInDialogue = false;
           
@@ -476,7 +477,8 @@ k.scene("main", async () => {
   const { chapter_id } = await getChapter();
   const { level_name } = await getLevel();
   await getHint(chapter_id, level_name, "player", "video");
-  // await startAnimation();
+  await updateRemainingCracksUI();
+  await startAnimation();
 });
 
 k.go("main");
