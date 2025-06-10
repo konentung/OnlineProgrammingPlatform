@@ -5,7 +5,7 @@ from accounts.models import Account
 from accounts.forms import RegisterForm, LoginForm
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from games.models import UserChapterRecord, UserLevelRecord, UserLineRecord, UserQuestionRecord, Chapter, Level, Line, Hint, QuestionRed, QuestionBlue
+from games.models import UserChapterRecord, UserLevelRecord, UserLineRecord, UserQuestionRecord, UserHintRecord, Chapter, Level, Line, Hint, QuestionRed, QuestionBlue
 
 # 首頁
 def index(request):
@@ -98,7 +98,7 @@ def register(request):
             lines = Line.objects.all()
             hints = Hint.objects.all()
             for hint in hints:
-                UserChapterRecord.objects.create(account=user, hint=hint)
+                UserHintRecord.objects.create(account=user, hint=hint)
             for chapter in chapters:
                 UserChapterRecord.objects.create(account=user, chapter=chapter)
             for level in levels:

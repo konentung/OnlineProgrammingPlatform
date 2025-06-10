@@ -31,7 +31,9 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'onlineprogrammingplatform.onrender.com']
+# ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'onlineprogrammingplatform.onrender.com']
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS')
+CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS')
 # settings.py
 LOGIN_URL = '/login/'
 
