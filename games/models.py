@@ -9,16 +9,16 @@ class Character(models.Model):
     identity = models.CharField(max_length=100)
     feature = models.CharField(max_length=300)
     background = models.CharField(max_length=300)
-    
+
     def __str__(self):
         return self.name
-    
+
 # 關卡
 class Level(models.Model):
     level_name = models.CharField(max_length=100)
     description = models.CharField(max_length=300)
     clear = models.BooleanField(default=False)
-    
+
     def __str__(self):
         return self.level_name
 
@@ -28,31 +28,30 @@ class Chapter(models.Model):
     chapter_name = models.CharField(max_length=100)
     description = models.TextField()
     clear = models.BooleanField(default=False)
-    
+
     def __str__(self):
         return self.chapter_name
 
 # 道具
-# class Item(models.Model):
-#     name = models.CharField(max_length=100)
-#     description = models.CharField(max_length=300)
-#     character = models.ForeignKey(Character, on_delete=models.CASCADE)
-#     used = models.BooleanField(default=False)
+class Item(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=300)
+    character = models.ForeignKey(Character, on_delete=models.CASCADE)
+    used = models.BooleanField(default=False)
 
-# 台詞
-class Line(models.Model):
-    content = models.CharField(max_length=300)
-    speaker = models.ForeignKey(Character, on_delete=models.CASCADE, related_name='speaker')
-    listener = models.ForeignKey(Character, on_delete=models.CASCADE, related_name='listener')
+# 提示詞
+class Hint(models.Model):
+    hint_content = models.CharField(max_length=500)
     chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE)
-    
-    def __str__(self):
-        return self.content
+    level = models.ForeignKey(Level, on_delete=models.CASCADE)
+    speaker = models.ForeignKey(Character, on_delete=models.CASCADE, related_name='hint_speaker')
+    listener = models.ForeignKey(Character, on_delete=models.CASCADE, related_name='hint_listener')
 
 class QuestionType(models.Model):
     TYPE_CHOICES = [
         ('red_crack', '紅色裂縫'),
-        ('blue_crack', '藍色裂縫')
+        ('blue_crack', '藍色裂縫'),
+        ('big_crack', '大裂縫'),
     ]
     question_type = models.CharField(max_length=20, choices=TYPE_CHOICES)
 
@@ -79,6 +78,9 @@ class QuestionRed(models.Model):
     question_type = models.ForeignKey(QuestionType, on_delete=models.CASCADE)
     listener = models.ForeignKey('Character', on_delete=models.CASCADE, null=True, blank=True)
 
+    # 新增的欄位來記錄裂縫名稱
+    map_object_name = models.CharField(max_length=100, null=True, blank=True)
+
     def __str__(self):
         return self.question
 
@@ -92,16 +94,46 @@ class QuestionBlue(models.Model):
     question_type = models.ForeignKey(QuestionType, on_delete=models.CASCADE)
     listener = models.ForeignKey('Character', on_delete=models.CASCADE, null=True, blank=True)
 
+    # 新增的欄位來記錄裂縫名稱
+    map_object_name = models.CharField(max_length=100, null=True, blank=True)
+
     def __str__(self):
         return self.question
 
+# 大裂縫選擇題
+class QuestionBig(models.Model):
+    question = models.TextField()
+    option1 = models.TextField()
+    option2 = models.TextField()
+    option3 = models.TextField()
+    option4 = models.TextField()
+    OPTION_CHOICES = [
+        ('option1', 'option1'),
+        ('option2', 'option2'),
+        ('option3', 'option3'),
+        ('option4', 'option4')
+    ]
+    answer = models.CharField(max_length=20, choices=OPTION_CHOICES)
+    correct = models.BooleanField(default=False)
+    level = models.ForeignKey('Level', on_delete=models.CASCADE)
+    chapter = models.ForeignKey('Chapter', on_delete=models.CASCADE)
+    question_type = models.ForeignKey(QuestionType, on_delete=models.CASCADE)
+    listener = models.ForeignKey('Character', on_delete=models.CASCADE, null=True, blank=True)
+
+    # 新增的欄位來記錄裂縫名稱
+    map_object_name = models.CharField(max_length=100, null=True, blank=True)
+
+    def __str__(self):
+        return self.question
+
+# 台詞
 class Line(models.Model):
     content = models.CharField(max_length=300)
     speaker = models.ForeignKey('Character', on_delete=models.CASCADE, related_name='speaker')
     listener = models.ForeignKey('Character', on_delete=models.CASCADE, related_name='listener')
     level = models.ForeignKey('Level', on_delete=models.CASCADE)
     chapter = models.ForeignKey('Chapter', on_delete=models.CASCADE)
-    
+
     def __str__(self):
         return self.content
 
@@ -118,6 +150,7 @@ class ChapterFlow(models.Model):
     line = models.ForeignKey('Line', on_delete=models.CASCADE, null=True, blank=True)
     question_red = models.ForeignKey('QuestionRed', on_delete=models.CASCADE, null=True, blank=True)
     question_blue = models.ForeignKey('QuestionBlue', on_delete=models.CASCADE, null=True, blank=True)
+    question_big = models.ForeignKey('QuestionBig', on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
         ordering = ['order']
@@ -158,9 +191,29 @@ class UserQuestionRecord(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     question_red = models.ForeignKey(QuestionRed, on_delete=models.CASCADE, null=True, blank=True)
     question_blue = models.ForeignKey(QuestionBlue, on_delete=models.CASCADE, null=True, blank=True)
+    question_big = models.ForeignKey(QuestionBig, on_delete=models.CASCADE, null=True, blank=True)
     answered_count = models.PositiveIntegerField(default=0)
     correct_count = models.PositiveIntegerField(default=0)
     cleared = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.account.username} - {self.question_red or self.question_blue}"
+
+class UserItemRecord(models.Model):
+    """紀錄使用者擁有的道具"""
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    obtained = models.BooleanField(default=False)
+    used = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.account.username} - {self.item.name}"
+
+class UserHintRecord(models.Model):
+    """紀錄使用者獲得的提示詞"""
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    hint = models.ForeignKey(Hint, on_delete=models.CASCADE)
+    cleared = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.account.username} - {self.hint.hint_content}"

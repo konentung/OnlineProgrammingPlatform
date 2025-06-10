@@ -22,7 +22,7 @@ export function displayDialogue(text, onDisplayEnd, isLast = false) {
       return;
     }
     clearInterval(intervalRef);
-  }, 1);
+  }, 10);
 
   function onCloseBtnClick() {
     onDisplayEnd();
@@ -66,21 +66,37 @@ export async function getLevel() {
   return levelData;
 }
 
-
 // 顯示問題
-export function displayQuestion(questionData, onFinish) {
+export async function displayQuestion(questionData, onFinish) {
+  const p = document.getElementById("remaining-questions");
+  p.style.display = "none"; // 預設先隱藏
+
+  // 顯示剩餘題目數（只在 map_object_name 存在時）
+  if (questionData.map_object_name) {
+    await updateRemainingQuestionsUI(questionData.map_object_name);
+  }
+
   const dialogueUI = document.getElementById("textbox-container");
   const dialogue = document.getElementById("dialogue");
   const questionBox = document.getElementById("question-box");
   const questionText = document.getElementById("question-text");
   const redChoices = document.getElementById("red-choices");
   const blueAnswer = document.getElementById("blue-answer");
+  const bigChoices = document.getElementById("big-choices");
   const feedback = document.getElementById("feedback");
 
-  const option1Btn = document.getElementById("option1");
-  const option2Btn = document.getElementById("option2");
-  const option3Btn = document.getElementById("option3");
-  const option4Btn = document.getElementById("option4");
+  const redOptionBtns = [
+    document.getElementById("red-option1"),
+    document.getElementById("red-option2"),
+    document.getElementById("red-option3"),
+    document.getElementById("red-option4"),
+  ];
+  const bigOptionBtns = [
+    document.getElementById("big-option1"),
+    document.getElementById("big-option2"),
+    document.getElementById("big-option3"),
+    document.getElementById("big-option4"),
+  ];
   const blueInput = document.getElementById("blue-input");
   const blueSubmit = document.getElementById("blue-submit");
   const closeBtn = document.getElementById("close");
@@ -91,17 +107,22 @@ export function displayQuestion(questionData, onFinish) {
   questionBox.style.display = "block";
   redChoices.style.display = "none";
   blueAnswer.style.display = "none";
+  bigChoices.style.display = "none";
   feedback.style.display = "none";
   questionText.innerText = questionData.question || "沒有題目";
   closeBtn.disabled = true;
 
-  // 移除先前的 click handler
-  [option1Btn, option2Btn, option3Btn, option4Btn].forEach(btn => btn.onclick = null);
+  if (questionData.crackName) {
+    await updateRemainingQuestionsUI(questionData.crackName);
+  }
+
+  // 清空舊事件
+  [...redOptionBtns, ...bigOptionBtns].forEach(btn => btn.onclick = null);
   blueSubmit.onclick = null;
   closeBtn.onclick = null;
 
-  // 用來儲存後端回傳的 game_over 旗標
   let gameOverFlag = false;
+  let isCorrect = false;
 
   async function checkAnswer(userAnswer) {
     try {
@@ -119,12 +140,16 @@ export function displayQuestion(questionData, onFinish) {
       });
 
       const result = await res.json();
-      const isCorrect = result.is_correct;
-      // 儲存後端的 game_over 旗標
+      isCorrect = result.is_correct;
       gameOverFlag = result.game_over || false;
       feedback.innerText = isCorrect ? "✅ 答對了！" : "❌ 答錯了！";
       feedback.style.display = "block";
       closeBtn.disabled = false;
+
+      if (questionData.crackName) {
+        await updateRemainingQuestionsUI(questionData.crackName);
+      }
+      
     } catch (err) {
       feedback.innerText = "⚠️ 回傳答案失敗";
       feedback.style.display = "block";
@@ -138,33 +163,33 @@ export function displayQuestion(questionData, onFinish) {
 
   if (questionData.type === "red_crack") {
     redChoices.style.display = "block";
-    option1Btn.innerText = questionData.option1;
-    option2Btn.innerText = questionData.option2;
-    option3Btn.innerText = questionData.option3;
-    option4Btn.innerText = questionData.option4;
-
-    option1Btn.onclick = () => checkAnswer("option1");
-    option2Btn.onclick = () => checkAnswer("option2");
-    option3Btn.onclick = () => checkAnswer("option3");
-    option4Btn.onclick = () => checkAnswer("option4");
+    redOptionBtns.forEach((btn, index) => {
+      btn.innerText = questionData[`option${index + 1}`];
+      btn.onclick = () => checkAnswer(`option${index + 1}`);
+    });
   } else if (questionData.type === "blue_crack") {
     blueAnswer.style.display = "block";
     blueInput.value = "";
-
     blueSubmit.onclick = () => {
       const userAns = blueInput.value.trim();
       if (!userAns) return;
       checkAnswer(userAns);
     };
+  } else if (questionData.type === "big_crack") {
+    bigChoices.style.display = "block";
+    bigOptionBtns.forEach((btn, index) => {
+      btn.innerText = questionData[`option${index + 1}`];
+      btn.onclick = () => checkAnswer(`option${index + 1}`);
+    });
   }
 
-  // 當使用者點擊 close 按鈕時，隱藏介面並把 gameOverFlag 傳入 onFinish callback
   closeBtn.onclick = () => {
     dialogueUI.style.display = "none";
     questionBox.style.display = "none";
     feedback.style.display = "none";
+    p.style.display = "none";  // ✅ 關閉時也順便隱藏右上角提示
     closeBtn.disabled = true;
-    if (onFinish) onFinish(gameOverFlag);
+    if (onFinish) onFinish(gameOverFlag, isCorrect);
   };
 }
 
@@ -175,7 +200,7 @@ export function displayGameOver() {
   displayDialogue(gameOverText, () => {
     // 對話播完後顯示選項
     const btnContainer = $(".btn-container");
-    btnContainer.empty();
+    btnContainer.empty(); // 清空按鈕容器
     
     // 設定按鈕容器的位置（絕對定位到對話框的左上角）
     btnContainer.css({
@@ -219,20 +244,107 @@ export function displayGameOver() {
     btnContainer.append(restartBtn, homeBtn, aboutBtn);
     
     // 使用者點擊按鈕後先隱藏對話框，然後直接重新載入頁面
-    restartBtn.click(() => {
+    restartBtn.click(async () => {
       $("#textbox-container").hide(); // 隱藏對話框
-      window.location.reload(); // 直接重新載入當前頁面
-    });
+      try {
+        await fetch("/api/reset");
+      } catch (e) {
+        console.warn("重置失敗：", e);
+      }
+      window.location.reload(); // 重新載入頁面
+    });    
     
-    homeBtn.click(() => {
+    homeBtn.click(async() => {
       $("#textbox-container").hide();
+      try {
+        await fetch("/api/reset");
+      } catch (e) {
+        console.warn("重置失敗：", e);
+      }
       window.location.href = "/";
     });
     
-    aboutBtn.click(() => {
+    aboutBtn.click(async() => {
       $("#textbox-container").hide();
+      try {
+        await fetch("/api/reset");
+      } catch (e) {
+        console.warn("重置失敗：", e);
+      }
       window.location.href = "/about";
     });
     
   }, false); // isLast 設為 false，避免自動隱藏對話框
+}
+
+// 抓取提示詞
+export async function getHint(chapter_id, level_name, speaker, listener) {
+  try {
+    const res = await fetch(`/api/get_hint/?chapter_id=${chapter_id}&level_name=${level_name}&speaker=${speaker}&listener=${listener}`);
+    const data = await res.json();
+    const hintBox = document.getElementById("game-hint");
+
+    if (data.hint) {
+      hintBox.style.opacity = 0; // 先透明
+      setTimeout(() => {
+        hintBox.textContent = `💡提示：${data.hint}`;
+        hintBox.style.transition = "opacity 0.5s ease-in-out";
+        hintBox.style.opacity = 1;
+      }, 100);
+    }
+  } catch (err) {
+    console.error("❌ 取得提示失敗", err);
+  }
+}
+
+export async function loadChapterFlow(speaker, listener, chapterId, levelName) {
+  const res = await fetch(`/api/chapterflow/?speaker=${speaker}&listener=${listener}&chapter_id=${chapterId}&level_name=${levelName}`);
+  const data = await res.json();
+  if (data.error === "no_flow") {
+    player.isInDialogue = false;
+    return { flow: [] };
+  }
+  if (data.error) {
+    console.error("Error fetching flow:", data.error);
+    return { flow: []};
+  }
+  return {
+    flow: data.flow || [],
+  };
+}
+
+// 取得剩餘裂縫數
+export async function updateRemainingCracksUI() {
+  try {
+    const res = await fetch("/api/get_remaining_cracks/");
+    const data = await res.json();
+    const div = document.getElementById("remaining-cracks");
+    div.innerText = `剩餘裂縫數：${data.remaining_cracks}`;
+  } catch (e) {
+    console.error("⚠️ 無法更新剩餘裂縫數", e);
+  }
+}
+
+export async function updateRemainingQuestionsUI(crackName) {
+  try {
+    const res = await fetch(`/api/get_remaining_questions/?crack_name=${crackName}`);
+    const data = await res.json();
+    const p = document.getElementById("remaining-questions");
+
+    if (!p) {
+      console.error("找不到 id 為 'remaining-questions' 的元素");
+      return;
+    }
+
+    if (data.total > 0) {
+      const cleared = data.cleared;
+      console.log("🧪 顯示剩餘題目資訊", crackName, `剩餘：${data.cleared} / ${data.total}`);
+      p.innerText = `剩餘題目：${cleared} / ${data.total}`;
+      p.style.display = "block";
+    } else {
+      p.style.display = "none";  // 沒有題目就隱藏
+    }
+  } catch (e) {
+    console.error("⚠️ 無法更新剩餘題目數量", e);
+  }
 }

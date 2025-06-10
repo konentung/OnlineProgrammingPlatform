@@ -9,6 +9,11 @@
 <div id="app">
     <div>
       <p class="note">Tap/Click around to move</p>
+      <!-- 右上方的黑黑區塊 -->
+      <div class="hint" id="status-box">
+        <div id="remaining-cracks">剩餘裂縫數：3</div>
+        <div id="game-hint"></div>
+      </div>
 
       <div id="textbox-container" style="display: none">
         <div id="textbox">
@@ -16,14 +21,16 @@
       
           <!-- 題目內容放這裡 -->
           <div id="question-box" style="display: none">
+            <p id="remaining-questions" style="position: absolute; top: 5px; right: 10px; font-weight: bold; color: #333; display: none;"></p>
+
             <p id="question-text" class="ui-text"></p>
       
             <!-- 紅題 -->
             <div id="red-choices" style="display: none;">
-              <button id="option1"></button>
-              <button id="option2"></button>
-              <button id="option3"></button>
-              <button id="option4"></button>
+              <button id="red-option1"></button>
+              <button id="red-option2"></button>
+              <button id="red-option3"></button>
+              <button id="red-option4"></button>
             </div>
       
             <!-- 藍題 -->
@@ -31,7 +38,15 @@
               <input type="text" id="blue-input" placeholder="請輸入答案" />
               <button id="blue-submit">送出</button>
             </div>
-      
+
+            <!-- 大裂縫題 -->
+            <div id="big-choices" style="display: none;">
+              <button id="big-option1"></button>
+              <button id="big-option2"></button>
+              <button id="big-option3"></button>
+              <button id="big-option4"></button>
+            </div>
+
             <!-- 顯示答對/錯 -->
             <p id="feedback" style="display:none;"></p>
           </div>
@@ -42,6 +57,10 @@
         </div>
       </div>      
     </div>
+    <!-- 過場影片（一開始隱藏） -->
+    <div id="cutscene-container" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; background: black;">
+      <video id="cutscene-video" autoplay muted playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
+    </div>    
     <canvas id="gameCanvas"></canvas>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
